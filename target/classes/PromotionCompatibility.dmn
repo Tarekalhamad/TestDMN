@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/"
+                 xmlns="https://telenor.se/promotion-compatibility"
+                 xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+                 xmlns:kie="http://www.drools.org/kie/dmn/1.2"
+                 xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/"
+                 xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+                 id="_PROMO_COMPAT_001"
+                 name="PromotionCompatibility"
+                 expressionLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 namespace="https://telenor.se/promotion-compatibility">
+
+  <!-- ============================================================ -->
+  <!-- ITEM DEFINITIONS (Custom Data Types)                         -->
+  <!-- ============================================================ -->
+
+  <!-- Input promotion structure -->
+  <dmn:itemDefinition id="_tPromotion" name="tPromotion" isCollection="false">
+    <dmn:itemComponent id="_tPromotion_id" name="promotionId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromotion_name" name="promotionName" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromotion_baseType" name="promotionBaseType" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromotion_category" name="discountCategory" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+
+  <!-- Collection of input promotions -->
+  <dmn:itemDefinition id="_tPromotionList" name="tPromotionList" isCollection="true">
+    <dmn:typeRef>tPromotion</dmn:typeRef>
+  </dmn:itemDefinition>
+
+  <!-- Output allowed promotion structure -->
+  <dmn:itemDefinition id="_tAllowedPromotion" name="tAllowedPromotion" isCollection="false">
+    <dmn:itemComponent id="_tAllowed_id" name="promotionId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tAllowed_name" name="promotionName" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tAllowed_category" name="discountCategory" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tAllowed_order" name="appliedOrder" isCollection="false">
+      <dmn:typeRef>number</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+
+  <!-- Collection of allowed promotions -->
+  <dmn:itemDefinition id="_tAllowedPromotionList" name="tAllowedPromotionList" isCollection="true">
+    <dmn:typeRef>tAllowedPromotion</dmn:typeRef>
+  </dmn:itemDefinition>
+
+  <!-- Output rejected promotion structure -->
+  <dmn:itemDefinition id="_tRejectedPromotion" name="tRejectedPromotion" isCollection="false">
+    <dmn:itemComponent id="_tRejected_id" name="promotionId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tRejected_name" name="promotionName" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tRejected_category" name="discountCategory" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tRejected_reason" name="reason" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+
+  <!-- Collection of rejected promotions -->
+  <dmn:itemDefinition id="_tRejectedPromotionList" name="tRejectedPromotionList" isCollection="true">
+    <dmn:typeRef>tRejectedPromotion</dmn:typeRef>
+  </dmn:itemDefinition>
+
+  <!-- ============================================================ -->
+  <!-- INPUT DATA                                                   -->
+  <!-- ============================================================ -->
+
+  <dmn:inputData id="_INPUT_ELIGIBLE" name="EligiblePromotions">
+    <dmn:variable id="_VAR_ELIGIBLE" name="EligiblePromotions" typeRef="tPromotionList"/>
+  </dmn:inputData>
+
+  <!-- ============================================================ -->
+  <!-- SINGLE DECISION: CompatibilityResult                         -->
+  <!-- Contains all static tables + FEEL logic in one context.      -->
+  <!-- Output: {AllowedPromotions: [...], RejectedPromotions: [...]} -->
+  <!-- No sub-decisions = clean API response (no noise).            -->
+  <!-- ============================================================ -->
+
+  <dmn:decision id="_DECISION_RESULT" name="CompatibilityResult">
+    <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any"/>
+    <dmn:informationRequirement id="_IR_ELIGIBLE">
+      <dmn:requiredInput href="#_INPUT_ELIGIBLE"/>
+    </dmn:informationRequirement>
+
+    <dmn:context id="_CTX_RESULT">
+
+      <!-- ======================================================== -->
+      <!-- STATIC TABLE 1: Category Precedence                      -->
+      <!-- Lower precedenceRank = higher priority = wins conflicts.  -->
+      <!-- Business managers: change rank numbers to reorder.        -->
+      <!-- ======================================================== -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_PREC" name="categoryPrecedence" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_PREC">
+          <dmn:text>[{discountCategory: "EmployeeDiscount", precedenceRank: 1}, {discountCategory: "ComplaintDiscount", precedenceRank: 2}, {discountCategory: "SaveDeskDiscount", precedenceRank: 3}, {discountCategory: "ChurnBlockerDiscount", precedenceRank: 4}, {discountCategory: "SignUpDiscount", precedenceRank: 5}, {discountCategory: "SignUpDiscountLimited", precedenceRank: 6}, {discountCategory: "LegacyBindingDiscount", precedenceRank: 7}, {discountCategory: "OTSDiscount", precedenceRank: 8}, {discountCategory: "HWSubscriptionDiscount", precedenceRank: 9}, {discountCategory: "HWSubscriptionDiscountLimited", precedenceRank: 10}, {discountCategory: "HWSubscriptionDiscountAccessory", precedenceRank: 11}, {discountCategory: "HWDiscount", precedenceRank: 12}, {discountCategory: "GeoDiscount", precedenceRank: 13}, {discountCategory: "KomboDiscount", precedenceRank: 14}, {discountCategory: "PromotionOffering", precedenceRank: 15}, {discountCategory: "RecurringExtraSurf", precedenceRank: 16}, {discountCategory: "MiscMigratedDiscount", precedenceRank: 17}, {discountCategory: "MiscMigratedDiscountLimited", precedenceRank: 18}]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- ======================================================== -->
+      <!-- STATIC TABLE 2: Category Incompatibilities                -->
+      <!-- Declares which discount category pairs CANNOT coexist.    -->
+      <!-- overrideWinner: null = use precedence, or set category.   -->
+      <!-- Business managers: add/remove rows to change rules.       -->
+      <!-- ======================================================== -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_INCOMPAT" name="categoryIncompatibilities" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_INCOMPAT">
+          <dmn:text>[{categoryA: "EmployeeDiscount", categoryB: "LegacyBindingDiscount", overrideWinner: null}, {categoryA: "EmployeeDiscount", categoryB: "OTSDiscount", overrideWinner: null}, {categoryA: "EmployeeDiscount", categoryB: "HWSubscriptionDiscount", overrideWinner: null}, {categoryA: "EmployeeDiscount", categoryB: "ChurnBlockerDiscount", overrideWinner: null}, {categoryA: "LegacyBindingDiscount", categoryB: "HWSubscriptionDiscount", overrideWinner: null}, {categoryA: "LegacyBindingDiscount", categoryB: "HWSubscriptionDiscountLimited", overrideWinner: null}, {categoryA: "LegacyBindingDiscount", categoryB: "HWSubscriptionDiscountAccessory", overrideWinner: null}, {categoryA: "OTSDiscount", categoryB: "SignUpDiscount", overrideWinner: null}, {categoryA: "OTSDiscount", categoryB: "SignUpDiscountLimited", overrideWinner: null}]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- ======================================================== -->
+      <!-- STATIC TABLE 3: Individual Incompatibilities              -->
+      <!-- Blocks specific promotion IDs when a category or promo    -->
+      <!-- is present. Business managers: add rows as needed.        -->
+      <!-- ======================================================== -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_INDIV" name="individualIncompatibilities" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_INDIV">
+          <dmn:text>[{blockedPromotionId: "PROMO-ATL-001", whenCategoryPresent: "EmployeeDiscount", whenPromotionIdPresent: null, ruleName: "Block ATL campaign when employee discount present"}]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Helper: look up precedence rank for a category -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_PREC_OF" name="precedenceOf" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_PREC_OF">
+          <dmn:text><![CDATA[function(cat) if count(categoryPrecedence[discountCategory = cat]) > 0 then (categoryPrecedence[discountCategory = cat]).precedenceRank[1] else 999]]></dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 1: Distinct categories in the input -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CATS" name="categoriesPresent" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_CATS">
+          <dmn:text>distinct values(for p in EligiblePromotions return p.discountCategory)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 2: Active conflicts (both categories present) -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_CONFLICTS">
+          <dmn:text>categoryIncompatibilities[list contains(categoriesPresent, categoryA) and list contains(categoriesPresent, categoryB)]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 3: Resolve each conflict to winner/loser -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_RESOLUTIONS">
+          <dmn:text><![CDATA[for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.categoryA) < precedenceOf(c.categoryB) then c.categoryA else c.categoryB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.categoryA then c.categoryB else c.categoryA) else if precedenceOf(c.categoryA) < precedenceOf(c.categoryB) then c.categoryB else c.categoryA}]]></dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 4: Collect losing categories -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_LOSERS" name="losingCategories" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_LOSERS">
+          <dmn:text>distinct values(for cr in conflictResolutions return cr.loserCategory)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 5: Find active individual blocks -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
+          <dmn:text>(for rule in individualIncompatibilities return if (rule.whenCategoryPresent != null and list contains(categoriesPresent, rule.whenCategoryPresent)) or (rule.whenPromotionIdPresent != null and (some p in EligiblePromotions satisfies p.promotionId = rule.whenPromotionIdPresent)) then rule else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 6: Extract blocked promotion IDs -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_BLOCKED_IDS">
+          <dmn:text>distinct values(for b in activeBlocks return b.blockedPromotionId)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 7: Filter out losers and blocked promotions -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_SURVIVING" name="surviving" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_SURVIVING">
+          <dmn:text>EligiblePromotions[not(list contains(losingCategories, discountCategory)) and not(list contains(blockedPromotionIds, promotionId))]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 8: Sort survivors by precedence rank -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_SORTED" name="sorted" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_SORTED">
+          <dmn:text><![CDATA[sort(surviving, function(a, b) precedenceOf(a.discountCategory) < precedenceOf(b.discountCategory))]]></dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 9: Build AllowedPromotions list with appliedOrder -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ALLOWED" name="allowedResult" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_ALLOWED">
+          <dmn:text>if count(sorted) = 0 then [] else for i in 1..count(sorted) return {promotionId: sorted[i].promotionId, promotionName: sorted[i].promotionName, discountCategory: sorted[i].discountCategory, appliedOrder: i}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 10: Build RejectedPromotions - category conflicts -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_CAT_REJECTED">
+          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + " (higher precedence)"}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 11: Build RejectedPromotions - individual blocks -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_IND_REJECTED" name="individualRejections" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_IND_REJECTED">
+          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Individually blocked: " + activeBlocks[blockedPromotionId = p.promotionId][1].ruleName}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Step 12: Combine all rejections -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_REJECTED" name="rejectedResult" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_REJECTED">
+          <dmn:text>concatenate(categoryRejections, individualRejections)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+      <!-- Final result: context with both lists -->
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EXPR_FINAL">
+          <dmn:text>{AllowedPromotions: allowedResult, RejectedPromotions: rejectedResult}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+
+    </dmn:context>
+  </dmn:decision>
+
+  <!-- ============================================================ -->
+  <!-- DMNDI: Diagram Layout                                        -->
+  <!-- ============================================================ -->
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_DIAGRAM_001" name="Promotion Compatibility DRG">
+      <di:extension>
+        <kie:ComponentsWidthsExtension/>
+      </di:extension>
+
+      <dmndi:DMNShape id="dmnshape-_INPUT_ELIGIBLE" dmnElementRef="_INPUT_ELIGIBLE" isCollapsed="false">
+        <dc:Bounds x="350" y="400" width="200" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNShape id="dmnshape-_DECISION_RESULT" dmnElementRef="_DECISION_RESULT" isCollapsed="false">
+        <dc:Bounds x="300" y="200" width="300" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNEdge id="dmnedge-_IR_ELIGIBLE" dmnElementRef="_IR_ELIGIBLE">
+        <di:waypoint x="450" y="400"/>
+        <di:waypoint x="450" y="250"/>
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</dmn:definitions>

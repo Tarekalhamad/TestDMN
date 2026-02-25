@@ -1,0 +1,108 @@
+{
+    "id": "A6989",
+    "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v2/productOffering/A6989",
+    "version": "1.0.0",
+    "lastUpdate": null,
+    "name": "Bindningsrabatt 200 kr i 24 månader",
+    "description": "Bindningsrabatt 200 kr i 24 månader",
+    "isBundle": false,
+    "isSellable": true,
+    "lifecycleStatus": "Launched",
+    "validFor": {
+        "startDateTime": "2025-02-20T00:00:00.000+01:00",
+        "endDateTime": "3000-01-01T00:00:00.000+01:00"
+    },
+    "resourceCandidate": [],
+    "serviceCandidate": null,
+    "channel": [
+        {
+            "id": "EOTS",
+            "href": null,
+            "name": "External OTS",
+            "@referredType": "SalesChannel"
+        }
+    ],
+    "marketSegment": null,
+    "place": null,
+    "paymentOption": [],
+    "productOfferingRelationship": [],
+    "category": [
+        {
+            "id": "X1552",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/category/X1552",
+            "name": "Discount",
+            "version": "1.0.0",
+            "@referredType": "AddonOfferType"
+        },
+        {
+            "id": "D34",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/category/D34",
+            "name": "OTSDiscount",
+            "version": "1.0.0",
+            "@referredType": "Discount"
+        }
+    ],
+    "productSpecification": {
+        "id": "15749",
+        "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/productSpecification/15749",
+        "name": "Rabatt OTS abonnemang",
+        "version": "1.0.0",
+        "@referredType": "OTSDiscount"
+    },
+    "productOfferingTerm": [
+        {
+            "name": "Cancellation period",
+            "description": "The minimum cancellation period",
+            "duration": {
+                "amount": 0,
+                "units": "day"
+            },
+            "validFor": {
+                "startDateTime": "2025-02-20T01:09:58.000+01:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "@type": "CancellationPeriod",
+            "@schemaLocation": ""
+        }
+    ],
+    "productOfferingPrice": [
+        {
+            "id": "157381",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/productOfferingPrice/157381",
+            "name": "Rabatt",
+            "description": "Rabatt",
+            "price": {
+                "taxIncludedAmount": {
+                    "value": -200.0,
+                    "unit": "SEK"
+                },
+                "dutyFreeAmount": {
+                    "value": -160.0,
+                    "unit": "SEK"
+                },
+                "taxRate": 25.0,
+                "percentage": 0.0
+            },
+            "recurringChargePeriod": "MONTHLY",
+            "recurringChargePeriodLength": 24,
+            "validFor": {
+                "startDateTime": "2025-02-20T01:09:58.000+01:00",
+                "endDateTime": "2999-12-31T00:00:00.000+01:00"
+            },
+            "unitOfMeasure": "SEK",
+            "priceType": "RECURRING",
+            "version": "165452",
+            "isBundle": false,
+            "productOfferingPriceRelationship": [],
+            "instantiateIfZeroPriced": true,
+            "productOfferingPriceCondition": [],
+            "@type": "ProductOfferingPrice",
+            "@baseType": "ProductOfferingPrice",
+            "@schemaLocation": ""
+        }
+    ],
+    "prodSpecCharValueUse": [],
+    "@type": "ProductAddonOffering",
+    "@baseType": "ProductOffering",
+    "@schemaLocation": ""
+}

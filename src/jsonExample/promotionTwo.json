@@ -1,0 +1,119 @@
+{
+    "id": "126",
+    "href": "https://promotion.ingress1-nonexp-prd-1.aws1.se.telenor.net/promotion/v1/promotion/126",
+    "description": "BO - Nätsäker Plus med befintligt Cubs Plus abonnemang",
+    "name": "BO - Nätsäker Plus med befintligt Cubs Plus abonnemang",
+    "lastUpdate": null,
+    "lifecycleStatus": "Launched",
+    "validFor": {
+        "startDateTime": "2022-05-17T00:00:00.000+02:00",
+        "endDateTime": "3000-01-01T00:00:00.000+01:00"
+    },
+    "pattern": [
+        {
+            "id": "243",
+            "name": "BO - Nätsäker Plus med befintligt Cubs Plus abonnemang",
+            "description": "BO - Nätsäker Plus med befintligt Cubs Plus abonnemang",
+            "priority": 1,
+            "relationTypeAmongGroup": "AND",
+            "validFor": {
+                "startDateTime": "2022-05-17T00:00:00.000+02:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "criteriaGroup": [
+                {
+                    "id": "256",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "580",
+                            "criteriaPara": "2.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "A4986",
+                            "@referredValueType": "ProductAddonOffering"
+                        }
+                    ]
+                },
+                {
+                    "id": "324",
+                    "groupName": "Existing MPO 7550 or 7551",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "791",
+                            "criteriaPara": "2.1",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7550",
+                            "@referredValueType": "ProductOffering"
+                        },
+                        {
+                            "id": "792",
+                            "criteriaPara": "2.1",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7551",
+                            "@referredValueType": "ProductOffering"
+                        }
+                    ]
+                },
+                {
+                    "id": "326",
+                    "groupName": "Existing Plus product A5743",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "794",
+                            "criteriaPara": "2.1",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "A5743",
+                            "@referredValueType": "ProductAddonOffering"
+                        }
+                    ]
+                }
+            ],
+            "action": [
+                {
+                    "id": "243",
+                    "actionValue": "A4986",
+                    "price": null,
+                    "actionRelationship": [
+                        {
+                            "criteriaGroupId": "324",
+                            "relationshipType": "addon"
+                        },
+                        {
+                            "criteriaGroupId": "326",
+                            "relationshipType": "requires"
+                        }
+                    ],
+                    "actionObject": [
+                        {
+                            "id": "324",
+                            "relationshipType": "addon"
+                        },
+                        {
+                            "id": "326",
+                            "relationshipType": "requires"
+                        }
+                    ],
+                    "actionType": "5.1",
+                    "@referredValueType": "ProductAddonOffering"
+                }
+            ],
+            "@type": "PromotionPattern",
+            "@baseType": "PromotionPattern"
+        }
+    ],
+    "@schemaLocation": null,
+    "@baseType": "SubscriptionPromotion",
+    "@type": "Subscription",
+    "type": "benefit",
+    "channel": [
+        {
+            "id": "BO1",
+            "href": null,
+            "name": "Back Office",
+            "@referredType": "SalesChannel"
+        }
+    ]
+}

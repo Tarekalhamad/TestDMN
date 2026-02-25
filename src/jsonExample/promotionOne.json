@@ -1,0 +1,585 @@
+{
+    "id": "273",
+    "href": "https://promotion.ingress1-nonexp-prd-1.aws1.se.telenor.net/promotion/v1/promotion/273",
+    "description": "Discount OTS - New MPO Obegränsat",
+    "name": "Discount OTS - New MPO Obegränsat",
+    "lastUpdate": null,
+    "lifecycleStatus": "Launched",
+    "validFor": {
+        "startDateTime": "2024-02-01T01:00:00.000+01:00",
+        "endDateTime": "3000-01-01T00:00:00.000+01:00"
+    },
+    "pattern": [
+        {
+            "id": "482",
+            "name": "New MPO Obegränsat Solo",
+            "description": "New MPO Obegränsat Solo",
+            "priority": 1,
+            "relationTypeAmongGroup": "AND",
+            "validFor": {
+                "startDateTime": "2024-01-31T00:00:00.000+01:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "criteriaGroup": [
+                {
+                    "id": "228",
+                    "groupName": "Binding criteria",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "520",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "A4743",
+                            "@referredValueType": "ProductAddonOffering"
+                        }
+                    ]
+                },
+                {
+                    "id": "382",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1216",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "14305",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1341",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15749",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "413",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1301",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1302",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1303",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1304",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1305",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1306",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1307",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1308",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1309",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1310",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1311",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1312",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "569",
+                    "groupName": "New MPO Obegränsat Solo ",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "2471",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7549",
+                            "@referredValueType": "ProductOffering"
+                        },
+                        {
+                            "id": "3605",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7750",
+                            "@referredValueType": "ProductOffering"
+                        }
+                    ]
+                }
+            ],
+            "action": [
+                {
+                    "id": "484",
+                    "actionValue": "A6989",
+                    "price": null,
+                    "actionRelationship": [
+                        {
+                            "criteriaGroupId": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "criteriaGroupId": "569",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionObject": [
+                        {
+                            "id": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "id": "569",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionType": "5.1",
+                    "@referredValueType": "ProductAddonOffering"
+                }
+            ],
+            "@type": "PromotionPattern",
+            "@baseType": "PromotionPattern"
+        },
+        {
+            "id": "483",
+            "name": "New MPO Obegränsat Familj",
+            "description": "New MPO Obegränsat Familj",
+            "priority": 1,
+            "relationTypeAmongGroup": "AND",
+            "validFor": {
+                "startDateTime": "2024-01-31T00:00:00.000+01:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "criteriaGroup": [
+                {
+                    "id": "228",
+                    "groupName": "Binding criteria",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "520",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "A4743",
+                            "@referredValueType": "ProductAddonOffering"
+                        }
+                    ]
+                },
+                {
+                    "id": "382",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1216",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "14305",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1341",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15749",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "413",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1301",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1302",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1303",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1304",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1305",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1306",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1307",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1308",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1309",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1310",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1311",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1312",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "570",
+                    "groupName": "New MPO Obegränsat Plus Solo, Obegränsat Familj",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "2472",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7548",
+                            "@referredValueType": "ProductOffering"
+                        }
+                    ]
+                }
+            ],
+            "action": [
+                {
+                    "id": "485",
+                    "actionValue": "A6990",
+                    "price": null,
+                    "actionRelationship": [
+                        {
+                            "criteriaGroupId": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "criteriaGroupId": "570",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionObject": [
+                        {
+                            "id": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "id": "570",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionType": "5.1",
+                    "@referredValueType": "ProductAddonOffering"
+                }
+            ],
+            "@type": "PromotionPattern",
+            "@baseType": "PromotionPattern"
+        },
+        {
+            "id": "484",
+            "name": "New MPO Obegränsat Plus Familj",
+            "description": "New MPO Obegränsat Plus Familj",
+            "priority": 1,
+            "relationTypeAmongGroup": "AND",
+            "validFor": {
+                "startDateTime": "2024-01-31T00:00:00.000+01:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "criteriaGroup": [
+                {
+                    "id": "228",
+                    "groupName": "Binding criteria",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "520",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "A4743",
+                            "@referredValueType": "ProductAddonOffering"
+                        }
+                    ]
+                },
+                {
+                    "id": "382",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1216",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "14305",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1341",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15749",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "413",
+                    "groupName": "Blocking products",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "1301",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1302",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1303",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1304",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1305",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1306",
+                            "criteriaPara": "3.1",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1307",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15184",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1308",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15185",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1309",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15186",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1310",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15187",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1311",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15188",
+                            "@referredValueType": "ProductSpecification"
+                        },
+                        {
+                            "id": "1312",
+                            "criteriaPara": "3.6",
+                            "criteriaOperator": "<>",
+                            "criteriaValue": "15716",
+                            "@referredValueType": "ProductSpecification"
+                        }
+                    ]
+                },
+                {
+                    "id": "571",
+                    "groupName": "New MPO Obegränsat Plus Familj",
+                    "relationTypeInGroup": "OR",
+                    "criteria": [
+                        {
+                            "id": "2474",
+                            "criteriaPara": "2.6",
+                            "criteriaOperator": "=",
+                            "criteriaValue": "7551",
+                            "@referredValueType": "ProductOffering"
+                        }
+                    ]
+                }
+            ],
+            "action": [
+                {
+                    "id": "486",
+                    "actionValue": "A6991",
+                    "price": null,
+                    "actionRelationship": [
+                        {
+                            "criteriaGroupId": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "criteriaGroupId": "571",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionObject": [
+                        {
+                            "id": "228",
+                            "relationshipType": "requires"
+                        },
+                        {
+                            "id": "571",
+                            "relationshipType": "addon"
+                        }
+                    ],
+                    "actionType": "5.1",
+                    "@referredValueType": "ProductAddonOffering"
+                }
+            ],
+            "@type": "PromotionPattern",
+            "@baseType": "PromotionPattern"
+        }
+    ],
+    "@schemaLocation": null,
+    "@baseType": "SubscriptionPromotion",
+    "@type": "Subscription",
+    "type": "benefit",
+    "channel": [
+        {
+            "id": "EOTS",
+            "href": null,
+            "name": "External OTS",
+            "@referredType": "SalesChannel"
+        }
+    ]
+}

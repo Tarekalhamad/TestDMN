@@ -1,0 +1,192 @@
+{
+    "id": "A4743",
+    "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v2/productOffering/A4743",
+    "version": "1.0.0",
+    "lastUpdate": null,
+    "name": "24 mån bindning abonnemang",
+    "description": "24 mån bindning abonnemang",
+    "isBundle": false,
+    "isSellable": true,
+    "lifecycleStatus": "Launched",
+    "validFor": {
+        "startDateTime": "2022-03-28T22:30:00.000+02:00",
+        "endDateTime": "3000-01-01T00:00:00.000+01:00"
+    },
+    "resourceCandidate": [],
+    "serviceCandidate": null,
+    "channel": [
+        {
+            "id": "PS",
+            "href": null,
+            "name": "Partner",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "OS",
+            "href": null,
+            "name": "Online Sales",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "TNApp",
+            "href": null,
+            "name": "TNapp",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "EOTS",
+            "href": null,
+            "name": "External OTS",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "8",
+            "href": null,
+            "name": "Partner",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "7",
+            "href": null,
+            "name": "Egna butiker",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "12",
+            "href": null,
+            "name": "Kundservice",
+            "@referredType": "SalesChannel"
+        },
+        {
+            "id": "TM",
+            "href": null,
+            "name": "TM - Kundservice",
+            "@referredType": "SalesChannel"
+        }
+    ],
+    "marketSegment": null,
+    "place": null,
+    "paymentOption": [],
+    "productOfferingRelationship": [],
+    "category": [
+        {
+            "id": "X1555",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/category/X1555",
+            "name": "Bindning",
+            "version": "1.0.0",
+            "@referredType": "AddonOfferType"
+        },
+        {
+            "id": "PL85",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/category/PL85",
+            "name": "Bindning abonnemang",
+            "version": "1.0.0",
+            "@referredType": "Product Label"
+        }
+    ],
+    "productSpecification": {
+        "id": "15701",
+        "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/productSpecification/15701",
+        "name": "Binding",
+        "version": "1.0.0",
+        "@referredType": "Binding"
+    },
+    "productOfferingTerm": [
+        {
+            "name": "Cancellation period",
+            "description": "The minimum cancellation period",
+            "duration": {
+                "amount": 0,
+                "units": "day"
+            },
+            "validFor": {
+                "startDateTime": "2021-12-14T00:00:00.000+01:00",
+                "endDateTime": "2999-12-31T00:00:00.000+01:00"
+            },
+            "@type": "CancellationPeriod",
+            "@schemaLocation": ""
+        },
+        {
+            "name": "Commitment period",
+            "description": "The minimum commitment period",
+            "duration": {
+                "amount": 24,
+                "units": "month"
+            },
+            "validFor": {
+                "startDateTime": "2021-12-14T00:00:00.000+01:00",
+                "endDateTime": "2999-12-31T00:00:00.000+01:00"
+            },
+            "@type": "commitmentPeriod",
+            "@schemaLocation": ""
+        },
+        {
+            "name": "Binding renewal threshold for internal Channels",
+            "description": "Period before expiry when extension allowed in internal channels",
+            "duration": {
+                "amount": 9,
+                "units": "month"
+            },
+            "validFor": {
+                "startDateTime": "2023-09-27T16:29:44.000+02:00",
+                "endDateTime": "2999-12-31T00:00:00.000+01:00"
+            },
+            "@type": "bindingRenewalThresholdInternal",
+            "@schemaLocation": ""
+        },
+        {
+            "name": "Binding renewal threshold for external channels",
+            "description": "Period before expiry when extension allowed in external channels",
+            "duration": {
+                "amount": 4,
+                "units": "month"
+            },
+            "validFor": {
+                "startDateTime": "2023-09-27T00:00:00.000+02:00",
+                "endDateTime": "3000-01-01T00:00:00.000+01:00"
+            },
+            "@type": "bindingRenewalThresholdExternal",
+            "@schemaLocation": ""
+        }
+    ],
+    "productOfferingPrice": [
+        {
+            "id": "154010",
+            "href": "https://product-catalog.ingress1-nonexp-prd-1.aws1.se.telenor.net/catalogManagement/v1/productOfferingPrice/154010",
+            "name": "Bindning",
+            "description": "Bindning",
+            "price": {
+                "taxIncludedAmount": {
+                    "value": 0.0,
+                    "unit": "SEK"
+                },
+                "dutyFreeAmount": {
+                    "value": 0.0,
+                    "unit": "SEK"
+                },
+                "taxRate": 25.0,
+                "percentage": 0.0
+            },
+            "recurringChargePeriod": "MONTHLY",
+            "recurringChargePeriodLength": 24,
+            "validFor": {
+                "startDateTime": "2021-12-14T00:00:00.000+01:00",
+                "endDateTime": "2999-12-31T00:00:00.000+01:00"
+            },
+            "unitOfMeasure": "SEK",
+            "priceType": "RECURRING",
+            "version": "154241",
+            "isBundle": false,
+            "productOfferingPriceRelationship": [],
+            "instantiateIfZeroPriced": true,
+            "productOfferingPriceCondition": [],
+            "@type": "ProductOfferingPrice",
+            "@baseType": "ProductOfferingPrice",
+            "@schemaLocation": ""
+        }
+    ],
+    "prodSpecCharValueUse": [],
+    "@type": "ProductAddonOffering",
+    "@baseType": "ProductOffering",
+    "@schemaLocation": ""
+}

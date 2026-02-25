@@ -1,0 +1,451 @@
+Promotion API
+Promotion
+Promotion Pattern
+Promotion Criteria Group
+Criteria
+CriteriaPara
+Promotion action
+The Promotion API makes additional offerings available to customers when criteria are met.
+Update March 2022 - TMF has a new PromotionAPI version and the Promotion API is not yet aligned with it.
+Promotion
+Promotion can contain several patterns and they should be evaluated by their priority.
+Priority >= 1 All patterns are evaluated based on priority until a pattern where all criteria are met. The remaining lower priority patterns 
+are then not evaluated.
+Priority = 0 If there is pattern with priority 0, that pattern should always be evaluated and the action of it should be added to the 
+customer if the criteria are met.
+Promotion @type and @baseType should be used in order any filtering in the clients is needed.
+object value Comment
+@type KomboDiscount | OrderAdminDiscount 
+| Subscription
+this field id used by MAUI to filter different promotion types (old types were not used, so they 
+got clreaned up and reduced to: SubscriptionPromotion 2022-01-17 as part of Binding epic FP
+-6151)
+@baset
+ype
+KomboPromotion | OrderAdminPromotion | 
+SubscriptionPromotion
+this field id used by MAUI to filter different promotion types (old types were not used, so they 
+got clreaned up and reduced to: SubscriptionPromotion 2022-01-17 as part of Binding epic FP
+-6151)
+type award (this express that the promotion is 
+automatically given when the criterias are 
+fulfilled)
+benefit: (This express that the promotion is 
+opt-in)
+Expresses if promotion is automatically added or if the customer should actively opt-in for it
+channel Where the promotion is valid
+Promotion Pattern
+"The pattern decides the conditions of promotion and the benefit of the promotion to be given to the eligible customer."
+Contains the conditions (criteria groups) and benefits (action) of the promotion to an eligible party.
+It should be only one action added per matched pattern, even if the MPO (addon p2p) is matched via several different criteria combinations
+object Description Comment
+priority describes the priority of this pattern within the promotion Not evaluated in WAPI as per 2022-01-17 as currently WAPI is extracting each 
+pattern as single promotion and supporting priority would require bigger 
+refactoring
+relationTyp
+eAmongGr
+oup
+Relation to be considered between all criteria groups 
+inside the pattern (up until this moment we only support 
+"AND")
+@type PromotionPattern as per 2022-01-17 No clients are using this field, so it is simplified to one type 
+of pattern FP-6151
+@basetype PromotionPattern as per 2022-01-17 No clients are using this field, so it is simplified to one type 
+of pattern FP-6151
+Promotion Criteria Group
+object Description
+groupname Criteria Group name
+relationTypeInGroup Relation to be considered between all criteria inside the group (up until this moment we only support "OR")
+Criteria
+Criteria parameters are linked to parent Criteria Groups.
+A "criteria parameter" together with "criteria operator" and "criteria value" builds a Promotion Criteria. See below example usage.
+Example usage:
+Criteria
+{
+ "id": "Group.A.1",
+ "criteriaPara":"2.6", //Selected for subscription Product Offering ID
+ "criteriaOperator":"=",
+ "criteriaValue":"7287" // 30 GB Product Offer ID
+ @referredValueType: "ProductOffering"
+},
+CriteriaPara
+The pattern followed when creating new criteria paras is the following (initially defined in older versions of TMF Promotion API and extended):
+Configuration
+Entity - Integral Part
+2.* - Product Offering
+3.* - Product Specification
+4.* - Category
+5.* - PaymentOption (Will always be 5.6 as we see it now as the PaymentOption applies on SignUp)
+6.* - TradeInVendor
+7.* - VoucherCampaign
+8.* - VoucherCode
+9.* - Communicator Operator (referredType can be ko or subnet)
+12.* - Product Offering To be removed
+13.* - Product Specification To be removed
+14.* - Category To be removed
+Flow - Fractional Part
+*.1 - Product Inventory 
+*.3 - Trade-in
+*.4 - VoucherEvaluation
+*.5 - Telenor Change
+*.6 - Shopping cart
+*.7 - Upgrading
+*.8 - Downgrading
+*.9 - Offer Change
+Table
+NOTE: Due to missing support in WAPI Promotions in CUBS: we cannot use any PS criteriaParas when it comes to bundled Product offerings
+NOTE: Due to missing support in WAPI Promotion: Only one criteria group where X.1 and X.6 are combined per pattern is supported.
+CriteriaPara Description Type ObjectType 
+referal
+Supported in WAPI Commnets
+2.1 Installed product offering ID in Product Inventory Installed ProductOffering/
+ProductAddonOff
+ering
+2.6 Offering ID for subscription (when signing up) Sign Up ProductOffering/
+ProductAddonOff
+ering
+3.1 Installed product in Product Inventory (product 
+specification ID)
+Installed ProductSpecificat
+ion
+Missing support in WAPI for CUBS
+3.6 Product Specification ID for subscription (when 
+signing up)
+Sign up ProductSpecificat
+ion
+Missing support in WAPI for CUBS
+4.1 Category ID of the subscribed Offering Installed CategoryId
+4.6 Category ID of the Offering for subscription 
+(when signing up)
+Sign up CategoryId
+2.7 ProductOffering ID for upgrade Upgrade ProductOffering/
+ProductAddonOff
+ering
+TBD Cubs FP-6121 Other criteria groups will determen if it is upgrade or 
+downgrad, irellevant to have separate criteriaPara for 
+upgrade and doqngrade
+3.7 ProductSpecification ID for upgrade Upgrade ProductSpecificat
+ion
+Cubs FP-6121 Missing support in WAPI for CUBS
+4.7 Category ID for upgrade Upgrade CategoryId Cubs FP-6121 .. to be included
+2.8 ProductOffering ID for downgrade Downgra
+de
+ProductOffering/
+ProductAddonOff
+ering
+New in Cubs 
+FP-6980
+3.8 ProductSpecification ID for downgrade Downgra
+de
+ProductSpecificat
+ion
+FP-6980
+4.8 Category ID for downgrade Downgra
+de
+CategoryId FP-6980
+2.9 ProductOffering ID for Offer 
+Change
+ProductOffering/
+ProductAddonOff
+ering
+TBD ? Missing support in WAPI for CUBS
+3.9 ProductSpecification ID for Offer 
+Change
+ProductSpecificat
+ion
+TBD ? Missing support in WAPI for CUBS
+4.9 Category ID for Offer 
+Change
+CategoryId TBD ? Missing support in WAPI for CUBS
+12.1 Installed offering ID to be removed Installed ProductOffering/
+ProductAddonOff
+ering
+TBD 
+FP-5976 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get terminated as result of this promotion 
+12.6 Offering ID for subscription (when 
+signing up) to be removed
+Sign up ProductOffering/
+ProductAddonOff
+ering
+TBD 
+FP-5976 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get removed as result of this promotion 
+13.1 Installed Product Specification ID t
+o be removed
+Installed ProductSpecificat
+ion
+TBD 
+FP-5976 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get terminated as result of this promotion 
+13.6 Product Specification ID for 
+subscription (when signing up) to 
+be removed
+Sign up ProductSpecificat
+ion
+TBD 
+FP-5976 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get removed as result of this promotion 
+14.1 Installed product offering of catego
+ry ID to be removed
+Installed Category Binding 
+EC-1391 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get terminated as result of this promotion 
+14.6 Selected product offering of category
+ID to be removed
+Sign up Category Binding 
+EC-1391 - Getting issue details...
+STATUS
+Special criteria that is used to indicate which products will 
+get removed as result of this promotion 
+5.6 Selected payment option ID Sign Up PaymentOption EC-1623 - Getting issue details...
+STATUS
+Special criteria to represent Payment Option
+2.5 Offering ID for subscription (when signing up) TelenorC
+hange
+ProductOffering/
+ProductAddonOff
+ering
+EC-1623 - Getting issue details...
+STATUS
+Special Criteria to indicate TelenorChange of 
+ProductOffering
+6.3 Text for the vendor of Traded In HW phone TradeInV
+endor
+Trade-In EC-1621 - Getting issue details...
+STATUS
+FP-7937 - Getting issue details...
+STATUS
+Special Criteria to indicate Vendor of the HW being traded in
+7.4 VoucherCampaign ID for Voucher Evaluation VoucherC
+ampaign
+Voucher 
+Evaluation EC-1548 - Getting issue details...
+STATUS
+Special Criteria to indicate the voucher campaign id
+Promotion action
+Action is the offering that customer is getting after meeting all criteria in a promotion pattern. When customer is rewarded an offering via promotion, some 
+relationships to any of the products/offerings from the met criteria need to be persisted in PI.
+This is defined via relationshipType 
+Object Description Comment
+actionValue This value reflect the result of the action
+actionRelations
+hip
+A list containing P2P relations to criteria Group. Types of relations: Addon | Discounts | Requires.
+price Override amount to replace the price amount connected to the 
+actionValue Addon.
+This at the moment can only be used for Addons from category 
+D63 - HW Discounts.
+actionType 5.1 = ProductAddonOffer Only one supported at the moment.
+@referredValue
+Type
+"ProductAddonOffering" Only Action type supported for now.
+Sample Promotion
+{
+ "id":"244",
+ "href":"https://promotion-sit.ingress1-nonexp-tst-1.aws1.se.telenor.net/promotion/v1/promotion/244",
+ "description":"Mobilrabatt vid kontatntköp av valfri HW och bindningstidt",
+ "name":"Mobilrabatt vid kontatntköp av valfri HW och bindningstid",
+ "lastUpdate":null,
+ "lifecycleStatus":"Launched",
+ "validFor":{
+ "startDateTime":"2023-11-03T01:00:00.000+01:00",
+ "endDateTime":"3000-01-01T00:00:00.000+01:00"
+ },
+ "pattern":[
+ {
+ "id":"444",
+ "name":"Cashdeal with any phone",
+ "description":"Cashdeal with any phone",
+ "priority":1,
+ "relationTypeAmongGroup":"AND",
+ "validFor":{
+ "startDateTime":"2023-11-03T00:00:00.000+01:00",
+ "endDateTime":"3000-01-01T00:00:00.000+01:00"
+ },
+ "criteriaGroup":[
+ {
+ "id":"219",
+ "groupName":"All phones",
+ "relationTypeInGroup":"OR",
+ "criteria":[
+ {
+ "id":"495",
+ "criteriaPara":"4.6",
+ "criteriaOperator":"=",
+ "criteriaValue":"X1444",
+ "@referredValueType":"AddonOfferType"
+ }
+ ]
+ },
+ {
+ "id":"228",
+ "groupName":"Binding criteria",
+ "relationTypeInGroup":"OR",
+ "criteria":[
+ {
+ "id":"520",
+ "criteriaPara":"2.6",
+ "criteriaOperator":"=",
+ "criteriaValue":"A4743",
+ "@referredValueType":"ProductAddonOffering"
+ }
+ ]
+ },
+ {
+ "id":"229",
+ "groupName":"Blocking products - binding",
+ "relationTypeInGroup":"OR",
+ "criteria":[
+ {
+ "id":"521",
+ "criteriaPara":"3.1",
+ "criteriaOperator":"<>",
+ "criteriaValue":"15701",
+ "@referredValueType":"ProductSpecification"
+ }
+ ]
+ },
+ {
+ "id":"452",
+ "groupName":"Cash Upfront",
+ "relationTypeInGroup":"OR",
+ "criteria":[
+ {
+ "id":"1512",
+ "criteriaPara":"5.6",
+ "criteriaOperator":"=",
+ "criteriaValue":"1",
+ "@referredValueType":"PaymentOption"
+ }
+ ]
+ },
+ {
+ "id":"482",
+ "groupName":"Mobile Offer Subscription",
+ "relationTypeInGroup":"OR",
+ "criteria":[
+ {
+ "id":"1729",
+ "criteriaPara":"4.6",
+ "criteriaOperator":"=",
+ "criteriaValue":"S26",
+ "@referredValueType":"OfferServiceType"
+ },
+ {
+ "id":"1730",
+ "criteriaPara":"4.1",
+ "criteriaOperator":"=",
+ "criteriaValue":"S26",
+ "@referredValueType":"OfferServiceType"
+ },
+ {
+ "id":"1731",
+ "criteriaPara":"4.6",
+ "criteriaOperator":"=",
+ "criteriaValue":"S27",
+ "@referredValueType":"OfferServiceType"
+ },
+ {
+ "id":"1732",
+ "criteriaPara":"4.1",
+ "criteriaOperator":"=",
+ "criteriaValue":"S27",
+ "@referredValueType":"OfferServiceType"
+ }
+ ]
+ }
+ ],
+ "action":[
+ {
+ "id":"446",
+ "actionValue":"A6117",
+ "price":{
+ "taxIncludedAmount":{
+ "value":-504,
+ "unit":"SEK"
+ },
+ "dutyFreeAmount":{
+ "value":-403.2,
+ "unit":"SEK"
+ },
+ "taxRate":25,
+ "percentage":0
+ },
+ "actionRelationship":[
+ {
+ "criteriaGroupId":"219",
+ "relationshipType":"discounts"
+ },
+ {
+ "criteriaGroupId":"228",
+ "relationshipType":"requires"
+ },
+ {
+ "criteriaGroupId":"482",
+ "relationshipType":"addon"
+ }
+ ],
+ "actionObject":[
+ {
+ "id":"219",
+ "relationshipType":"discounts"
+ },
+ {
+ "id":"228",
+ "relationshipType":"requires"
+ },
+ {
+ "id":"482",
+ "relationshipType":"addon"
+ }
+ ],
+ "actionType":"5.1",
+ "@referredValueType":"ProductAddonOffering"
+ }
+ ],
+ "@type":"PromotionPattern",
+ "@baseType":"PromotionPattern"
+ }
+ ],
+ "@schemaLocation":null,
+ "@baseType":"HWSubscriptionPromotion",
+ "@type":"HWSubscriptionDiscount",
+ "type":"award",
+ "channel":[
+ {
+ "id":"12",
+ "href":null,
+ "name":"Kundservice",
+ "@referredType":"SalesChannel"
+ },
+ {
+ "id":"7",
+ "href":null,
+ "name":"Egna butiker",
+ "@referredType":"SalesChannel"
+ },
+ {
+ "id":"OS",
+ "href":null,
+ "name":"Online Sales",
+ "@referredType":"SalesChannel"
+ },
+ {
+ "id":"TM",
+ "href":null,
+ "name":"TM - Kundservice",
+ "@referredType":"SalesChannel"
+ }
+ ]
+}

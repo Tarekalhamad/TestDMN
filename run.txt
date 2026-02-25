@@ -1,0 +1,2 @@
+.\mvnw.cmd clean install -DskipTests
+.\mvnw.cmd spring-boot:run
