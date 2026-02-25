@@ -101,6 +101,9 @@ Blocks specific promotion IDs (not categories) based on presence of a category o
 | blockedPromotionId | whenCategoryPresent | whenPromotionIdPresent | ruleName |
 |---|---|---|---|
 | PROMO-ATL-001 | EmployeeDiscount | null | Block ATL campaign when employee discount present |
+| PROMO-SUMMER-01 | null | PROMO-VIP-99 | Block summer promo when VIP promo present |
+| PROMO-FLASH-01 | OTSDiscount | PROMO-LOYAL-01 | Block flash sale when OTS discount or loyalty promo present |
+| PROMO-RETAIN-05 | SaveDeskDiscount | null | Block retention offer when save desk discount present |
 
 Business managers add rows in the Decision Table grid as needed.
 
