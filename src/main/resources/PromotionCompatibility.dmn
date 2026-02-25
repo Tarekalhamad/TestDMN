@@ -93,41 +93,44 @@
     <dmn:typeRef>tPrecedenceRow</dmn:typeRef>
   </dmn:itemDefinition>
 
-  <!-- Category incompatibility row type -->
-  <dmn:itemDefinition id="_tCatIncompatRow" name="tCatIncompatRow" isCollection="false">
-    <dmn:itemComponent id="_tCatInc_a" name="categoryA" isCollection="false">
+  <!-- Category rule row type (was: tCatIncompatRow) -->
+  <dmn:itemDefinition id="_tCategoryRuleRow" name="tCategoryRuleRow" isCollection="false">
+    <dmn:itemComponent id="_tCatRule_a" name="groupA" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tCatInc_b" name="categoryB" isCollection="false">
+    <dmn:itemComponent id="_tCatRule_b" name="groupB" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tCatInc_winner" name="overrideWinner" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-  </dmn:itemDefinition>
-
-  <dmn:itemDefinition id="_tCatIncompatList" name="tCatIncompatList" isCollection="true">
-    <dmn:typeRef>tCatIncompatRow</dmn:typeRef>
-  </dmn:itemDefinition>
-
-  <!-- Individual incompatibility row type -->
-  <dmn:itemDefinition id="_tIndivIncompatRow" name="tIndivIncompatRow" isCollection="false">
-    <dmn:itemComponent id="_tIndInc_blocked" name="blockedPromotionId" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tIndInc_cat" name="whenCategoryPresent" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tIndInc_promo" name="whenPromotionIdPresent" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tIndInc_rule" name="ruleName" isCollection="false">
+    <dmn:itemComponent id="_tCatRule_winner" name="overrideWinner" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
   </dmn:itemDefinition>
 
-  <dmn:itemDefinition id="_tIndivIncompatList" name="tIndivIncompatList" isCollection="true">
-    <dmn:typeRef>tIndivIncompatRow</dmn:typeRef>
+  <dmn:itemDefinition id="_tCategoryRuleList" name="tCategoryRuleList" isCollection="true">
+    <dmn:typeRef>tCategoryRuleRow</dmn:typeRef>
+  </dmn:itemDefinition>
+
+  <!-- Promotion rule row type (was: tIndivIncompatRow) -->
+  <dmn:itemDefinition id="_tPromotionRuleRow" name="tPromotionRuleRow" isCollection="false">
+    <dmn:itemComponent id="_tPromoRule_promo" name="promotion" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromoRule_group" name="blockedByGroup" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromoRule_blockedBy" name="blockedByPromotion" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromoRule_winner" name="winner" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tPromoRule_desc" name="description" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+
+  <dmn:itemDefinition id="_tPromotionRuleList" name="tPromotionRuleList" isCollection="true">
+    <dmn:typeRef>tPromotionRuleRow</dmn:typeRef>
   </dmn:itemDefinition>
 
   <!-- ============================================================ -->
@@ -248,129 +251,159 @@
   </dmn:decision>
 
   <!-- ============================================================ -->
-  <!-- DECISION TABLE 2: Category Incompatibilities                  -->
-  <!-- Declares which discount category pairs CANNOT coexist.        -->
-  <!-- overrideWinner: leave empty to use precedence, or set a       -->
-  <!-- category name to force that category as the winner.           -->
-  <!-- Business managers: add/remove rows to change rules.           -->
+  <!-- DECISION TABLE 2: CategoryRules                              -->
+  <!-- (was: CategoryIncompatibilities)                              -->
+  <!-- Declares which discount group pairs CANNOT coexist.          -->
+  <!-- overrideWinner: leave empty to use precedence, or set a      -->
+  <!-- group name to force that group as the winner.                -->
+  <!-- Business managers: add/remove rows to change rules.          -->
   <!-- ============================================================ -->
 
-  <dmn:decision id="_DECISION_CAT_INCOMPAT" name="CategoryIncompatibilities">
-    <dmn:variable id="_VAR_CAT_INCOMPAT" name="CategoryIncompatibilities" typeRef="tCatIncompatList"/>
-    <dmn:decisionTable id="_DT_CAT_INCOMPAT" hitPolicy="COLLECT" outputLabel="CategoryIncompatibilities">
-      <dmn:input id="_DT_CI_IN1">
-        <dmn:inputExpression id="_DT_CI_IE1" typeRef="string">
+  <dmn:decision id="_DECISION_CAT_RULES" name="CategoryRules">
+    <dmn:variable id="_VAR_CAT_RULES" name="CategoryRules" typeRef="tCategoryRuleList"/>
+    <dmn:decisionTable id="_DT_CAT_RULES" hitPolicy="COLLECT" outputLabel="CategoryRules">
+      <dmn:input id="_DT_CR_IN1">
+        <dmn:inputExpression id="_DT_CR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_CI_OUT1" name="categoryA" typeRef="string"/>
-      <dmn:output id="_DT_CI_OUT2" name="categoryB" typeRef="string"/>
-      <dmn:output id="_DT_CI_OUT3" name="overrideWinner" typeRef="string"/>
-      <dmn:rule id="_DT_CI_R1">
-        <dmn:inputEntry id="_DT_CI_R1_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R1_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R1_O2"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R1_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:output id="_DT_CR_OUT1" name="groupA" typeRef="string"/>
+      <dmn:output id="_DT_CR_OUT2" name="groupB" typeRef="string"/>
+      <dmn:output id="_DT_CR_OUT3" name="overrideWinner" typeRef="string"/>
+      <dmn:rule id="_DT_CR_R1">
+        <dmn:inputEntry id="_DT_CR_R1_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R1_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R1_O2"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R1_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R2">
-        <dmn:inputEntry id="_DT_CI_R2_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R2_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R2_O2"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R2_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R2">
+        <dmn:inputEntry id="_DT_CR_R2_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R2_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R2_O2"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R2_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R3">
-        <dmn:inputEntry id="_DT_CI_R3_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R3_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R3_O2"><dmn:text>"HWSubscriptionDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R3_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R3">
+        <dmn:inputEntry id="_DT_CR_R3_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R3_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R3_O2"><dmn:text>"HWSubscriptionDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R3_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R4">
-        <dmn:inputEntry id="_DT_CI_R4_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R4_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R4_O2"><dmn:text>"ChurnBlockerDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R4_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R4">
+        <dmn:inputEntry id="_DT_CR_R4_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R4_O1"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R4_O2"><dmn:text>"ChurnBlockerDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R4_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R5">
-        <dmn:inputEntry id="_DT_CI_R5_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R5_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R5_O2"><dmn:text>"HWSubscriptionDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R5_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R5">
+        <dmn:inputEntry id="_DT_CR_R5_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R5_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R5_O2"><dmn:text>"HWSubscriptionDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R5_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R6">
-        <dmn:inputEntry id="_DT_CI_R6_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R6_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R6_O2"><dmn:text>"HWSubscriptionDiscountLimited"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R6_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R6">
+        <dmn:inputEntry id="_DT_CR_R6_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R6_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R6_O2"><dmn:text>"HWSubscriptionDiscountLimited"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R6_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R7">
-        <dmn:inputEntry id="_DT_CI_R7_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R7_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R7_O2"><dmn:text>"HWSubscriptionDiscountAccessory"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R7_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R7">
+        <dmn:inputEntry id="_DT_CR_R7_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R7_O1"><dmn:text>"LegacyBindingDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R7_O2"><dmn:text>"HWSubscriptionDiscountAccessory"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R7_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R8">
-        <dmn:inputEntry id="_DT_CI_R8_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R8_O1"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R8_O2"><dmn:text>"SignUpDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R8_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R8">
+        <dmn:inputEntry id="_DT_CR_R8_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R8_O1"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R8_O2"><dmn:text>"SignUpDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R8_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_CI_R9">
-        <dmn:inputEntry id="_DT_CI_R9_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CI_R9_O1"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R9_O2"><dmn:text>"SignUpDiscountLimited"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CI_R9_O3"><dmn:text></dmn:text></dmn:outputEntry>
+      <dmn:rule id="_DT_CR_R9">
+        <dmn:inputEntry id="_DT_CR_R9_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CR_R9_O1"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R9_O2"><dmn:text>"SignUpDiscountLimited"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CR_R9_O3"><dmn:text></dmn:text></dmn:outputEntry>
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
 
   <!-- ============================================================ -->
-  <!-- DECISION TABLE 3: Individual Incompatibilities                -->
-  <!-- Blocks specific promotion IDs when a category or promotion   -->
-  <!-- is present. Business managers: add rows as needed.            -->
+  <!-- DECISION TABLE 3: PromotionRules                             -->
+  <!-- (was: IndividualIncompatibilities)                            -->
+  <!-- Blocks specific promotions when a group or another promotion -->
+  <!-- is present. Use the 'winner' column to control who wins:     -->
+  <!--   empty    = always block 'promotion'                        -->
+  <!--   PROMO-ID = that specific promo wins                        -->
+  <!--   BY_PRECEDENCE = compare group precedence to pick winner    -->
+  <!-- Business managers: add rows as needed.                       -->
   <!-- ============================================================ -->
 
-  <dmn:decision id="_DECISION_INDIV_INCOMPAT" name="IndividualIncompatibilities">
-    <dmn:variable id="_VAR_INDIV_INCOMPAT" name="IndividualIncompatibilities" typeRef="tIndivIncompatList"/>
-    <dmn:decisionTable id="_DT_INDIV_INCOMPAT" hitPolicy="COLLECT" outputLabel="IndividualIncompatibilities">
-      <dmn:input id="_DT_II_IN1">
-        <dmn:inputExpression id="_DT_II_IE1" typeRef="string">
+  <dmn:decision id="_DECISION_PROMO_RULES" name="PromotionRules">
+    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionRules" typeRef="tPromotionRuleList"/>
+    <dmn:decisionTable id="_DT_PROMO_RULES" hitPolicy="COLLECT" outputLabel="PromotionRules">
+      <dmn:input id="_DT_PR_IN1">
+        <dmn:inputExpression id="_DT_PR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_II_OUT1" name="blockedPromotionId" typeRef="string"/>
-      <dmn:output id="_DT_II_OUT2" name="whenCategoryPresent" typeRef="string"/>
-      <dmn:output id="_DT_II_OUT3" name="whenPromotionIdPresent" typeRef="string"/>
-      <dmn:output id="_DT_II_OUT4" name="ruleName" typeRef="string"/>
-      <dmn:rule id="_DT_II_R1">
-        <dmn:inputEntry id="_DT_II_R1_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_II_R1_O1"><dmn:text>"PROMO-ATL-001"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R1_O2"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R1_O3"><dmn:text></dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R1_O4"><dmn:text>"Block ATL campaign when employee discount present"</dmn:text></dmn:outputEntry>
+      <dmn:output id="_DT_PR_OUT1" name="promotion" typeRef="string"/>
+      <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string"/>
+      <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string"/>
+      <dmn:output id="_DT_PR_OUT4" name="winner" typeRef="string"/>
+      <dmn:output id="_DT_PR_OUT5" name="description" typeRef="string"/>
+      <!-- Rule 1: Block by group presence -->
+      <dmn:rule id="_DT_PR_R1">
+        <dmn:inputEntry id="_DT_PR_R1_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R1_O1"><dmn:text>"PROMO-ATL-001"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R1_O2"><dmn:text>"EmployeeDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R1_O3"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R1_O4"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R1_O5"><dmn:text>"ATL campaign blocked by employee discount"</dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <!-- Rule 2: Block by specific promotion ID presence (no category trigger) -->
-      <dmn:rule id="_DT_II_R2">
-        <dmn:inputEntry id="_DT_II_R2_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_II_R2_O1"><dmn:text>"PROMO-SUMMER-01"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R2_O2"><dmn:text></dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R2_O3"><dmn:text>"PROMO-VIP-99"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R2_O4"><dmn:text>"Block summer promo when VIP promo present"</dmn:text></dmn:outputEntry>
+      <!-- Rule 2: Block by specific promotion presence -->
+      <dmn:rule id="_DT_PR_R2">
+        <dmn:inputEntry id="_DT_PR_R2_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R2_O1"><dmn:text>"PROMO-SUMMER-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R2_O2"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R2_O3"><dmn:text>"PROMO-VIP-99"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R2_O4"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R2_O5"><dmn:text>"Summer sale blocked by VIP deal"</dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <!-- Rule 3: Block by EITHER category OR promotion ID (OR logic) -->
-      <dmn:rule id="_DT_II_R3">
-        <dmn:inputEntry id="_DT_II_R3_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_II_R3_O1"><dmn:text>"PROMO-FLASH-01"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R3_O2"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R3_O3"><dmn:text>"PROMO-LOYAL-01"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R3_O4"><dmn:text>"Block flash sale when OTS discount or loyalty promo present"</dmn:text></dmn:outputEntry>
+      <!-- Rule 3: Block by EITHER group OR promotion (OR logic) -->
+      <dmn:rule id="_DT_PR_R3">
+        <dmn:inputEntry id="_DT_PR_R3_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R3_O1"><dmn:text>"PROMO-FLASH-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R3_O2"><dmn:text>"OTSDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R3_O3"><dmn:text>"PROMO-LOYAL-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R3_O4"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R3_O5"><dmn:text>"Flash sale blocked by OTS or loyalty"</dmn:text></dmn:outputEntry>
       </dmn:rule>
-      <!-- Rule 4: Block by category - SaveDeskDiscount blocks a specific retention offer -->
-      <dmn:rule id="_DT_II_R4">
-        <dmn:inputEntry id="_DT_II_R4_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
-        <dmn:outputEntry id="_DT_II_R4_O1"><dmn:text>"PROMO-RETAIN-05"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R4_O2"><dmn:text>"SaveDeskDiscount"</dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R4_O3"><dmn:text></dmn:text></dmn:outputEntry>
-        <dmn:outputEntry id="_DT_II_R4_O4"><dmn:text>"Block retention offer when save desk discount present"</dmn:text></dmn:outputEntry>
+      <!-- Rule 4: Block by group - SaveDeskDiscount blocks retention offer -->
+      <dmn:rule id="_DT_PR_R4">
+        <dmn:inputEntry id="_DT_PR_R4_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R4_O1"><dmn:text>"PROMO-RETAIN-05"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R4_O2"><dmn:text>"SaveDeskDiscount"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R4_O3"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R4_O4"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R4_O5"><dmn:text>"Retention offer blocked by save desk"</dmn:text></dmn:outputEntry>
+      </dmn:rule>
+      <!-- Rule 5: Mutual exclusion with explicit winner -->
+      <dmn:rule id="_DT_PR_R5">
+        <dmn:inputEntry id="_DT_PR_R5_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R5_O1"><dmn:text>"PROMO-EAST-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R5_O2"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R5_O3"><dmn:text>"PROMO-WEST-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R5_O4"><dmn:text>"PROMO-WEST-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R5_O5"><dmn:text>"East and West can't combine, West wins"</dmn:text></dmn:outputEntry>
+      </dmn:rule>
+      <!-- Rule 6: Mutual exclusion with precedence-based winner -->
+      <dmn:rule id="_DT_PR_R6">
+        <dmn:inputEntry id="_DT_PR_R6_I1"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_DT_PR_R6_O1"><dmn:text>"PROMO-BAS-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R6_O2"><dmn:text></dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R6_O3"><dmn:text>"PROMO-PREM-01"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R6_O4"><dmn:text>"BY_PRECEDENCE"</dmn:text></dmn:outputEntry>
+        <dmn:outputEntry id="_DT_PR_R6_O5"><dmn:text>"Basic and Premium can't combine, precedence decides"</dmn:text></dmn:outputEntry>
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
@@ -390,16 +423,16 @@
     <dmn:informationRequirement id="_IR_PRECEDENCE">
       <dmn:requiredDecision href="#_DECISION_PRECEDENCE"/>
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_CAT_INCOMPAT">
-      <dmn:requiredDecision href="#_DECISION_CAT_INCOMPAT"/>
+    <dmn:informationRequirement id="_IR_CAT_RULES">
+      <dmn:requiredDecision href="#_DECISION_CAT_RULES"/>
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_INDIV_INCOMPAT">
-      <dmn:requiredDecision href="#_DECISION_INDIV_INCOMPAT"/>
+    <dmn:informationRequirement id="_IR_PROMO_RULES">
+      <dmn:requiredDecision href="#_DECISION_PROMO_RULES"/>
     </dmn:informationRequirement>
 
     <dmn:context id="_CTX_RESULT">
 
-      <!-- Aliases: map sub-decision names to camelCase used by FEEL logic below -->
+      <!-- Aliases -->
       <dmn:contextEntry>
         <dmn:variable id="_CE_PREC" name="categoryPrecedence" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_PREC">
@@ -407,15 +440,15 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_INCOMPAT" name="categoryIncompatibilities" typeRef="Any"/>
-        <dmn:literalExpression id="_EXPR_INCOMPAT">
-          <dmn:text>CategoryIncompatibilities</dmn:text>
+        <dmn:variable id="_CE_CAT_RULES" name="categoryRules" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_CAT_RULES">
+          <dmn:text>CategoryRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_INDIV" name="individualIncompatibilities" typeRef="Any"/>
-        <dmn:literalExpression id="_EXPR_INDIV">
-          <dmn:text>IndividualIncompatibilities</dmn:text>
+        <dmn:variable id="_CE_PROMO_RULES" name="promotionRules" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_PROMO_RULES">
+          <dmn:text>PromotionRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
@@ -435,19 +468,19 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Step 2: Active conflicts (both categories present) -->
+      <!-- Step 2: Active category conflicts (both groups present) -->
       <dmn:contextEntry>
         <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_CONFLICTS">
-          <dmn:text>categoryIncompatibilities[list contains(categoriesPresent, categoryA) and list contains(categoriesPresent, categoryB)]</dmn:text>
+          <dmn:text>categoryRules[list contains(categoriesPresent, groupA) and list contains(categoriesPresent, groupB)]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Step 3: Resolve each conflict to winner/loser -->
+      <!-- Step 3: Resolve each category conflict to winner/loser -->
       <dmn:contextEntry>
         <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_RESOLUTIONS">
-          <dmn:text><![CDATA[for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.categoryA) < precedenceOf(c.categoryB) then c.categoryA else c.categoryB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.categoryA then c.categoryB else c.categoryA) else if precedenceOf(c.categoryA) < precedenceOf(c.categoryB) then c.categoryB else c.categoryA}]]></dmn:text>
+          <dmn:text><![CDATA[for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.groupA) < precedenceOf(c.groupB) then c.groupA else c.groupB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.groupA then c.groupB else c.groupA) else if precedenceOf(c.groupA) < precedenceOf(c.groupB) then c.groupB else c.groupA}]]></dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
@@ -459,19 +492,19 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Step 5: Find active individual blocks -->
+      <!-- Step 5: Find active promotion rule blocks (rules where trigger condition is met) -->
       <dmn:contextEntry>
         <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
-          <dmn:text>(for rule in individualIncompatibilities return if (rule.whenCategoryPresent != null and list contains(categoriesPresent, rule.whenCategoryPresent)) or (rule.whenPromotionIdPresent != null and (some p in EligiblePromotions satisfies p.promotionId = rule.whenPromotionIdPresent)) then rule else null)[item != null]</dmn:text>
+          <dmn:text>(for rule in promotionRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Step 6: Extract blocked promotion IDs -->
+      <!-- Step 6: Resolve which promo IDs to block, considering the winner column -->
       <dmn:contextEntry>
         <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_BLOCKED_IDS">
-          <dmn:text>distinct values(for b in activeBlocks return b.blockedPromotionId)</dmn:text>
+          <dmn:text><![CDATA[distinct values(for b in activeBlocks return if b.winner = null or b.winner = "" then b.promotion else if b.winner = "BY_PRECEDENCE" then (if b.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = b.blockedByPromotion) then (if precedenceOf((EligiblePromotions[promotionId = b.promotion])[1].discountCategory) < precedenceOf((EligiblePromotions[promotionId = b.blockedByPromotion])[1].discountCategory) then b.blockedByPromotion else b.promotion) else b.promotion) else if b.winner = b.promotion then b.blockedByPromotion else b.promotion)]]></dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
@@ -507,11 +540,11 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Step 11: Build RejectedPromotions - individual blocks -->
+      <!-- Step 11: Build RejectedPromotions - promotion rule blocks -->
       <dmn:contextEntry>
-        <dmn:variable id="_CE_IND_REJECTED" name="individualRejections" typeRef="Any"/>
-        <dmn:literalExpression id="_EXPR_IND_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Individually blocked: " + activeBlocks[blockedPromotionId = p.promotionId][1].ruleName}</dmn:text>
+        <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_PROMO_REJECTED">
+          <dmn:text><![CDATA[for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Blocked by rule: " + (if count(activeBlocks[promotion = p.promotionId]) > 0 then activeBlocks[promotion = p.promotionId][1].description else if count(activeBlocks[blockedByPromotion = p.promotionId]) > 0 then activeBlocks[blockedByPromotion = p.promotionId][1].description else "promotion rule")}]]></dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
@@ -519,11 +552,11 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_REJECTED" name="rejectedResult" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_REJECTED">
-          <dmn:text>concatenate(categoryRejections, individualRejections)</dmn:text>
+          <dmn:text>concatenate(categoryRejections, promotionRejections)</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
 
-      <!-- Final result: context with both lists -->
+      <!-- Final result -->
       <dmn:contextEntry>
         <dmn:literalExpression id="_EXPR_FINAL">
           <dmn:text>{AllowedPromotions: allowedResult, RejectedPromotions: rejectedResult}</dmn:text>
@@ -555,12 +588,12 @@
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
 
-      <dmndi:DMNShape id="dmnshape-_DECISION_CAT_INCOMPAT" dmnElementRef="_DECISION_CAT_INCOMPAT" isCollapsed="false">
+      <dmndi:DMNShape id="dmnshape-_DECISION_CAT_RULES" dmnElementRef="_DECISION_CAT_RULES" isCollapsed="false">
         <dc:Bounds x="350" y="350" width="250" height="50"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
 
-      <dmndi:DMNShape id="dmnshape-_DECISION_INDIV_INCOMPAT" dmnElementRef="_DECISION_INDIV_INCOMPAT" isCollapsed="false">
+      <dmndi:DMNShape id="dmnshape-_DECISION_PROMO_RULES" dmnElementRef="_DECISION_PROMO_RULES" isCollapsed="false">
         <dc:Bounds x="650" y="350" width="250" height="50"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
@@ -583,14 +616,14 @@
         <di:waypoint x="375" y="200"/>
       </dmndi:DMNEdge>
 
-      <!-- Edge: CategoryIncompatibilities -> Main decision -->
-      <dmndi:DMNEdge id="dmnedge-_IR_CAT_INCOMPAT" dmnElementRef="_IR_CAT_INCOMPAT">
+      <!-- Edge: CategoryRules -> Main decision -->
+      <dmndi:DMNEdge id="dmnedge-_IR_CAT_RULES" dmnElementRef="_IR_CAT_RULES">
         <di:waypoint x="475" y="350"/>
         <di:waypoint x="450" y="200"/>
       </dmndi:DMNEdge>
 
-      <!-- Edge: IndividualIncompatibilities -> Main decision -->
-      <dmndi:DMNEdge id="dmnedge-_IR_INDIV_INCOMPAT" dmnElementRef="_IR_INDIV_INCOMPAT">
+      <!-- Edge: PromotionRules -> Main decision -->
+      <dmndi:DMNEdge id="dmnedge-_IR_PROMO_RULES" dmnElementRef="_IR_PROMO_RULES">
         <di:waypoint x="775" y="350"/>
         <di:waypoint x="525" y="200"/>
       </dmndi:DMNEdge>

@@ -14,7 +14,7 @@ One DMN file (`src/main/resources/PromotionCompatibility.dmn`) with **4 decision
 - **3 lookup-table decisions** (Decision Tables) — business managers edit these directly as spreadsheet grids
 - **1 main decision** (`CompatibilityResult`) — contains FEEL resolution logic, not touched by business managers
 
-**Note:** The API response now includes `CategoryPrecedence`, `CategoryIncompatibilities`, and `IndividualIncompatibilities` as additional top-level keys (additive only, does not break existing consumers).
+**Note:** The API response now includes `CategoryPrecedence`, `CategoryRules`, and `PromotionRules` as additional top-level keys (additive only, does not break existing consumers).
 
 ```
 EligiblePromotions (Input)
@@ -23,13 +23,14 @@ EligiblePromotions (Input)
                     CompatibilityResult (Boxed Context - resolution logic)
                    /           |            \              \
                   /            |             \              \
- CategoryPrecedence  CategoryIncompatibilities  IndividualIncompatibilities  EligiblePromotions
- (Decision Table)    (Decision Table)           (Decision Table)            (Input Data)
- 18 rows, COLLECT    9 rows, COLLECT            1 row, COLLECT
+ CategoryPrecedence      CategoryRules      PromotionRules    EligiblePromotions
+ (Decision Table)        (Decision Table)   (Decision Table)  (Input Data)
+ 18 rows, COLLECT        9 rows, COLLECT    6 rows, COLLECT
+
 CompatibilityResult internals (resolution logic - do not edit):
   precedenceOf() → categoriesPresent → activeConflicts → conflictResolutions
   → losingCategories → activeBlocks → blockedPromotionIds → surviving
-  → sorted → allowedResult → categoryRejections → individualRejections
+  → sorted → allowedResult → categoryRejections → promotionRejections
   → rejectedResult → {AllowedPromotions, RejectedPromotions}
 ```
 
@@ -54,7 +55,7 @@ Collection types: `tPromotionList`, `tAllowedPromotionList`, `tRejectedPromotion
 
 ## Static Data Tables (Separate Decision Tables — editable as spreadsheet grids)
 
-### Table 1: categoryPrecedence
+### Table 1: CategoryPrecedence
 Lower rank = higher precedence = wins conflicts. Business managers reorder by changing the rank number.
 
 | discountCategory | precedenceRank |
@@ -78,32 +79,46 @@ Lower rank = higher precedence = wins conflicts. Business managers reorder by ch
 | MiscMigratedDiscount | 17 |
 | MiscMigratedDiscountLimited | 18 |
 
-### Table 2: categoryIncompatibilities
-Declares which discount category pairs CANNOT coexist. `overrideWinner` is normally null (resolved by precedence), but can be set to force a specific winner for that pair.
+### Table 2: CategoryRules
+Declares which discount group pairs CANNOT coexist. `overrideWinner` is normally empty (resolved by precedence), but can be set to force a specific winner for that pair.
 
-| categoryA | categoryB | overrideWinner |
+| groupA | groupB | overrideWinner |
 |---|---|---|
-| EmployeeDiscount | LegacyBindingDiscount | null |
-| EmployeeDiscount | OTSDiscount | null |
-| EmployeeDiscount | HWSubscriptionDiscount | null |
-| EmployeeDiscount | ChurnBlockerDiscount | null |
-| LegacyBindingDiscount | HWSubscriptionDiscount | null |
-| LegacyBindingDiscount | HWSubscriptionDiscountLimited | null |
-| LegacyBindingDiscount | HWSubscriptionDiscountAccessory | null |
-| OTSDiscount | SignUpDiscount | null |
-| OTSDiscount | SignUpDiscountLimited | null |
+| EmployeeDiscount | LegacyBindingDiscount | |
+| EmployeeDiscount | OTSDiscount | |
+| EmployeeDiscount | HWSubscriptionDiscount | |
+| EmployeeDiscount | ChurnBlockerDiscount | |
+| LegacyBindingDiscount | HWSubscriptionDiscount | |
+| LegacyBindingDiscount | HWSubscriptionDiscountLimited | |
+| LegacyBindingDiscount | HWSubscriptionDiscountAccessory | |
+| OTSDiscount | SignUpDiscount | |
+| OTSDiscount | SignUpDiscountLimited | |
 
 Business managers add/remove rows in the Decision Table grid to change rules.
 
-### Table 3: individualIncompatibilities
-Blocks specific promotion IDs (not categories) based on presence of a category or another specific promotion.
+### Table 3: PromotionRules
+Controls which specific promotions cannot coexist with a group or another promotion.
 
-| blockedPromotionId | whenCategoryPresent | whenPromotionIdPresent | ruleName |
-|---|---|---|---|
-| PROMO-ATL-001 | EmployeeDiscount | null | Block ATL campaign when employee discount present |
-| PROMO-SUMMER-01 | null | PROMO-VIP-99 | Block summer promo when VIP promo present |
-| PROMO-FLASH-01 | OTSDiscount | PROMO-LOYAL-01 | Block flash sale when OTS discount or loyalty promo present |
-| PROMO-RETAIN-05 | SaveDeskDiscount | null | Block retention offer when save desk discount present |
+| promotion | blockedByGroup | blockedByPromotion | winner | description |
+|---|---|---|---|---|
+| PROMO-ATL-001 | EmployeeDiscount | | | ATL campaign blocked by employee discount |
+| PROMO-SUMMER-01 | | PROMO-VIP-99 | | Summer sale blocked by VIP deal |
+| PROMO-FLASH-01 | OTSDiscount | PROMO-LOYAL-01 | | Flash sale blocked by OTS or loyalty |
+| PROMO-RETAIN-05 | SaveDeskDiscount | | | Retention offer blocked by save desk |
+| PROMO-EAST-01 | | PROMO-WEST-01 | PROMO-WEST-01 | East and West can't combine, West wins |
+| PROMO-BAS-01 | | PROMO-PREM-01 | BY_PRECEDENCE | Basic and Premium can't combine, precedence decides |
+
+**How to read each column:**
+- **promotion** — the promotion affected by this rule
+- **blockedByGroup** — if this discount group is present, the rule triggers (leave empty if not applicable)
+- **blockedByPromotion** — if this specific promotion is present, the rule triggers (leave empty if not applicable)
+- **winner** — who wins when both are present?
+  - *Empty* = always block `promotion`
+  - *A promotion ID* = that specific promotion wins, the other is rejected
+  - `BY_PRECEDENCE` = compare both promotions' group precedence, higher precedence wins
+- **description** — human-readable explanation of the rule
+
+If both `blockedByGroup` and `blockedByPromotion` are filled, the rule triggers if EITHER condition is met (OR logic).
 
 Business managers add rows in the Decision Table grid as needed.
 
@@ -113,16 +128,16 @@ Business managers add rows in the Decision Table grid as needed.
 
 1. **precedenceOf(cat)** — Helper function: looks up precedenceRank for a category (returns 999 if not found)
 2. **categoriesPresent** — Extracts distinct discountCategory values from EligiblePromotions
-3. **activeConflicts** — Filters categoryIncompatibilities where BOTH categories are present in input
+3. **activeConflicts** — Filters categoryRules where BOTH groups are present in input
 4. **conflictResolutions** — For each active conflict, determines winner (lower rank or overrideWinner) and loser
 5. **losingCategories** — Distinct list of all losing categories from step 4
-6. **activeBlocks** — Evaluates individualIncompatibilities to find which block rules are triggered
-7. **blockedPromotionIds** — Distinct promotion IDs from step 6
-8. **surviving** — Filters EligiblePromotions: removes promotions in losing categories + individually blocked IDs
+6. **activeBlocks** — Evaluates promotionRules to find which rules are triggered
+7. **blockedPromotionIds** — Determines which promo IDs to block, considering the winner column
+8. **surviving** — Filters EligiblePromotions: removes promotions in losing categories + blocked IDs
 9. **sorted** — Sorts survivors by precedence rank (ascending)
 10. **allowedResult** — Maps sorted list to output structure with `appliedOrder` (1, 2, 3...)
 11. **categoryRejections** — Builds rejection list for category-conflict losers with reason: `"Incompatible with [winnerCategory] (higher precedence)"`
-12. **individualRejections** — Builds rejection list for individually blocked promotions with reason: `"Individually blocked: [ruleName]"`
+12. **promotionRejections** — Builds rejection list for promotion-rule blocked promotions with reason: `"Blocked by rule: [description]"`
 13. **rejectedResult** — Concatenates both rejection lists
 14. **Final output** — `{AllowedPromotions: allowedResult, RejectedPromotions: rejectedResult}`
 
@@ -134,13 +149,16 @@ Open `PromotionCompatibility.dmn` in a DMN editor (VS Code Kogito plugin or Kogi
 
 ### Add a new discount category
 1. Click **CategoryPrecedence** in the DRG → add a row with the category name and rank number
-2. If needed, click **CategoryIncompatibilities** → add rows for conflict pairs
+2. If needed, click **CategoryRules** → add rows for conflict pairs
 
-### Add a new incompatibility rule
-Click **CategoryIncompatibilities** → add a row: fill `categoryA`, `categoryB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the category name in `overrideWinner`.
+### Add a new group incompatibility rule
+Click **CategoryRules** → add a row: fill `groupA`, `groupB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the group name in `overrideWinner`.
 
 ### Block a specific promotion
-Click **IndividualIncompatibilities** → add a row: fill `blockedPromotionId`, `whenCategoryPresent` (or `whenPromotionIdPresent`), and `ruleName`.
+Click **PromotionRules** → add a row: fill `promotion`, `blockedByGroup` (or `blockedByPromotion`), and `description`. Leave `winner` empty to always block the promotion.
+
+### Make two promotions mutually exclusive
+Click **PromotionRules** → add a row: fill `promotion` with one promo ID, `blockedByPromotion` with the other. Set `winner` to the promo ID that should win, or `BY_PRECEDENCE` to let group rank decide.
 
 ### Change category precedence
 Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank = higher precedence.
@@ -153,7 +171,7 @@ Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank 
 |------|---------|
 | `src/main/resources/PromotionCompatibility.dmn` | The DMN file with all rules and logic |
 | `src/main/java/com/example/discount/DiscountApplication.java` | Spring Boot application entry point |
-| `src/test/java/com/example/discount/DiscountRulesTest.java` | 7 integration tests |
+| `src/test/java/com/example/discount/DiscountRulesTest.java` | 9 integration tests |
 | `pom.xml` | Maven config: Spring Boot 3.5.5, Drools/Kogito 10.1.0 |
 
 ---
@@ -227,10 +245,12 @@ Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank 
 1. **Two incompatible categories** — EmployeeDiscount + LegacyBindingDiscount → only EmployeeDiscount survives, 1 rejected
 2. **Two compatible categories** — GeoDiscount + KomboDiscount → both survive, 0 rejected
 3. **Three-way conflict** — EmployeeDiscount + OTSDiscount + LegacyBindingDiscount → only EmployeeDiscount, 2 rejected
-4. **Individual block** — PROMO-ATL-001 blocked when EmployeeDiscount category present, reason: "Individually blocked: ..."
+4. **Promotion rule block** — PROMO-ATL-001 blocked when EmployeeDiscount group present, reason: "Blocked by rule: ..."
 5. **Single promotion** — passes through unchanged, 0 rejected
 6. **Empty input** — returns empty lists
 7. **Binding vs HW subscription** — LegacyBindingDiscount wins by precedence (rank 7 vs 9), 1 rejected
+8. **Explicit winner** — PROMO-EAST-01 + PROMO-WEST-01, winner=PROMO-WEST-01 → East rejected, West allowed
+9. **BY_PRECEDENCE winner** — PROMO-BAS-01 (OTSDiscount rank 8) + PROMO-PREM-01 (PromotionOffering rank 15) → Premium rejected
 
 ---
 
