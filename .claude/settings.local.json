@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cmd //c \".\\\\mvnw.cmd clean install\")"
+      "Bash(cmd //c \".\\\\mvnw.cmd clean install\")",
+      "Bash(./mvnw.cmd clean test)"
     ]
   }
 }

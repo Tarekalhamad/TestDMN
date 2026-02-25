@@ -8,32 +8,29 @@ The Telenor Promotion API (TMF-based) allows promotions to independently grant d
 
 ---
 
-## Architecture: Single DMN Decision
+## Architecture: Multi-Decision DMN with Editable Tables
 
-One DMN file (`src/main/resources/PromotionCompatibility.dmn`) with a **single decision** (`CompatibilityResult`) that contains all static data tables and FEEL logic as context entries. This design ensures the API response is clean — no sub-decision noise.
+One DMN file (`src/main/resources/PromotionCompatibility.dmn`) with **4 decisions**:
+- **3 lookup-table decisions** (Decision Tables) — business managers edit these directly as spreadsheet grids
+- **1 main decision** (`CompatibilityResult`) — contains FEEL resolution logic, not touched by business managers
+
+**Note:** The API response now includes `CategoryPrecedence`, `CategoryIncompatibilities`, and `IndividualIncompatibilities` as additional top-level keys (additive only, does not break existing consumers).
 
 ```
 EligiblePromotions (Input)
         |
         v
-CompatibilityResult (Boxed Context)
-  ├── categoryPrecedence          (FEEL list literal - static data)
-  ├── categoryIncompatibilities   (FEEL list literal - static data)
-  ├── individualIncompatibilities (FEEL list literal - static data)
-  ├── precedenceOf()              (helper function)
-  ├── categoriesPresent           (Step 1: distinct categories)
-  ├── activeConflicts             (Step 2: filter incompatibilities)
-  ├── conflictResolutions         (Step 3: determine winner/loser)
-  ├── losingCategories            (Step 4: collect losers)
-  ├── activeBlocks                (Step 5: individual blocks)
-  ├── blockedPromotionIds         (Step 6: extract IDs)
-  ├── surviving                   (Step 7: filter)
-  ├── sorted                      (Step 8: sort by precedence)
-  ├── allowedResult               (Step 9: map with appliedOrder)
-  ├── categoryRejections          (Step 10: rejection reasons - conflicts)
-  ├── individualRejections        (Step 11: rejection reasons - blocks)
-  ├── rejectedResult              (Step 12: combine rejections)
-  └── {AllowedPromotions, RejectedPromotions} (Final output)
+                    CompatibilityResult (Boxed Context - resolution logic)
+                   /           |            \              \
+                  /            |             \              \
+ CategoryPrecedence  CategoryIncompatibilities  IndividualIncompatibilities  EligiblePromotions
+ (Decision Table)    (Decision Table)           (Decision Table)            (Input Data)
+ 18 rows, COLLECT    9 rows, COLLECT            1 row, COLLECT
+CompatibilityResult internals (resolution logic - do not edit):
+  precedenceOf() → categoriesPresent → activeConflicts → conflictResolutions
+  → losingCategories → activeBlocks → blockedPromotionIds → surviving
+  → sorted → allowedResult → categoryRejections → individualRejections
+  → rejectedResult → {AllowedPromotions, RejectedPromotions}
 ```
 
 Kogito auto-generates: `POST /PromotionCompatibility`
@@ -55,7 +52,7 @@ Collection types: `tPromotionList`, `tAllowedPromotionList`, `tRejectedPromotion
 
 ---
 
-## Static Data Tables (FEEL List Literals inside CompatibilityResult context)
+## Static Data Tables (Separate Decision Tables — editable as spreadsheet grids)
 
 ### Table 1: categoryPrecedence
 Lower rank = higher precedence = wins conflicts. Business managers reorder by changing the rank number.
@@ -96,7 +93,7 @@ Declares which discount category pairs CANNOT coexist. `overrideWinner` is norma
 | OTSDiscount | SignUpDiscount | null |
 | OTSDiscount | SignUpDiscountLimited | null |
 
-Business managers add/remove entries in the FEEL list to change rules.
+Business managers add/remove rows in the Decision Table grid to change rules.
 
 ### Table 3: individualIncompatibilities
 Blocks specific promotion IDs (not categories) based on presence of a category or another specific promotion.
@@ -105,7 +102,7 @@ Blocks specific promotion IDs (not categories) based on presence of a category o
 |---|---|---|---|
 | PROMO-ATL-001 | EmployeeDiscount | null | Block ATL campaign when employee discount present |
 
-Business managers add entries to the FEEL list as needed.
+Business managers add rows in the Decision Table grid as needed.
 
 ---
 
@@ -128,27 +125,22 @@ Business managers add entries to the FEEL list as needed.
 
 ---
 
-## How to Modify Rules
+## How to Modify Rules (for Business Managers)
+
+Open `PromotionCompatibility.dmn` in a DMN editor (VS Code Kogito plugin or Kogito online editor). Each table is a separate clickable decision node in the DRG diagram.
 
 ### Add a new discount category
-1. Add a new entry to `categoryPrecedence` list with the category name and rank number
-2. Add any incompatibility pairs to `categoryIncompatibilities` list
+1. Click **CategoryPrecedence** in the DRG → add a row with the category name and rank number
+2. If needed, click **CategoryIncompatibilities** → add rows for conflict pairs
 
 ### Add a new incompatibility rule
-Add an entry to `categoryIncompatibilities`:
-```feel
-{categoryA: "CategoryX", categoryB: "CategoryY", overrideWinner: null}
-```
-Set `overrideWinner` to a specific category name to force it as the winner regardless of precedence.
+Click **CategoryIncompatibilities** → add a row: fill `categoryA`, `categoryB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the category name in `overrideWinner`.
 
 ### Block a specific promotion
-Add an entry to `individualIncompatibilities`:
-```feel
-{blockedPromotionId: "PROMO-ID", whenCategoryPresent: "SomeCategory", whenPromotionIdPresent: null, ruleName: "Descriptive rule name"}
-```
+Click **IndividualIncompatibilities** → add a row: fill `blockedPromotionId`, `whenCategoryPresent` (or `whenPromotionIdPresent`), and `ruleName`.
 
 ### Change category precedence
-Change the `precedenceRank` number in `categoryPrecedence`. Lower rank = higher precedence.
+Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank = higher precedence.
 
 ---
 
