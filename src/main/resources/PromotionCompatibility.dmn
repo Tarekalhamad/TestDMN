@@ -87,7 +87,7 @@
     <dmn:itemComponent id="_tPromoRule_blockedBy" name="blockedByPromotion" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromoRule_winner" name="winner" isCollection="false">
+    <dmn:itemComponent id="_tPromoRule_winner" name="overrideWinner" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
     <dmn:itemComponent id="_tPromoRule_desc" name="description" isCollection="false">
@@ -547,7 +547,7 @@
       <dmn:output id="_DT_PR_OUT1" name="promotion" typeRef="string"/>
       <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string"/>
       <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string"/>
-      <dmn:output id="_DT_PR_OUT4" name="winner" typeRef="string"/>
+      <dmn:output id="_DT_PR_OUT4" name="overrideWinner" typeRef="string"/>
       <dmn:output id="_DT_PR_OUT5" name="description" typeRef="string"/>
       <dmn:annotation name=""/>
       <dmn:rule id="_DT_PR_R1">
@@ -763,7 +763,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_BLOCKED_IDS">
-          <dmn:text>distinct values(for b in activeBlocks return if b.winner = null or b.winner = "" then b.promotion else if b.winner = "BY_PRECEDENCE" then (if b.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = b.blockedByPromotion) then (if precedenceOf((EligiblePromotions[promotionId = b.promotion])[1].discountCategory) &lt; precedenceOf((EligiblePromotions[promotionId = b.blockedByPromotion])[1].discountCategory) then b.blockedByPromotion else b.promotion) else b.promotion) else if b.winner = b.promotion then b.blockedByPromotion else b.promotion)</dmn:text>
+          <dmn:text>distinct values(for b in activeBlocks return if b.overrideWinner = null or b.overrideWinner = "" then b.promotion else if b.overrideWinner = "BY_PRECEDENCE" then (if b.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = b.blockedByPromotion) then (if precedenceOf((EligiblePromotions[promotionId = b.promotion])[1].discountCategory) &lt; precedenceOf((EligiblePromotions[promotionId = b.blockedByPromotion])[1].discountCategory) then b.blockedByPromotion else b.promotion) else b.promotion) else if b.overrideWinner = b.promotion then b.blockedByPromotion else b.promotion)</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>

@@ -4,7 +4,7 @@ Endpoint: `POST /PromotionCompatibility`
 
 ## Rules in the Decision Table
 
-| # | promotion | blockedByGroup | blockedByPromotion | winner | description |
+| # | promotion | blockedByGroup | blockedByPromotion | overrideWinner | description |
 |---|---|---|---|---|---|
 | R1 | 299 | EmployeeDiscount | *(empty)* | *(empty)* | BTL Boost MPO blocked by employee discount |
 | R2 | 355 | *(empty)* | 449 | *(empty)* | Mobilrabatt 1 blocked by Mobilrabatt MPO |
@@ -714,9 +714,9 @@ Endpoint: `POST /PromotionCompatibility`
 
 ---
 
-## Test Case 13: Explicit winner - internal GEO wins over external GEO (R5 triggered)
+## Test Case 13: Explicit overrideWinner - internal GEO wins over external GEO (R5 triggered)
 
-**Use case:** Promotions 72 and 73 are both present. R5 has winner=73, so 72 (external) is rejected.
+**Use case:** Promotions 72 and 73 are both present. R5 has overrideWinner=73, so 72 (external) is rejected.
 
 ### Request
 ```json
@@ -763,15 +763,15 @@ Endpoint: `POST /PromotionCompatibility`
 ```
 
 ### Verify
-- 73 survives (it's the explicit winner)
+- 73 survives (it's the explicit overrideWinner)
 - 72 rejected with reason referencing the rule description
 - Both are same category — this is a promotion-level rule, not a category conflict
 
 ---
 
-## Test Case 14: BY_PRECEDENCE winner - SignUpDiscount beats OTSDiscount (R6 triggered)
+## Test Case 14: BY_PRECEDENCE overrideWinner - SignUpDiscount beats OTSDiscount (R6 triggered)
 
-**Use case:** Promotion 272 (OTSDiscount, rank 8) and promotion 306 (SignUpDiscount, rank 5) are both present. R6 has winner=BY_PRECEDENCE, so the higher-precedence promo (lower rank number) wins.
+**Use case:** Promotion 272 (OTSDiscount, rank 8) and promotion 306 (SignUpDiscount, rank 5) are both present. R6 has overrideWinner=BY_PRECEDENCE, so the higher-precedence promo (lower rank number) wins.
 
 ### Request
 ```json

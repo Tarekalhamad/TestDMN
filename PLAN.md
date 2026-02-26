@@ -55,6 +55,8 @@ Collection types: `tPromotionList`, `tAllowedPromotionList`, `tRejectedPromotion
 
 ## Static Data Tables (Separate Decision Tables — editable as spreadsheet grids)
 
+> **Note about the "match" column in the DMN editor:** When you open a decision table in the DMN editor, you will see a first input column containing a dash (`-`) in every row. This is a technical requirement of the DMN standard — every decision table must have at least one input column. Since these tables are static lookup data (not conditional rules), the dash means "always include this row." **You can safely ignore this column. Do not edit or remove it.**
+
 ### Table 1: CategoryPrecedence
 Lower rank = higher precedence = wins conflicts. Business managers reorder by changing the rank number.
 
@@ -99,7 +101,7 @@ Business managers add/remove rows in the Decision Table grid to change rules.
 ### Table 3: PromotionRules
 Controls which specific promotions cannot coexist with a group or another promotion.
 
-| promotion | blockedByGroup | blockedByPromotion | winner | description |
+| promotion | blockedByGroup | blockedByPromotion | overrideWinner | description |
 |---|---|---|---|---|
 | PROMO-ATL-001 | EmployeeDiscount | | | ATL campaign blocked by employee discount |
 | PROMO-SUMMER-01 | | PROMO-VIP-99 | | Summer sale blocked by VIP deal |
@@ -112,7 +114,7 @@ Controls which specific promotions cannot coexist with a group or another promot
 - **promotion** — the promotion affected by this rule
 - **blockedByGroup** — if this discount group is present, the rule triggers (leave empty if not applicable)
 - **blockedByPromotion** — if this specific promotion is present, the rule triggers (leave empty if not applicable)
-- **winner** — who wins when both are present?
+- **overrideWinner** — who wins when both are present? (same concept as in CategoryRules)
   - *Empty* = always block `promotion`
   - *A promotion ID* = that specific promotion wins, the other is rejected
   - `BY_PRECEDENCE` = compare both promotions' group precedence, higher precedence wins
@@ -132,7 +134,7 @@ Business managers add rows in the Decision Table grid as needed.
 4. **conflictResolutions** — For each active conflict, determines winner (lower rank or overrideWinner) and loser
 5. **losingCategories** — Distinct list of all losing categories from step 4
 6. **activeBlocks** — Evaluates promotionRules to find which rules are triggered
-7. **blockedPromotionIds** — Determines which promo IDs to block, considering the winner column
+7. **blockedPromotionIds** — Determines which promo IDs to block, considering the overrideWinner column
 8. **surviving** — Filters EligiblePromotions: removes promotions in losing categories + blocked IDs
 9. **sorted** — Sorts survivors by precedence rank (ascending)
 10. **allowedResult** — Maps sorted list to output structure with `appliedOrder` (1, 2, 3...)
@@ -155,10 +157,10 @@ Open `PromotionCompatibility.dmn` in a DMN editor (VS Code Kogito plugin or Kogi
 Click **CategoryRules** → add a row: fill `groupA`, `groupB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the group name in `overrideWinner`.
 
 ### Block a specific promotion
-Click **PromotionRules** → add a row: fill `promotion`, `blockedByGroup` (or `blockedByPromotion`), and `description`. Leave `winner` empty to always block the promotion.
+Click **PromotionRules** → add a row: fill `promotion`, `blockedByGroup` (or `blockedByPromotion`), and `description`. Leave `overrideWinner` empty to always block the promotion.
 
 ### Make two promotions mutually exclusive
-Click **PromotionRules** → add a row: fill `promotion` with one promo ID, `blockedByPromotion` with the other. Set `winner` to the promo ID that should win, or `BY_PRECEDENCE` to let group rank decide.
+Click **PromotionRules** → add a row: fill `promotion` with one promo ID, `blockedByPromotion` with the other. Set `overrideWinner` to the promo ID that should win, or `BY_PRECEDENCE` to let group rank decide.
 
 ### Change category precedence
 Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank = higher precedence.
@@ -249,8 +251,8 @@ Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank 
 5. **Single promotion** — passes through unchanged, 0 rejected
 6. **Empty input** — returns empty lists
 7. **Binding vs HW subscription** — LegacyBindingDiscount wins by precedence (rank 7 vs 9), 1 rejected
-8. **Explicit winner** — PROMO-EAST-01 + PROMO-WEST-01, winner=PROMO-WEST-01 → East rejected, West allowed
-9. **BY_PRECEDENCE winner** — PROMO-BAS-01 (OTSDiscount rank 8) + PROMO-PREM-01 (PromotionOffering rank 15) → Premium rejected
+8. **Explicit overrideWinner** — PROMO-EAST-01 + PROMO-WEST-01, overrideWinner=PROMO-WEST-01 → East rejected, West allowed
+9. **BY_PRECEDENCE overrideWinner** — PROMO-BAS-01 (OTSDiscount rank 8) + PROMO-PREM-01 (PromotionOffering rank 15) → Premium rejected
 
 ---
 
