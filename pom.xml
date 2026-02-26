@@ -61,6 +61,21 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- JUnit Vintage engine: needed for KogitoJunitActivator (@RunWith / JUnit 4) -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Kogito Test Scenario Simulation (industry-standard DMN testing via .scesim files) -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-scenario-simulation</artifactId>
+            <version>${kogito.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -78,6 +93,15 @@
                         <phase>compile</phase>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Surefire: disable manifest JAR so KogitoJunitActivator can scan java.class.path -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                </configuration>
             </plugin>
 
             <plugin>
