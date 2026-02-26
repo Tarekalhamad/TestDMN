@@ -140,7 +140,7 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions", hasSize(2));
     }
 
-    // --- Test 4: Individual block by category ---
+    // --- Test 4: Individual block by category (R1: promo 299 blocked by EmployeeDiscount) ---
 
     @Test
     void promotionRule_promoBlockedWhenGroupPresent() {
@@ -148,14 +148,14 @@ class DiscountRulesTest {
             {
               "EligiblePromotions": [
                 {
-                  "promotionId": "PROMO-ATL-001",
-                  "promotionName": "ATL Campaign Special",
+                  "promotionId": "299",
+                  "promotionName": "BTL Boost - New or Existing MPO with binding 24 months",
                   "promotionBaseType": "SubscriptionPromotion",
-                  "discountCategory": "PromotionOffering"
+                  "discountCategory": "SignUpDiscount"
                 },
                 {
-                  "promotionId": "P031",
-                  "promotionName": "Employee Discount",
+                  "promotionId": "103",
+                  "promotionName": "Employee discount on mobile main sim",
                   "promotionBaseType": "SubscriptionPromotion",
                   "discountCategory": "EmployeeDiscount"
                 }
@@ -171,10 +171,10 @@ class DiscountRulesTest {
         .then()
             .statusCode(200)
             .body("CompatibilityResult.AllowedPromotions", hasSize(1))
-            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("P031"))
+            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("103"))
             .body("CompatibilityResult.AllowedPromotions[0].discountCategory", is("EmployeeDiscount"))
             .body("CompatibilityResult.RejectedPromotions", hasSize(1))
-            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("PROMO-ATL-001"))
+            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("299"))
             .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by rule"));
     }
 
@@ -267,24 +267,24 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("LegacyBindingDiscount"));
     }
 
-    // --- Test 8: Explicit winner - PROMO-WEST-01 wins over PROMO-EAST-01 ---
+    // --- Test 8: Explicit overrideWinner - promo 73 (internal GEO) wins over promo 72 (external GEO) ---
 
     @Test
-    void explicitWinner_westWinsOverEast() {
+    void explicitWinner_internalGeoWinsOverExternal() {
         String body = """
             {
               "EligiblePromotions": [
                 {
-                  "promotionId": "PROMO-EAST-01",
-                  "promotionName": "East Region Campaign",
+                  "promotionId": "72",
+                  "promotionName": "GEO rabatt external retail",
                   "promotionBaseType": "SubscriptionPromotion",
-                  "discountCategory": "PromotionOffering"
+                  "discountCategory": "GeoDiscount"
                 },
                 {
-                  "promotionId": "PROMO-WEST-01",
-                  "promotionName": "West Region Campaign",
+                  "promotionId": "73",
+                  "promotionName": "GEO rabatt interna kanaler",
                   "promotionBaseType": "SubscriptionPromotion",
-                  "discountCategory": "PromotionOffering"
+                  "discountCategory": "GeoDiscount"
                 }
               ]
             }
@@ -298,14 +298,17 @@ class DiscountRulesTest {
         .then()
             .statusCode(200)
             .body("CompatibilityResult.AllowedPromotions", hasSize(1))
-            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("PROMO-WEST-01"))
+            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("73"))
             .body("CompatibilityResult.RejectedPromotions", hasSize(1))
-            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("PROMO-EAST-01"))
+            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("72"))
             .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by rule"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("East and West"));
+            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("GEO"));
     }
 
-    // --- Test 9: BY_PRECEDENCE winner - OTSDiscount (rank 8) beats PromotionOffering (rank 15) ---
+    // --- Test 9: BY_PRECEDENCE overrideWinner - SignUpDiscount (rank 5) beats OTSDiscount (rank 8) ---
+    // Note: OTSDiscount vs SignUpDiscount is also a CategoryRules conflict, so the category
+    // rule fires first. The result is the same (272 rejected, 306 survives) but the rejection
+    // reason comes from the category-level rule rather than the promotion-level rule.
 
     @Test
     void byPrecedenceWinner_higherPrecedenceWins() {
@@ -313,16 +316,16 @@ class DiscountRulesTest {
             {
               "EligiblePromotions": [
                 {
-                  "promotionId": "PROMO-BAS-01",
-                  "promotionName": "Basic Offer",
+                  "promotionId": "272",
+                  "promotionName": "Discount OTS - New MPO 10, 30 GB and extra användare mobil",
                   "promotionBaseType": "SubscriptionPromotion",
                   "discountCategory": "OTSDiscount"
                 },
                 {
-                  "promotionId": "PROMO-PREM-01",
-                  "promotionName": "Premium Offer",
+                  "promotionId": "306",
+                  "promotionName": "New or Existing MPO main or Extra användare Mobil with binding",
                   "promotionBaseType": "SubscriptionPromotion",
-                  "discountCategory": "PromotionOffering"
+                  "discountCategory": "SignUpDiscount"
                 }
               ]
             }
@@ -336,10 +339,9 @@ class DiscountRulesTest {
         .then()
             .statusCode(200)
             .body("CompatibilityResult.AllowedPromotions", hasSize(1))
-            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("PROMO-BAS-01"))
+            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("306"))
             .body("CompatibilityResult.RejectedPromotions", hasSize(1))
-            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("PROMO-PREM-01"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by rule"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Basic and Premium"));
+            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("272"))
+            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("SignUpDiscount"));
     }
 }
