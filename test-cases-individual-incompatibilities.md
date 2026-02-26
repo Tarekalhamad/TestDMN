@@ -820,7 +820,7 @@ Endpoint: `POST /PromotionCompatibility`
 ### Verify
 - 306 survives (SignUpDiscount rank 5 < OTSDiscount rank 8)
 - 272 rejected because its category has lower precedence (higher rank number)
-- Winner was determined dynamically by category precedence, not hardcoded
+- overrideWinner was determined dynamically by category precedence, not hardcoded
 
 ---
 
@@ -840,5 +840,5 @@ Endpoint: `POST /PromotionCompatibility`
 | 10 | R1 + cat rule | Category + Promotion rule | Yes | Both rejection types in same response |
 | 11 | R1 | Group present, blocked promo absent | N/A | Rule fires but target not in input |
 | 12 | R4 | Target present, trigger absent | No | Rule does not fire |
-| 13 | R5 | Explicit winner | Yes | Winner column with specific promo ID |
-| 14 | R6 | BY_PRECEDENCE winner | Yes | Winner column with precedence-based resolution |
+| 13 | R5 | Explicit overrideWinner | Yes | overrideWinner column with specific promo ID |
+| 14 | R6 | BY_PRECEDENCE overrideWinner | Yes | overrideWinner column with precedence-based resolution |
