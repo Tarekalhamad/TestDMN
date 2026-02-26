@@ -175,7 +175,7 @@ class DiscountRulesTest {
             .body("CompatibilityResult.AllowedPromotions[0].discountCategory", is("EmployeeDiscount"))
             .body("CompatibilityResult.RejectedPromotions", hasSize(1))
             .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("299"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by rule"));
+            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by category EmployeeDiscount"));
     }
 
     // --- Test 5: Single promotion passes through unchanged ---
@@ -301,8 +301,8 @@ class DiscountRulesTest {
             .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("73"))
             .body("CompatibilityResult.RejectedPromotions", hasSize(1))
             .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("72"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by rule"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("GEO"));
+            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("Blocked by promotion"))
+            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("winner"));
     }
 
     // --- Test 9: BY_PRECEDENCE overrideWinner - SignUpDiscount (rank 5) beats OTSDiscount (rank 8) ---

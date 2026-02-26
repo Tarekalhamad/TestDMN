@@ -90,9 +90,6 @@
     <dmn:itemComponent id="_tPromoRule_winner" name="overrideWinner" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromoRule_desc" name="description" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
   </dmn:itemDefinition>
   <dmn:itemDefinition id="_tPromotionRuleList" name="tPromotionRuleList" isCollection="true">
     <dmn:typeRef>tPromotionRuleRow</dmn:typeRef>
@@ -548,7 +545,6 @@
       <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string"/>
       <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string"/>
       <dmn:output id="_DT_PR_OUT4" name="overrideWinner" typeRef="string"/>
-      <dmn:output id="_DT_PR_OUT5" name="description" typeRef="string"/>
       <dmn:annotation name=""/>
       <dmn:rule id="_DT_PR_R1">
         <dmn:inputEntry id="_DT_PR_R1_I1">
@@ -565,9 +561,6 @@
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R1_O4">
           <dmn:text/>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R1_O5">
-          <dmn:text>"BTL Boost MPO blocked by employee discount"</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
@@ -589,9 +582,6 @@
         <dmn:outputEntry id="_DT_PR_R2_O4">
           <dmn:text/>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R2_O5">
-          <dmn:text>"Mobilrabatt 1 blocked by Mobilrabatt MPO"</dmn:text>
-        </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
         </dmn:annotationEntry>
@@ -611,9 +601,6 @@
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R3_O4">
           <dmn:text/>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R3_O5">
-          <dmn:text>"BTL voucher Boost blocked by OTS or One-to-One campaign"</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
@@ -635,9 +622,6 @@
         <dmn:outputEntry id="_DT_PR_R4_O4">
           <dmn:text/>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R4_O5">
-          <dmn:text>"One-to-One mid-risk campaign blocked by save desk"</dmn:text>
-        </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
         </dmn:annotationEntry>
@@ -658,9 +642,6 @@
         <dmn:outputEntry id="_DT_PR_R5_O4">
           <dmn:text>"73"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R5_O5">
-          <dmn:text>"External and internal GEO discount can't combine, internal wins"</dmn:text>
-        </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
         </dmn:annotationEntry>
@@ -680,9 +661,6 @@
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R6_O4">
           <dmn:text>"BY_PRECEDENCE"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R6_O5">
-          <dmn:text>"OTS discount and campaign MPO can't combine, precedence decides"</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text/>
@@ -745,7 +723,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_RESOLUTIONS">
-          <dmn:text>for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupA else c.groupB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.groupA then c.groupB else c.groupA) else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupB else c.groupA}</dmn:text>
+          <dmn:text>for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupA else c.groupB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.groupA then c.groupB else c.groupA) else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupB else c.groupA, isOverride: c.overrideWinner != null}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -787,13 +765,19 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_CAT_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + " (higher precedence)"}</dmn:text>
+          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + (if conflictResolutions[loserCategory = p.discountCategory][1].isOverride then " (override winner)" else " (higher precedence)")}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_BUILD_REASON" name="buildReason" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_BUILD_REASON">
+          <dmn:text>function(rule) if rule = null then "Blocked by promotion rule" else (if rule.blockedByGroup != null and rule.blockedByPromotion != null then "Blocked by category " + rule.blockedByGroup + " or promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion) else if rule.blockedByGroup != null then "Blocked by category " + rule.blockedByGroup else "Blocked by promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion)) + (if rule.overrideWinner != null and rule.overrideWinner != "" then (if rule.overrideWinner = "BY_PRECEDENCE" then ", winner by precedence" else ", winner: " + (if count(EligiblePromotions[promotionId = rule.overrideWinner]) &gt; 0 then EligiblePromotions[promotionId = rule.overrideWinner][1].promotionName + " (" + rule.overrideWinner + ")" else rule.overrideWinner)) else "")</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
         <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_PROMO_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Blocked by rule: " + (if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1].description else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1].description else "promotion rule")}</dmn:text>
+          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: buildReason(if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1] else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1] else null)}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -835,7 +819,6 @@
             <kie:width>246</kie:width>
             <kie:width>222</kie:width>
             <kie:width>100</kie:width>
-            <kie:width>482</kie:width>
             <kie:width>100</kie:width>
           </kie:ComponentWidths>
           <kie:ComponentWidths dmnElementRef="_CTX_RESULT">
@@ -883,6 +866,9 @@
             <kie:width>863</kie:width>
           </kie:ComponentWidths>
           <kie:ComponentWidths dmnElementRef="_EXPR_CAT_REJECTED">
+            <kie:width>863</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_EXPR_BUILD_REASON">
             <kie:width>863</kie:width>
           </kie:ComponentWidths>
           <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_REJECTED">
