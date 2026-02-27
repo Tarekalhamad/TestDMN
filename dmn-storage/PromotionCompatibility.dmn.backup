@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dmn:definitions xmlns:dmn="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns="https://telenor.se/promotion-compatibility" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="http://www.drools.org/kie/dmn/1.5" xmlns:feel="https://www.omg.org/spec/DMN/20191111/FEEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="_PROMO_COMPAT_001" name="PromotionCompatibility" expressionLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" typeLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" namespace="https://telenor.se/promotion-compatibility">
-  <dmn:extensionElements/>
+<dmn:definitions xmlns:dmn="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns="https://telenor.se/promotion-compatibility" xmlns:kie="http://www.drools.org/kie/dmn/1.5" xmlns:feel="https://www.omg.org/spec/DMN/20191111/FEEL/" id="_PROMO_COMPAT_001" name="PromotionCompatibility" namespace="https://telenor.se/promotion-compatibility" expressionLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" typeLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/">
+  <dmn:extensionElements />
   <dmn:itemDefinition id="_tPromotion" name="tPromotion" isCollection="false">
     <dmn:itemComponent id="_tPromotion_id" name="promotionId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
@@ -95,21 +95,21 @@
     <dmn:typeRef>tPromotionRuleRow</dmn:typeRef>
   </dmn:itemDefinition>
   <dmn:inputData id="_INPUT_ELIGIBLE" name="EligiblePromotions">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_ELIGIBLE" name="EligiblePromotions" typeRef="tPromotionList"/>
+    <dmn:extensionElements />
+    <dmn:variable id="_VAR_ELIGIBLE" name="EligiblePromotions" typeRef="tPromotionList" />
   </dmn:inputData>
   <dmn:decision id="_DECISION_PRECEDENCE" name="CategoryPrecedence">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_PRECEDENCE" name="CategoryPrecedence" typeRef="tPrecedenceList"/>
+    <dmn:extensionElements />
+    <dmn:variable id="_VAR_PRECEDENCE" name="CategoryPrecedence" typeRef="tPrecedenceList" />
     <dmn:decisionTable id="_DT_PRECEDENCE" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryPrecedence">
       <dmn:input id="_DT_PREC_IN1">
         <dmn:inputExpression id="_DT_PREC_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_PREC_OUT1" name="discountCategory" typeRef="string"/>
-      <dmn:output id="_DT_PREC_OUT2" name="precedenceRank" typeRef="number"/>
-      <dmn:annotation name=""/>
+      <dmn:output id="_DT_PREC_OUT1" name="discountCategory" typeRef="string" />
+      <dmn:output id="_DT_PREC_OUT2" name="precedenceRank" typeRef="number" />
+      <dmn:annotation name="" />
       <dmn:rule id="_DT_PREC_R1">
         <dmn:inputEntry id="_DT_PREC_R1_I1">
           <dmn:text>-</dmn:text>
@@ -121,7 +121,7 @@
           <dmn:text>1</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R2">
@@ -135,7 +135,7 @@
           <dmn:text>2</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R3">
@@ -149,7 +149,7 @@
           <dmn:text>3</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R4">
@@ -163,7 +163,7 @@
           <dmn:text>4</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R5">
@@ -177,7 +177,7 @@
           <dmn:text>5</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R6">
@@ -191,7 +191,7 @@
           <dmn:text>6</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R7">
@@ -205,7 +205,7 @@
           <dmn:text>7</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R8">
@@ -219,7 +219,7 @@
           <dmn:text>8</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R9">
@@ -233,7 +233,7 @@
           <dmn:text>9</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R10">
@@ -247,7 +247,7 @@
           <dmn:text>10</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R11">
@@ -261,7 +261,7 @@
           <dmn:text>11</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R12">
@@ -275,7 +275,7 @@
           <dmn:text>12</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R13">
@@ -289,7 +289,7 @@
           <dmn:text>13</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R14">
@@ -303,7 +303,7 @@
           <dmn:text>14</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R15">
@@ -317,7 +317,7 @@
           <dmn:text>15</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R16">
@@ -331,7 +331,7 @@
           <dmn:text>16</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R17">
@@ -345,7 +345,7 @@
           <dmn:text>17</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PREC_R18">
@@ -359,24 +359,24 @@
           <dmn:text>18</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
   <dmn:decision id="_DECISION_CAT_RULES" name="CategoryRules">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_CAT_RULES" name="CategoryRules" typeRef="tCategoryRuleList"/>
+    <dmn:extensionElements />
+    <dmn:variable id="_VAR_CAT_RULES" name="CategoryRules" typeRef="tCategoryRuleList" />
     <dmn:decisionTable id="_DT_CAT_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryRules">
       <dmn:input id="_DT_CR_IN1">
         <dmn:inputExpression id="_DT_CR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_CR_OUT1" name="groupA" typeRef="string"/>
-      <dmn:output id="_DT_CR_OUT2" name="groupB" typeRef="string"/>
-      <dmn:output id="_DT_CR_OUT3" name="overrideWinner" typeRef="string"/>
-      <dmn:annotation name=""/>
+      <dmn:output id="_DT_CR_OUT1" name="groupA" typeRef="string" />
+      <dmn:output id="_DT_CR_OUT2" name="groupB" typeRef="string" />
+      <dmn:output id="_DT_CR_OUT3" name="overrideWinner" typeRef="string" />
+      <dmn:annotation name="" />
       <dmn:rule id="_DT_CR_R1">
         <dmn:inputEntry id="_DT_CR_R1_I1">
           <dmn:text>-</dmn:text>
@@ -388,10 +388,10 @@
           <dmn:text>"LegacyBindingDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R1_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R2">
@@ -405,10 +405,10 @@
           <dmn:text>"OTSDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R2_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R3">
@@ -422,10 +422,10 @@
           <dmn:text>"HWSubscriptionDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R3_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R4">
@@ -439,10 +439,10 @@
           <dmn:text>"ChurnBlockerDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R4_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R5">
@@ -456,10 +456,10 @@
           <dmn:text>"HWSubscriptionDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R5_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R6">
@@ -473,10 +473,10 @@
           <dmn:text>"HWSubscriptionDiscountLimited"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R6_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R7">
@@ -490,10 +490,10 @@
           <dmn:text>"HWSubscriptionDiscountAccessory"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R7_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R8">
@@ -507,10 +507,10 @@
           <dmn:text>"SignUpDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R8_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_CR_R9">
@@ -524,28 +524,28 @@
           <dmn:text>"SignUpDiscountLimited"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_CR_R9_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
   <dmn:decision id="_DECISION_PROMO_RULES" name="PromotionRules">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionRules" typeRef="tPromotionRuleList"/>
+    <dmn:extensionElements />
+    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionRules" typeRef="tPromotionRuleList" />
     <dmn:decisionTable id="_DT_PROMO_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionRules">
       <dmn:input id="_DT_PR_IN1">
         <dmn:inputExpression id="_DT_PR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_PR_OUT1" name="promotion" typeRef="string"/>
-      <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string"/>
-      <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string"/>
-      <dmn:output id="_DT_PR_OUT4" name="overrideWinner" typeRef="string"/>
-      <dmn:annotation name=""/>
+      <dmn:output id="_DT_PR_OUT1" name="promotion" typeRef="string" />
+      <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string" />
+      <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string" />
+      <dmn:output id="_DT_PR_OUT4" name="overrideWinner" typeRef="string" />
+      <dmn:annotation name="" />
       <dmn:rule id="_DT_PR_R1">
         <dmn:inputEntry id="_DT_PR_R1_I1">
           <dmn:text>-</dmn:text>
@@ -557,13 +557,13 @@
           <dmn:text>"EmployeeDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R1_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R1_O4">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PR_R2">
@@ -574,16 +574,16 @@
           <dmn:text>"355"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R2_O2">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R2_O3">
-          <dmn:text>"449"</dmn:text>
+          <dmn:text>"49"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R2_O4">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PR_R3">
@@ -600,10 +600,10 @@
           <dmn:text>"389"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R3_O4">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PR_R4">
@@ -617,13 +617,13 @@
           <dmn:text>"SaveDeskDiscount"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R4_O3">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R4_O4">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PR_R5">
@@ -634,7 +634,7 @@
           <dmn:text>"72"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R5_O2">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R5_O3">
           <dmn:text>"73"</dmn:text>
@@ -643,7 +643,7 @@
           <dmn:text>"73"</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
       <dmn:rule id="_DT_PR_R6">
@@ -654,7 +654,7 @@
           <dmn:text>"272"</dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R6_O2">
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:outputEntry>
         <dmn:outputEntry id="_DT_PR_R6_O3">
           <dmn:text>"306"</dmn:text>
@@ -663,125 +663,125 @@
           <dmn:text>"BY_PRECEDENCE"</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
-          <dmn:text/>
+          <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
   <dmn:decision id="_DECISION_RESULT" name="CompatibilityResult">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any"/>
+    <dmn:extensionElements />
+    <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any" />
     <dmn:informationRequirement id="_IR_ELIGIBLE">
-      <dmn:requiredInput href="#_INPUT_ELIGIBLE"/>
+      <dmn:requiredInput href="#_INPUT_ELIGIBLE" />
     </dmn:informationRequirement>
     <dmn:informationRequirement id="_IR_PRECEDENCE">
-      <dmn:requiredDecision href="#_DECISION_PRECEDENCE"/>
+      <dmn:requiredDecision href="#_DECISION_PRECEDENCE" />
     </dmn:informationRequirement>
     <dmn:informationRequirement id="_IR_CAT_RULES">
-      <dmn:requiredDecision href="#_DECISION_CAT_RULES"/>
+      <dmn:requiredDecision href="#_DECISION_CAT_RULES" />
     </dmn:informationRequirement>
     <dmn:informationRequirement id="_IR_PROMO_RULES">
-      <dmn:requiredDecision href="#_DECISION_PROMO_RULES"/>
+      <dmn:requiredDecision href="#_DECISION_PROMO_RULES" />
     </dmn:informationRequirement>
     <dmn:context id="_CTX_RESULT">
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PREC" name="categoryPrecedence" typeRef="Any"/>
+        <dmn:variable id="_CE_PREC" name="categoryPrecedence" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PREC">
           <dmn:text>CategoryPrecedence</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_RULES" name="categoryRules" typeRef="Any"/>
+        <dmn:variable id="_CE_CAT_RULES" name="categoryRules" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CAT_RULES">
           <dmn:text>CategoryRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_RULES" name="promotionRules" typeRef="Any"/>
+        <dmn:variable id="_CE_PROMO_RULES" name="promotionRules" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PROMO_RULES">
           <dmn:text>PromotionRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PREC_OF" name="precedenceOf" typeRef="Any"/>
+        <dmn:variable id="_CE_PREC_OF" name="precedenceOf" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PREC_OF">
           <dmn:text>function(cat) if count(categoryPrecedence[discountCategory = cat]) &gt; 0 then (categoryPrecedence[discountCategory = cat]).precedenceRank[1] else 999</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CATS" name="categoriesPresent" typeRef="Any"/>
+        <dmn:variable id="_CE_CATS" name="categoriesPresent" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CATS">
           <dmn:text>distinct values(for p in EligiblePromotions return p.discountCategory)</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any"/>
+        <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CONFLICTS">
           <dmn:text>categoryRules[list contains(categoriesPresent, groupA) and list contains(categoriesPresent, groupB)]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any"/>
+        <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_RESOLUTIONS">
           <dmn:text>for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupA else c.groupB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.groupA then c.groupB else c.groupA) else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupB else c.groupA, isOverride: c.overrideWinner != null}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_LOSERS" name="losingCategories" typeRef="Any"/>
+        <dmn:variable id="_CE_LOSERS" name="losingCategories" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_LOSERS">
           <dmn:text>distinct values(for cr in conflictResolutions return cr.loserCategory)</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any"/>
+        <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
           <dmn:text>(for rule in promotionRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any"/>
+        <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_BLOCKED_IDS">
           <dmn:text>distinct values(for b in activeBlocks return if b.overrideWinner = null or b.overrideWinner = "" then b.promotion else if b.overrideWinner = "BY_PRECEDENCE" then (if b.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = b.blockedByPromotion) then (if precedenceOf((EligiblePromotions[promotionId = b.promotion])[1].discountCategory) &lt; precedenceOf((EligiblePromotions[promotionId = b.blockedByPromotion])[1].discountCategory) then b.blockedByPromotion else b.promotion) else b.promotion) else if b.overrideWinner = b.promotion then b.blockedByPromotion else b.promotion)</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_SURVIVING" name="surviving" typeRef="Any"/>
+        <dmn:variable id="_CE_SURVIVING" name="surviving" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_SURVIVING">
           <dmn:text>EligiblePromotions[not(list contains(losingCategories, discountCategory)) and not(list contains(blockedPromotionIds, promotionId))]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_SORTED" name="sorted" typeRef="Any"/>
+        <dmn:variable id="_CE_SORTED" name="sorted" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_SORTED">
           <dmn:text>sort(surviving, function(a, b) precedenceOf(a.discountCategory) &lt; precedenceOf(b.discountCategory))</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_ALLOWED" name="allowedResult" typeRef="Any"/>
+        <dmn:variable id="_CE_ALLOWED" name="allowedResult" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_ALLOWED">
           <dmn:text>if count(sorted) = 0 then [] else for i in 1..count(sorted) return {promotionId: sorted[i].promotionId, promotionName: sorted[i].promotionName, discountCategory: sorted[i].discountCategory, appliedOrder: i}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any"/>
+        <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CAT_REJECTED">
           <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + (if conflictResolutions[loserCategory = p.discountCategory][1].isOverride then " (override winner)" else " (higher precedence)")}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_BUILD_REASON" name="buildReason" typeRef="Any"/>
+        <dmn:variable id="_CE_BUILD_REASON" name="buildReason" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_BUILD_REASON">
           <dmn:text>function(rule) if rule = null then "Blocked by promotion rule" else (if rule.blockedByGroup != null and rule.blockedByPromotion != null then "Blocked by category " + rule.blockedByGroup + " or promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion) else if rule.blockedByGroup != null then "Blocked by category " + rule.blockedByGroup else "Blocked by promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion)) + (if rule.overrideWinner != null and rule.overrideWinner != "" then (if rule.overrideWinner = "BY_PRECEDENCE" then ", winner by precedence" else ", winner: " + (if count(EligiblePromotions[promotionId = rule.overrideWinner]) &gt; 0 then EligiblePromotions[promotionId = rule.overrideWinner][1].promotionName + " (" + rule.overrideWinner + ")" else rule.overrideWinner)) else "")</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any"/>
+        <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PROMO_REJECTED">
           <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: buildReason(if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1] else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1] else null)}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_REJECTED" name="rejectedResult" typeRef="Any"/>
+        <dmn:variable id="_CE_REJECTED" name="rejectedResult" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_REJECTED">
           <dmn:text>concatenate(categoryRejections, promotionRejections)</dmn:text>
         </dmn:literalExpression>
@@ -883,65 +883,40 @@
         </kie:ComponentsWidthsExtension>
       </di:extension>
       <dmndi:DMNShape id="dmnshape-drg-_INPUT_ELIGIBLE" dmnElementRef="_INPUT_ELIGIBLE" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="914" y="380.3421052631579" width="200" height="50"/>
-        <dmndi:DMNLabel/>
+        <dc:Bounds height="50" width="200" x="914" y="380.3421052631579" />
+        <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_PRECEDENCE" dmnElementRef="_DECISION_PRECEDENCE" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="5" y="380" width="250" height="50"/>
-        <dmndi:DMNLabel/>
+        <dc:Bounds height="50" width="250" x="5" y="380" />
+        <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_CAT_RULES" dmnElementRef="_DECISION_CAT_RULES" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="308" y="380" width="250" height="50"/>
-        <dmndi:DMNLabel/>
+        <dc:Bounds height="50" width="250" x="308" y="380" />
+        <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_PROMO_RULES" dmnElementRef="_DECISION_PROMO_RULES" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="607" y="380" width="250" height="50"/>
-        <dmndi:DMNLabel/>
+        <dc:Bounds height="50" width="250" x="607" y="380" />
+        <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_RESULT" dmnElementRef="_DECISION_RESULT" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="300" y="150" width="300" height="50"/>
-        <dmndi:DMNLabel/>
+        <dc:Bounds height="50" width="300" x="300" y="150" />
+        <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_ELIGIBLE" dmnElementRef="_IR_ELIGIBLE">
-        <di:waypoint x="1014" y="380.3421052631579"/>
-        <di:waypoint x="450" y="200"/>
+        <di:waypoint x="1014" y="380.3421052631579" />
+        <di:waypoint x="450" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PRECEDENCE" dmnElementRef="_IR_PRECEDENCE">
-        <di:waypoint x="130" y="380"/>
-        <di:waypoint x="375" y="200"/>
+        <di:waypoint x="130" y="380" />
+        <di:waypoint x="375" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_CAT_RULES" dmnElementRef="_IR_CAT_RULES">
-        <di:waypoint x="433" y="380"/>
-        <di:waypoint x="450" y="200"/>
+        <di:waypoint x="433" y="380" />
+        <di:waypoint x="450" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PROMO_RULES" dmnElementRef="_IR_PROMO_RULES">
-        <di:waypoint x="732" y="380"/>
-        <di:waypoint x="525" y="200"/>
+        <di:waypoint x="732" y="380" />
+        <di:waypoint x="525" y="200" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
