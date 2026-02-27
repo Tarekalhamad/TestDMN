@@ -51,26 +51,186 @@
         .toolbar button:hover { opacity: 0.85; }
         .toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-save {
-            background: #4CAF50;
-            color: white;
-        }
+        .btn-save { background: #4CAF50; color: white; }
+        .btn-rollback { background: #FF9800; color: white; }
+        .btn-reload { background: #2196F3; color: white; }
+        .btn-test { background: #9C27B0; color: white; }
 
-        .btn-rollback {
-            background: #FF9800;
-            color: white;
-        }
-
-        .btn-reload {
-            background: #2196F3;
-            color: white;
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
         }
 
         #canvas {
-            flex: 1;
             background: white;
         }
 
+        /* Test Panel */
+        .test-panel {
+            width: 480px;
+            background: #fafafa;
+            border-left: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.3s, opacity 0.3s;
+        }
+
+        .test-panel.hidden {
+            width: 0;
+            border-left: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .test-panel-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            background: #37474F;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .test-panel-header span { flex: 1; }
+
+        .test-panel-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .test-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+        }
+
+        .promo-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .promo-card .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .promo-card .remove-btn:hover { color: #f44336; }
+
+        .promo-card label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .promo-card input, .promo-card select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .promo-card select { background: white; }
+
+        .test-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .test-actions button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-add { background: #E3F2FD; color: #1565C0; flex: 1; }
+        .btn-run { background: #4CAF50; color: white; flex: 1; }
+        .btn-add:hover { background: #BBDEFB; }
+        .btn-run:hover { background: #43A047; }
+
+        .results-section {
+            margin-top: 10px;
+        }
+
+        .results-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item {
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .result-item.allowed {
+            background: #E8F5E9;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .result-item.rejected {
+            background: #FFEBEE;
+            border-left: 3px solid #f44336;
+        }
+
+        .result-item .promo-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .result-item .promo-detail {
+            color: #666;
+        }
+
+        .result-item .promo-reason {
+            color: #c62828;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .result-item .promo-order {
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .no-results {
+            color: #999;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -86,11 +246,7 @@
             max-width: 500px;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: #4CAF50; }
         .toast.error { background: #f44336; }
         .toast.info { background: #2196F3; }
@@ -103,21 +259,134 @@
             display: flex;
             justify-content: space-between;
         }
+
+        .preset-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .preset-buttons button {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .preset-buttons button:hover { background: #E3F2FD; border-color: #90CAF9; }
+
+        /* === Make dmn-js drill-down buttons large and clearly labeled === */
+
+        .djs-overlay-drilldown {
+            cursor: pointer !important;
+            z-index: 5 !important;
+        }
+
+        .djs-overlay-drilldown button {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            background: #1565C0 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 6px 14px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            cursor: pointer !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+            transition: background 0.2s, box-shadow 0.2s !important;
+            white-space: nowrap !important;
+            min-width: 80px !important;
+            justify-content: center !important;
+        }
+
+        .djs-overlay-drilldown button::after {
+            content: 'Edit Table' !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
+
+        .djs-overlay-drilldown button:hover {
+            background: #0D47A1 !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
+        }
     </style>
 </head>
 <body>
     <div class="toolbar">
         <h1>DMN Decision Table Editor</h1>
+        <button class="btn-test" onclick="toggleTestPanel()" title="Toggle test panel">Test</button>
         <button class="btn-reload" onclick="loadDmn()" title="Reload from server">Reload</button>
         <button class="btn-rollback" onclick="rollback()" title="Rollback to previous version">Rollback</button>
         <button class="btn-save" onclick="saveDmn()" title="Save and hot-reload engine">Save</button>
     </div>
 
-    <div id="canvas"></div>
+    <div class="main-content">
+        <div id="canvas" style="flex:1;min-width:0;"></div>
+
+        <div id="testPanel" class="test-panel hidden">
+            <div class="test-panel-header">
+                <span>Test Promotions</span>
+                <button onclick="toggleTestPanel()" title="Close">&times;</button>
+            </div>
+            <div class="test-panel-body">
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Load Test Case</label>
+                    <select id="presetSelect" onchange="loadPreset(this.value); this.value='';" style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:white;">
+                        <option value="">-- Select a test case --</option>
+                        <optgroup label="PromotionRules">
+                            <option value="tc1">TC1: R1 block by group (299 blocked by Employee)</option>
+                            <option value="tc2">TC2: R1 no block (trigger absent)</option>
+                            <option value="tc3">TC3: R2 block by promo (355 blocked by 449)</option>
+                            <option value="tc4">TC4: R2 no block (trigger promo absent)</option>
+                            <option value="tc5">TC5: R3 OR-rule group leg (263 blocked by OTS)</option>
+                            <option value="tc6">TC6: R3 OR-rule promo leg (263 blocked by 389)</option>
+                            <option value="tc7">TC7: R3 OR-rule both legs (no duplicate)</option>
+                            <option value="tc8">TC8: R3 OR-rule neither leg (no block)</option>
+                            <option value="tc9">TC9: R1+R4 multiple blocks (299+400)</option>
+                            <option value="tc10">TC10: Category + promo rule combined</option>
+                            <option value="tc11">TC11: Trigger present, target absent</option>
+                            <option value="tc12">TC12: Target present, trigger absent</option>
+                            <option value="tc13">TC13: R5 explicit winner (GEO 73 wins)</option>
+                            <option value="tc14">TC14: R6 BY_PRECEDENCE (SignUp beats OTS)</option>
+                        </optgroup>
+                        <optgroup label="CategoryRules">
+                            <option value="cat-employee-binding">Employee vs Binding</option>
+                            <option value="cat-geo-kombo">Geo + Kombo (compatible)</option>
+                            <option value="cat-three-way">3-Way: Employee vs OTS vs Binding</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:10px;">
+                    <button onclick="clearAll()" style="padding:4px 10px;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;background:white;">Clear All</button>
+                </div>
+
+                <div id="promoCards"></div>
+
+                <div class="test-actions">
+                    <button class="btn-add" onclick="addPromoCard()">+ Add Promotion</button>
+                    <button class="btn-run" onclick="runTest()">Run Test</button>
+                </div>
+
+                <div id="resultsSection" class="results-section" style="display:none;">
+                    <h3>Allowed Promotions</h3>
+                    <div id="allowedResults"></div>
+                    <h3 style="margin-top:12px;">Rejected Promotions</h3>
+                    <div id="rejectedResults"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="status-bar">
         <span id="status">Loading...</span>
-        <span>Tip: Click on a decision in the DRD to open its decision table for editing</span>
+        <span>Tip: Click the "Edit Table" button on any decision box to open its decision table</span>
     </div>
 
     <div id="toast" class="toast"></div>
@@ -125,12 +394,22 @@
     <script src="https://unpkg.com/dmn-js@17.6.0/dist/dmn-modeler.production.min.js"></script>
     <script>
         let modeler;
+        let promoCounter = 0;
 
+        const DISCOUNT_CATEGORIES = [
+            'EmployeeDiscount', 'ComplaintDiscount', 'SaveDeskDiscount',
+            'ChurnBlockerDiscount', 'SignUpDiscount', 'SignUpDiscountLimited',
+            'LegacyBindingDiscount', 'OTSDiscount', 'HWSubscriptionDiscount',
+            'HWSubscriptionDiscountLimited', 'HWSubscriptionDiscountAccessory',
+            'HWDiscount', 'GeoDiscount', 'KomboDiscount', 'PromotionOffering',
+            'RecurringExtraSurf', 'MiscMigratedDiscount', 'MiscMigratedDiscountLimited'
+        ];
+
+        const BASE_TYPES = ['SubscriptionPromotion', 'HWSubscriptionPromotion', 'HWPromotion'];
+
+        // --- DMN Editor Functions ---
         function initModeler() {
-            modeler = new DmnJS({
-                container: '#canvas',
-                keyboard: { bindTo: document }
-            });
+            modeler = new DmnJS({ container: '#canvas', keyboard: { bindTo: document } });
         }
 
         async function loadDmn() {
@@ -138,7 +417,6 @@
                 setStatus('Loading DMN...');
                 const response = await fetch('/api/dmn/content');
                 if (!response.ok) throw new Error('Failed to load DMN: ' + response.statusText);
-
                 const xml = await response.text();
                 await modeler.importXML(xml);
                 setStatus('DMN loaded successfully');
@@ -154,15 +432,12 @@
             try {
                 setStatus('Saving...');
                 const { xml } = await modeler.saveXML({ format: true });
-
                 const response = await fetch('/api/dmn/content', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/xml' },
                     body: xml
                 });
-
                 const result = await response.json();
-
                 if (response.ok) {
                     setStatus('Saved and hot-reloaded at ' + new Date().toLocaleTimeString());
                     showToast(result.message, 'success');
@@ -179,12 +454,10 @@
 
         async function rollback() {
             if (!confirm('Roll back to the previous version? Current changes will be lost.')) return;
-
             try {
                 setStatus('Rolling back...');
                 const response = await fetch('/api/dmn/rollback', { method: 'POST' });
                 const result = await response.json();
-
                 if (response.ok) {
                     showToast(result.message, 'success');
                     await loadDmn();
@@ -199,6 +472,206 @@
             }
         }
 
+        // --- Test Panel Functions ---
+        function toggleTestPanel() {
+            document.getElementById('testPanel').classList.toggle('hidden');
+        }
+
+        function addPromoCard(data) {
+            promoCounter++;
+            const id = 'promo-' + promoCounter;
+            const card = document.createElement('div');
+            card.className = 'promo-card';
+            card.id = id;
+
+            const catOptions = DISCOUNT_CATEGORIES.map(c =>
+                `<option value="${c}" ${data && data.category === c ? 'selected' : ''}>${c}</option>`
+            ).join('');
+
+            const baseOptions = BASE_TYPES.map(b =>
+                `<option value="${b}" ${data && data.baseType === b ? 'selected' : ''}>${b}</option>`
+            ).join('');
+
+            card.innerHTML = `
+                <button class="remove-btn" onclick="document.getElementById('${id}').remove()" title="Remove">&times;</button>
+                <label>Promotion ID</label>
+                <input type="text" class="promo-id" value="${data ? data.id : 'P' + (100 + promoCounter)}" placeholder="e.g. 299">
+                <label>Promotion Name</label>
+                <input type="text" class="promo-name" value="${data ? data.name : ''}" placeholder="e.g. Employee Discount 50%">
+                <label>Discount Category</label>
+                <select class="promo-category">${catOptions}</select>
+                <label>Base Type</label>
+                <select class="promo-base-type">${baseOptions}</select>
+            `;
+
+            document.getElementById('promoCards').appendChild(card);
+        }
+
+        function clearAll() {
+            document.getElementById('promoCards').innerHTML = '';
+            document.getElementById('resultsSection').style.display = 'none';
+            promoCounter = 0;
+        }
+
+        function getPromotions() {
+            const cards = document.querySelectorAll('.promo-card');
+            return Array.from(cards).map(card => ({
+                promotionId: card.querySelector('.promo-id').value,
+                promotionName: card.querySelector('.promo-name').value,
+                promotionBaseType: card.querySelector('.promo-base-type').value,
+                discountCategory: card.querySelector('.promo-category').value
+            }));
+        }
+
+        async function runTest() {
+            const promotions = getPromotions();
+            if (promotions.length === 0) {
+                showToast('Add at least one promotion to test', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/dmn/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ EligiblePromotions: promotions })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    showToast('Test failed: ' + err.message, 'error');
+                    return;
+                }
+
+                const result = await response.json();
+                const compat = result.CompatibilityResult;
+                displayResults(compat.AllowedPromotions || [], compat.RejectedPromotions || []);
+                showToast('Test completed', 'success');
+            } catch (err) {
+                showToast('Test failed: ' + err.message, 'error');
+                console.error(err);
+            }
+        }
+
+        function displayResults(allowed, rejected) {
+            const section = document.getElementById('resultsSection');
+            section.style.display = 'block';
+
+            const allowedDiv = document.getElementById('allowedResults');
+            const rejectedDiv = document.getElementById('rejectedResults');
+
+            if (allowed.length === 0) {
+                allowedDiv.innerHTML = '<div class="no-results">No promotions allowed</div>';
+            } else {
+                allowedDiv.innerHTML = allowed.map(p => `
+                    <div class="result-item allowed">
+                        <div class="promo-name">${p.promotionName || p.promotionId}</div>
+                        <div class="promo-detail">ID: ${p.promotionId} | Category: ${p.discountCategory}</div>
+                        <div class="promo-order">Applied Order: #${p.appliedOrder}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (rejected.length === 0) {
+                rejectedDiv.innerHTML = '<div class="no-results">No promotions rejected</div>';
+            } else {
+                rejectedDiv.innerHTML = rejected.map(p => `
+                    <div class="result-item rejected">
+                        <div class="promo-name">${p.promotionName || p.promotionId}</div>
+                        <div class="promo-detail">ID: ${p.promotionId} | Category: ${p.discountCategory}</div>
+                        <div class="promo-reason">${p.reason}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- Preset Test Scenarios (from test-cases-individual-incompatibilities.md) ---
+        function loadPreset(name) {
+            if (!name) return;
+            clearAll();
+            const S = 'SubscriptionPromotion';
+            const presets = {
+                // PromotionRules test cases
+                'tc1': [
+                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
+                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S }
+                ],
+                'tc2': [
+                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
+                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
+                ],
+                'tc3': [
+                    { id: '355', name: 'Mobilrabatt - New or existing MPO - 1', category: 'HWDiscount', baseType: S },
+                    { id: '449', name: 'Mobilrabatt - New or existing MPO', category: 'HWDiscount', baseType: S }
+                ],
+                'tc4': [
+                    { id: '355', name: 'Mobilrabatt - New or existing MPO - 1', category: 'HWDiscount', baseType: S },
+                    { id: '5', name: 'Kombo Mobile Discount', category: 'KomboDiscount', baseType: S }
+                ],
+                'tc5': [
+                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
+                    { id: '314', name: 'Discount OTS - New or existing MPO 5, 20 GB with binding', category: 'OTSDiscount', baseType: S }
+                ],
+                'tc6': [
+                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
+                    { id: '389', name: 'One to One campaigning - high-risk segment', category: 'SignUpDiscount', baseType: S }
+                ],
+                'tc7': [
+                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
+                    { id: '389', name: 'One to One campaigning - high-risk segment', category: 'SignUpDiscount', baseType: S },
+                    { id: '446', name: 'OTS Nykundsrabatt', category: 'OTSDiscount', baseType: S }
+                ],
+                'tc8': [
+                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
+                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
+                ],
+                'tc9': [
+                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
+                    { id: '400', name: 'One to One campaigning - mid-risk segment', category: 'SignUpDiscount', baseType: S },
+                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
+                    { id: '408', name: 'Savedesk - 12 months discount main sim', category: 'SaveDeskDiscount', baseType: S }
+                ],
+                'tc10': [
+                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
+                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
+                    { id: '291', name: 'Bindningsrabatt Nytt eller befintligt MPO med bindningstid', category: 'LegacyBindingDiscount', baseType: S }
+                ],
+                'tc11': [
+                    { id: '104', name: 'Employee discount on member voice sim', category: 'EmployeeDiscount', baseType: S },
+                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
+                ],
+                'tc12': [
+                    { id: '400', name: 'One to One campaigning - mid-risk segment', category: 'SignUpDiscount', baseType: S },
+                    { id: '5', name: 'Kombo Mobile Discount', category: 'KomboDiscount', baseType: S }
+                ],
+                'tc13': [
+                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S },
+                    { id: '73', name: 'GEO rabatt interna kanaler', category: 'GeoDiscount', baseType: S }
+                ],
+                'tc14': [
+                    { id: '272', name: 'Discount OTS - New MPO 10, 30 GB and extra användare mobil', category: 'OTSDiscount', baseType: S },
+                    { id: '306', name: 'New or Existing MPO main or Extra användare Mobil with binding', category: 'SignUpDiscount', baseType: S }
+                ],
+                // CategoryRules test cases
+                'cat-employee-binding': [
+                    { id: 'P001', name: 'Employee Discount 50%', category: 'EmployeeDiscount', baseType: S },
+                    { id: 'P002', name: 'Binding Discount 24mo', category: 'LegacyBindingDiscount', baseType: S }
+                ],
+                'cat-geo-kombo': [
+                    { id: 'P010', name: 'Geo Discount Stockholm', category: 'GeoDiscount', baseType: S },
+                    { id: 'P011', name: 'Kombo Bundle Discount', category: 'KomboDiscount', baseType: S }
+                ],
+                'cat-three-way': [
+                    { id: 'P020', name: 'OTS Discount 200kr', category: 'OTSDiscount', baseType: S },
+                    { id: 'P021', name: 'Employee Discount', category: 'EmployeeDiscount', baseType: S },
+                    { id: 'P022', name: 'Binding Discount', category: 'LegacyBindingDiscount', baseType: S }
+                ]
+            };
+
+            (presets[name] || []).forEach(p => addPromoCard(p));
+        }
+
+        // --- Utility ---
         function setStatus(text) {
             document.getElementById('status').textContent = text;
         }
@@ -210,7 +683,7 @@
             setTimeout(() => { toast.className = 'toast'; }, 4000);
         }
 
-        // Initialize
+        // --- Initialize ---
         initModeler();
         loadDmn();
     </script>
