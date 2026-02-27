@@ -55,14 +55,17 @@ public class DmnEditorController {
      * Use this endpoint instead of /PromotionCompatibility to get results from updated rules.
      */
     @PostMapping(value = "/evaluate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> evaluate(@RequestBody Map<String, Object> variables) {
+    public ResponseEntity<Map<String, Object>> evaluate(@RequestBody Map<String, Object> variables) {
         try {
             DMNResult result = hotReloadService.evaluate(variables);
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("CompatibilityResult", result.getContext().get("CompatibilityResult"));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+            Map<String, Object> error = new LinkedHashMap<>();
+            error.put("status", "error");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
         }
     }
 

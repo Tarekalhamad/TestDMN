@@ -55,6 +55,7 @@
         .btn-rollback { background: #FF9800; color: white; }
         .btn-reload { background: #2196F3; color: white; }
         .btn-test { background: #9C27B0; color: white; }
+        .btn-download { background: #00897B; color: white; }
 
         .main-content {
             flex: 1;
@@ -321,6 +322,7 @@
 <body>
     <div class="toolbar">
         <h1>DMN Decision Table Editor</h1>
+        <button class="btn-download" onclick="downloadDmn()" title="Download current DMN as XML file to send to tech team">Download XML</button>
         <button class="btn-test" onclick="toggleTestPanel()" title="Toggle test panel">Test</button>
         <button class="btn-reload" onclick="loadDmn()" title="Reload from server">Reload</button>
         <button class="btn-rollback" onclick="rollback()" title="Rollback to previous version">Rollback</button>
@@ -424,6 +426,27 @@
             } catch (err) {
                 setStatus('Error loading DMN');
                 showToast('Failed to load DMN: ' + err.message, 'error');
+                console.error(err);
+            }
+        }
+
+        async function downloadDmn() {
+            try {
+                const { xml } = await modeler.saveXML({ format: true });
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+                const filename = 'PromotionCompatibility_' + timestamp + '.dmn';
+                const blob = new Blob([xml], { type: 'application/xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Downloaded ' + filename, 'success');
+            } catch (err) {
+                showToast('Download failed: ' + err.message, 'error');
                 console.error(err);
             }
         }

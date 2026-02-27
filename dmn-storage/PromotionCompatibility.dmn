@@ -883,40 +883,44 @@
         </kie:ComponentsWidthsExtension>
       </di:extension>
       <dmndi:DMNShape id="dmnshape-drg-_INPUT_ELIGIBLE" dmnElementRef="_INPUT_ELIGIBLE" isCollapsed="false">
-        <dc:Bounds height="50" width="200" x="914" y="380.3421052631579" />
+        <dc:Bounds height="50" width="200" x="1090" y="380" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_PRECEDENCE" dmnElementRef="_DECISION_PRECEDENCE" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="5" y="380" />
+        <dc:Bounds height="50" width="250" x="85" y="380" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_CAT_RULES" dmnElementRef="_DECISION_CAT_RULES" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="308" y="380" />
+        <dc:Bounds height="50" width="250" x="405" y="380" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_PROMO_RULES" dmnElementRef="_DECISION_PROMO_RULES" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="607" y="380" />
+        <dc:Bounds height="50" width="250" x="765" y="380" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_RESULT" dmnElementRef="_DECISION_RESULT" isCollapsed="false">
-        <dc:Bounds height="50" width="300" x="300" y="150" />
+        <dc:Bounds height="50" width="300" x="520" y="150" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_ELIGIBLE" dmnElementRef="_IR_ELIGIBLE">
-        <di:waypoint x="1014" y="380.3421052631579" />
-        <di:waypoint x="450" y="200" />
+        <di:waypoint x="1190" y="380" />
+        <di:waypoint x="760" y="220" />
+        <di:waypoint x="760" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PRECEDENCE" dmnElementRef="_IR_PRECEDENCE">
-        <di:waypoint x="130" y="380" />
-        <di:waypoint x="375" y="200" />
+        <di:waypoint x="210" y="380" />
+        <di:waypoint x="580" y="220" />
+        <di:waypoint x="580" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_CAT_RULES" dmnElementRef="_IR_CAT_RULES">
-        <di:waypoint x="433" y="380" />
-        <di:waypoint x="450" y="200" />
+        <di:waypoint x="530" y="380" />
+        <di:waypoint x="640" y="220" />
+        <di:waypoint x="640" y="200" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PROMO_RULES" dmnElementRef="_IR_PROMO_RULES">
-        <di:waypoint x="732" y="380" />
-        <di:waypoint x="525" y="200" />
+        <di:waypoint x="890" y="380" />
+        <di:waypoint x="700" y="220" />
+        <di:waypoint x="700" y="200" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
