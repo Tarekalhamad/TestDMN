@@ -11,14 +11,18 @@
     <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-literal-expression.css">
     <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-boxed-expression.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        #app {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background: #f5f5f5;
         }
 
         .toolbar {
@@ -60,7 +64,7 @@
         .main-content {
             flex: 1;
             display: flex;
-            overflow: hidden;
+            min-height: 0;
         }
 
         #canvas {
@@ -279,6 +283,28 @@
 
         .preset-buttons button:hover { background: #E3F2FD; border-color: #90CAF9; }
 
+        /* Ensure dmn-js context menus appear above all page elements with proper styling */
+        .context-menu, [class*="context-menu"] {
+            z-index: 1000 !important;
+            background: white !important;
+            border: 1px solid #ccc !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2) !important;
+            padding: 4px 0 !important;
+        }
+
+        .context-menu .context-menu-group-entry,
+        [class*="context-menu"] [class*="group-entry"] {
+            padding: 6px 16px !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
+        }
+
+        .context-menu .context-menu-group-entry:hover,
+        [class*="context-menu"] [class*="group-entry"]:hover {
+            background: #e3f2fd !important;
+        }
+
         /* === Make dmn-js drill-down buttons large and clearly labeled === */
 
         .djs-overlay-drilldown {
@@ -320,6 +346,7 @@
     </style>
 </head>
 <body>
+<div id="app">
     <div class="toolbar">
         <h1>DMN Decision Table Editor</h1>
         <button class="btn-download" onclick="downloadDmn()" title="Download current DMN as XML file to send to tech team">Download XML</button>
@@ -392,6 +419,7 @@
     </div>
 
     <div id="toast" class="toast"></div>
+</div>
 
     <script src="https://unpkg.com/dmn-js@17.6.0/dist/dmn-modeler.production.min.js"></script>
     <script>
