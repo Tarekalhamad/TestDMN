@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dmn:definitions xmlns:dmn="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns="https://telenor.se/promotion-compatibility" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="http://www.drools.org/kie/dmn/1.5" xmlns:feel="https://www.omg.org/spec/DMN/20191111/FEEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="_PROMOTION_COMPATIBILITY" name="PromotionCompatibility" expressionLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" typeLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" namespace="https://telenor.se/promotion-compatibility">
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://telenor.se/promotion-compatibility" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="_PROMOTION_COMPATIBILITY" name="PromotionCompatibility" expressionLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://telenor.se/promotion-compatibility">
   <dmn:extensionElements/>
   <dmn:itemDefinition id="_tPromotion" name="tPromotion" isCollection="false">
     <dmn:itemComponent id="_tPromotion_id" name="promotionId" isCollection="false">
@@ -682,55 +682,6 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_ALLOWED_RULES" name="AllowedPromotionRules">
-    <dmn:extensionElements/>
-    <dmn:variable id="_VAR_ALLOWED_RULES" name="AllowedPromotionRules" typeRef="tAllowedRuleList"/>
-    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="AllowedPromotionRules">
-      <dmn:input id="_DT_AR_IN1">
-        <dmn:inputExpression id="_DT_AR_IE1" typeRef="string">
-          <dmn:text>"match"</dmn:text>
-        </dmn:inputExpression>
-      </dmn:input>
-      <dmn:output id="_DT_AR_OUT1" name="promotion" typeRef="string"/>
-      <dmn:output id="_DT_AR_OUT2" name="allowedWithGroup" typeRef="string"/>
-      <dmn:output id="_DT_AR_OUT3" name="allowedWithPromotion" typeRef="string"/>
-      <dmn:annotation name=""/>
-      <dmn:rule id="_DT_AR_R1">
-        <dmn:inputEntry id="_DT_AR_R1_I1">
-          <dmn:text>-</dmn:text>
-        </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O1">
-          <dmn:text>"EX001"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O2">
-          <dmn:text>"EmployeeDiscount"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O3">
-          <dmn:text/>
-        </dmn:outputEntry>
-        <dmn:annotationEntry>
-          <dmn:text>Test: Binding promo exempted from Employee category conflict</dmn:text>
-        </dmn:annotationEntry>
-      </dmn:rule>
-      <dmn:rule id="_DT_AR_R2">
-        <dmn:inputEntry id="_DT_AR_R2_I1">
-          <dmn:text>-</dmn:text>
-        </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O1">
-          <dmn:text>"EX002"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O2">
-          <dmn:text/>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O3">
-          <dmn:text>"449"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:annotationEntry>
-          <dmn:text>Test: Promo exempted from specific promotion block</dmn:text>
-        </dmn:annotationEntry>
-      </dmn:rule>
-    </dmn:decisionTable>
-  </dmn:decision>
   <dmn:decision id="_DECISION_RESULT" name="CompatibilityResult">
     <dmn:extensionElements/>
     <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any"/>
@@ -877,109 +828,91 @@
       </dmn:contextEntry>
     </dmn:context>
   </dmn:decision>
+  <dmn:decision id="_DECISION_ALLOWED_RULES" name="AllowedPromotionRules">
+    <dmn:extensionElements/>
+    <dmn:variable id="_VAR_ALLOWED_RULES" name="AllowedPromotionRules" typeRef="tAllowedRuleList"/>
+    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="AllowedPromotionRules">
+      <dmn:input id="_DT_AR_IN1">
+        <dmn:inputExpression id="_DT_AR_IE1" typeRef="string">
+          <dmn:text>"match"</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_DT_AR_OUT1" name="promotion" typeRef="string"/>
+      <dmn:output id="_DT_AR_OUT2" name="allowedWithGroup" typeRef="string"/>
+      <dmn:output id="_DT_AR_OUT3" name="allowedWithPromotion" typeRef="string"/>
+      <dmn:annotation name=""/>
+      <dmn:rule id="_DT_AR_R1">
+        <dmn:inputEntry id="_DT_AR_R1_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O1">
+          <dmn:text>"5"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O2">
+          <dmn:text>"EmployeeDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O3">
+          <dmn:text/>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text>Test: Kombo discount is aexempted from Employee category conflict</dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_AR_R2">
+        <dmn:inputEntry id="_DT_AR_R2_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O1">
+          <dmn:text>"EX002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O2">
+          <dmn:text/>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O3">
+          <dmn:text>"449"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text>Test: Promo exempted from specific promotion block</dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
   <dmndi:DMNDI>
     <dmndi:DMNDiagram id="_DIAGRAM_001" name="DRG">
       <di:extension>
         <kie:ComponentsWidthsExtension>
-          <kie:ComponentWidths dmnElementRef="_DT_PRECEDENCE">
-            <kie:width>50</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>352</kie:width>
-            <kie:width>372</kie:width>
-            <kie:width>100</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_DT_CAT_RULES">
-            <kie:width>50</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>258</kie:width>
-            <kie:width>251</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_DT_PROMO_RULES">
-            <kie:width>50</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>239</kie:width>
-            <kie:width>246</kie:width>
-            <kie:width>222</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_DT_PRECEDENCE"/>
+          <kie:ComponentWidths dmnElementRef="_DT_CAT_RULES"/>
+          <kie:ComponentWidths dmnElementRef="_DT_PROMO_RULES"/>
+          <kie:ComponentWidths dmnElementRef="_CTX_RESULT"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PREC"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_RULES"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_RULES"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED_RULES"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PREC_OF"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CATS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CONFLICTS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_RESOLUTIONS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_LOSERS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_EXEMPTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_ACTIVE_BLOCKS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_BLOCKED_IDS"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_EXEMPTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_SURVIVING"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_SORTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_REJECTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_BUILD_REASON"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_REJECTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_REJECTED"/>
+          <kie:ComponentWidths dmnElementRef="_EXPR_FINAL"/>
           <kie:ComponentWidths dmnElementRef="_DT_ALLOWED_RULES">
             <kie:width>50</kie:width>
             <kie:width>100</kie:width>
-            <kie:width>200</kie:width>
-            <kie:width>200</kie:width>
-            <kie:width>200</kie:width>
             <kie:width>100</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED_RULES">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_EXEMPTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_EXEMPTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_CTX_RESULT">
-            <kie:width>50</kie:width>
-            <kie:width>204</kie:width>
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_PREC">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_RULES">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_RULES">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_PREC_OF">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_CATS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_CONFLICTS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_RESOLUTIONS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_LOSERS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_ACTIVE_BLOCKS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_BLOCKED_IDS">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_SURVIVING">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_SORTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_REJECTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_BUILD_REASON">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_REJECTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_REJECTED">
-            <kie:width>863</kie:width>
-          </kie:ComponentWidths>
-          <kie:ComponentWidths dmnElementRef="_EXPR_FINAL">
-            <kie:width>863</kie:width>
+            <kie:width>100</kie:width>
+            <kie:width>100</kie:width>
+            <kie:width>572</kie:width>
           </kie:ComponentWidths>
         </kie:ComponentsWidthsExtension>
       </di:extension>
@@ -989,7 +922,7 @@
           <dmndi:StrokeColor red="0" green="0" blue="0"/>
           <dmndi:FontColor red="0" green="0" blue="0"/>
         </dmndi:DMNStyle>
-        <dc:Bounds x="914" y="380.3421052631579" width="200" height="50"/>
+        <dc:Bounds x="1309" y="378.3421052631579" width="200" height="50"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
       <dmndi:DMNShape id="dmnshape-drg-_DECISION_PRECEDENCE" dmnElementRef="_DECISION_PRECEDENCE" isCollapsed="false">
@@ -1028,8 +961,17 @@
         <dc:Bounds x="300" y="150" width="300" height="50"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_DECISION_ALLOWED_RULES" dmnElementRef="_DECISION_ALLOWED_RULES" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="952" y="380" width="270" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_ELIGIBLE" dmnElementRef="_IR_ELIGIBLE">
-        <di:waypoint x="1014" y="380.3421052631579"/>
+        <di:waypoint x="1409" y="378.3421052631579"/>
         <di:waypoint x="450" y="200"/>
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PRECEDENCE" dmnElementRef="_IR_PRECEDENCE">
@@ -1044,17 +986,8 @@
         <di:waypoint x="732" y="380"/>
         <di:waypoint x="525" y="200"/>
       </dmndi:DMNEdge>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_ALLOWED_RULES" dmnElementRef="_DECISION_ALLOWED_RULES" isCollapsed="false">
-        <dmndi:DMNStyle>
-          <dmndi:FillColor red="255" green="255" blue="255"/>
-          <dmndi:StrokeColor red="0" green="0" blue="0"/>
-          <dmndi:FontColor red="0" green="0" blue="0"/>
-        </dmndi:DMNStyle>
-        <dc:Bounds x="1170" y="380" width="270" height="50"/>
-        <dmndi:DMNLabel/>
-      </dmndi:DMNShape>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_ALLOWED_RULES" dmnElementRef="_IR_ALLOWED_RULES">
-        <di:waypoint x="1305" y="380"/>
+        <di:waypoint x="1087" y="380"/>
         <di:waypoint x="525" y="200"/>
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
