@@ -4,7 +4,7 @@
 
 The existing tests in `DiscountRulesTest.java` are **REST integration tests** (Spring Boot + RestAssured). They boot the entire application, hit `POST /PromotionCompatibility`, and assert JSON responses. This works but has two problems:
 
-1. **Hardcoded promo IDs and names** — when a business manager changes the DMN tables, these tests break even though the logic is still correct.
+1. **Hardcoded promo IDs and names** — when a User  changes the DMN tables, these tests break even though the logic is still correct.
 2. **Slow** — each test run boots Spring Boot + Tomcat.
 
 ## Goal
@@ -16,7 +16,7 @@ Replace the current Java tests with **Kogito Test Scenario Simulation (.scesim)*
 - XML-based test scenario files that live in `src/test/resources/`
 - Each row = one test scenario with **Given** (inputs) and **Expect** (outputs)
 - Runs via Maven Surefire — needs a JUnit activator class but no actual test logic
-- Editable visually in the **Kogito DMN editor** (same tool business managers use)
+- Editable visually in the **Kogito DMN editor** (same tool for users)
 - When DMN data changes, you update the `.scesim` file in the same editor session
 
 ## Known Blocker (from previous attempt)
@@ -41,7 +41,7 @@ These test that when two discount categories are incompatible, the higher-preced
 
 ### Layer 2: Individual promotion rules (PromotionRules decision table)
 
-These test specific business rules like "promo X is blocked when group Y is present" or "promo A and promo B can't coexist."
+These test specific users rules like "promo X is blocked when group Y is present" or "promo A and promo B can't coexist."
 
 ---
 
@@ -251,7 +251,7 @@ Unblock the `KogitoJunitActivator` so the 19 scenarios above live in a `.scesim`
 
 ### Option B: Keep REST integration tests (current)
 
-Keep the existing `DiscountRulesTest.java` approach but expand to 19 tests. Pros: works today. Cons: hardcoded, slow, not editable by business managers.
+Keep the existing `DiscountRulesTest.java` approach but expand to 19 tests. Pros: works today. Cons: hardcoded, slow, not editable by end users.
 
 ### Option C: Unit-test the DMN engine directly (no Spring Boot)
 

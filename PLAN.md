@@ -2,7 +2,7 @@
 
 ## Context
 
-The Telenor Promotion API (TMF-based) allows promotions to independently grant discount product offerings to customers. Currently there is no mechanism to prevent incompatible discounts from being combined. The business needs rules to control which discount types can coexist, with the ability for business managers to easily update these rules over time.
+The Telenor Promotion API (TMF-based) allows promotions to independently grant discount product offerings to customers. Currently there is no mechanism to prevent incompatible discounts from being combined. The business needs rules to control which discount types can coexist, with the ability to easily update these rules over time.
 
 **Goal:** A DMN-based `PromotionCompatibility` service that evaluates a list of eligible promotions and returns only the allowed (compatible) ones, ordered by precedence, along with rejection reasons for the ones that were removed.
 
@@ -11,8 +11,8 @@ The Telenor Promotion API (TMF-based) allows promotions to independently grant d
 ## Architecture: Multi-Decision DMN with Editable Tables
 
 One DMN file (`src/main/resources/PromotionCompatibility.dmn`) with **4 decisions**:
-- **3 lookup-table decisions** (Decision Tables) — business managers edit these directly as spreadsheet grids
-- **1 main decision** (`CompatibilityResult`) — contains FEEL resolution logic, not touched by business managers
+- **3 lookup-table decisions** (Decision Tables) — edit these directly as spreadsheet grids
+- **1 main decision** (`CompatibilityResult`) — contains FEEL resolution logic, not touched by editors
 
 **Note:** The API response now includes `CategoryPrecedence`, `CategoryRules`, and `PromotionRules` as additional top-level keys (additive only, does not break existing consumers).
 
@@ -58,7 +58,7 @@ Collection types: `tPromotionList`, `tAllowedPromotionList`, `tRejectedPromotion
 > **Note about the "match" column in the DMN editor:** When you open a decision table in the DMN editor, you will see a first input column containing a dash (`-`) in every row. This is a technical requirement of the DMN standard — every decision table must have at least one input column. Since these tables are static lookup data (not conditional rules), the dash means "always include this row." **You can safely ignore this column. Do not edit or remove it.**
 
 ### Table 1: CategoryPrecedence
-Lower rank = higher precedence = wins conflicts. Business managers reorder by changing the rank number.
+Lower rank = higher precedence = wins conflicts. End user reorder by changing the rank number.
 
 | discountCategory | precedenceRank |
 |---|---|
@@ -96,7 +96,7 @@ Declares which discount group pairs CANNOT coexist. `overrideWinner` is normally
 | OTSDiscount | SignUpDiscount | |
 | OTSDiscount | SignUpDiscountLimited | |
 
-Business managers add/remove rows in the Decision Table grid to change rules.
+End user add/remove rows in the Decision Table grid to change rules.
 
 ### Table 3: PromotionRules
 Controls which specific promotions cannot coexist with a group or another promotion.
@@ -122,7 +122,7 @@ Controls which specific promotions cannot coexist with a group or another promot
 
 If both `blockedByGroup` and `blockedByPromotion` are filled, the rule triggers if EITHER condition is met (OR logic).
 
-Business managers add rows in the Decision Table grid as needed.
+End user managers add rows in the Decision Table grid as needed.
 
 ---
 
@@ -145,7 +145,7 @@ Business managers add rows in the Decision Table grid as needed.
 
 ---
 
-## How to Modify Rules (for Business Managers)
+## How to Modify Rules (for End User)
 
 Open `PromotionCompatibility.dmn` in a DMN editor (VS Code Kogito plugin or Kogito online editor). Each table is a separate clickable decision node in the DRG diagram.
 
