@@ -94,6 +94,20 @@
   <dmn:itemDefinition id="_tPromotionRuleList" name="tPromotionRuleList" isCollection="true">
     <dmn:typeRef>tPromotionRuleRow</dmn:typeRef>
   </dmn:itemDefinition>
+  <dmn:itemDefinition id="_tAllowedRuleRow" name="tAllowedRuleRow" isCollection="false">
+    <dmn:itemComponent id="_tAllowedRule_promo" name="promotion" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tAllowedRule_group" name="allowedWithGroup" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tAllowedRule_promoWith" name="allowedWithPromotion" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_tAllowedRuleList" name="tAllowedRuleList" isCollection="true">
+    <dmn:typeRef>tAllowedRuleRow</dmn:typeRef>
+  </dmn:itemDefinition>
   <dmn:inputData id="_INPUT_ELIGIBLE" name="EligiblePromotions">
     <dmn:extensionElements/>
     <dmn:variable id="_VAR_ELIGIBLE" name="EligiblePromotions" typeRef="tPromotionList"/>
@@ -668,6 +682,55 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
+  <dmn:decision id="_DECISION_ALLOWED_RULES" name="AllowedPromotionRules">
+    <dmn:extensionElements/>
+    <dmn:variable id="_VAR_ALLOWED_RULES" name="AllowedPromotionRules" typeRef="tAllowedRuleList"/>
+    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="AllowedPromotionRules">
+      <dmn:input id="_DT_AR_IN1">
+        <dmn:inputExpression id="_DT_AR_IE1" typeRef="string">
+          <dmn:text>"match"</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_DT_AR_OUT1" name="promotion" typeRef="string"/>
+      <dmn:output id="_DT_AR_OUT2" name="allowedWithGroup" typeRef="string"/>
+      <dmn:output id="_DT_AR_OUT3" name="allowedWithPromotion" typeRef="string"/>
+      <dmn:annotation name=""/>
+      <dmn:rule id="_DT_AR_R1">
+        <dmn:inputEntry id="_DT_AR_R1_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O1">
+          <dmn:text>"EX001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O2">
+          <dmn:text>"EmployeeDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R1_O3">
+          <dmn:text/>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text>Test: Binding promo exempted from Employee category conflict</dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_AR_R2">
+        <dmn:inputEntry id="_DT_AR_R2_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O1">
+          <dmn:text>"EX002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O2">
+          <dmn:text/>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_AR_R2_O3">
+          <dmn:text>"449"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text>Test: Promo exempted from specific promotion block</dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
   <dmn:decision id="_DECISION_RESULT" name="CompatibilityResult">
     <dmn:extensionElements/>
     <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any"/>
@@ -682,6 +745,9 @@
     </dmn:informationRequirement>
     <dmn:informationRequirement id="_IR_PROMO_RULES">
       <dmn:requiredDecision href="#_DECISION_PROMO_RULES"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_ALLOWED_RULES">
+      <dmn:requiredDecision href="#_DECISION_ALLOWED_RULES"/>
     </dmn:informationRequirement>
     <dmn:context id="_CTX_RESULT">
       <dmn:contextEntry>
@@ -700,6 +766,12 @@
         <dmn:variable id="_CE_PROMO_RULES" name="promotionRules" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_PROMO_RULES">
           <dmn:text>PromotionRules</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ALLOWED_RULES" name="allowedRules" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_ALLOWED_RULES">
+          <dmn:text>AllowedPromotionRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -733,6 +805,12 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
+        <dmn:variable id="_CE_CAT_EXEMPTED" name="categoryExemptedIds" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_CAT_EXEMPTED">
+          <dmn:text>distinct values((for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return if (some rule in allowedRules satisfies rule.promotion = p.promotionId and (rule.allowedWithGroup = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory or (rule.allowedWithPromotion != null and (some winner in EligiblePromotions[discountCategory = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory] satisfies winner.promotionId = rule.allowedWithPromotion)))) then p.promotionId else null)[item != null])</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
         <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
           <dmn:text>(for rule in promotionRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
@@ -745,9 +823,15 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
+        <dmn:variable id="_CE_PROMO_EXEMPTED" name="promoExemptedIds" typeRef="Any"/>
+        <dmn:literalExpression id="_EXPR_PROMO_EXEMPTED">
+          <dmn:text>distinct values((for pid in blockedPromotionIds return if (some rule in allowedRules satisfies rule.promotion = pid and ((rule.allowedWithGroup != null and list contains(categoriesPresent, rule.allowedWithGroup)) or (rule.allowedWithPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.allowedWithPromotion)))) then pid else null)[item != null])</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
         <dmn:variable id="_CE_SURVIVING" name="surviving" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_SURVIVING">
-          <dmn:text>EligiblePromotions[not(list contains(losingCategories, discountCategory)) and not(list contains(blockedPromotionIds, promotionId))]</dmn:text>
+          <dmn:text>EligiblePromotions[(not(list contains(losingCategories, discountCategory)) or list contains(categoryExemptedIds, promotionId)) and (not(list contains(blockedPromotionIds, promotionId)) or list contains(promoExemptedIds, promotionId))]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -765,7 +849,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_CAT_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + (if conflictResolutions[loserCategory = p.discountCategory][1].isOverride then " (override winner)" else " (higher precedence)")}</dmn:text>
+          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory) and not(list contains(categoryExemptedIds, promotionId))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + (if conflictResolutions[loserCategory = p.discountCategory][1].isOverride then " (override winner)" else " (higher precedence)")}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -777,7 +861,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any"/>
         <dmn:literalExpression id="_EXPR_PROMO_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: buildReason(if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1] else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1] else null)}</dmn:text>
+          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(promoExemptedIds, promotionId)) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: buildReason(if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1] else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1] else null)}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -820,6 +904,23 @@
             <kie:width>222</kie:width>
             <kie:width>100</kie:width>
             <kie:width>100</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_DT_ALLOWED_RULES">
+            <kie:width>50</kie:width>
+            <kie:width>100</kie:width>
+            <kie:width>200</kie:width>
+            <kie:width>200</kie:width>
+            <kie:width>200</kie:width>
+            <kie:width>100</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED_RULES">
+            <kie:width>863</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_EXEMPTED">
+            <kie:width>863</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_EXEMPTED">
+            <kie:width>863</kie:width>
           </kie:ComponentWidths>
           <kie:ComponentWidths dmnElementRef="_CTX_RESULT">
             <kie:width>50</kie:width>
@@ -941,6 +1042,19 @@
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="dmnedge-drg-_IR_PROMO_RULES" dmnElementRef="_IR_PROMO_RULES">
         <di:waypoint x="732" y="380"/>
+        <di:waypoint x="525" y="200"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="dmnshape-drg-_DECISION_ALLOWED_RULES" dmnElementRef="_DECISION_ALLOWED_RULES" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="1170" y="380" width="270" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="dmnedge-drg-_IR_ALLOWED_RULES" dmnElementRef="_IR_ALLOWED_RULES">
+        <di:waypoint x="1305" y="380"/>
         <di:waypoint x="525" y="200"/>
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>

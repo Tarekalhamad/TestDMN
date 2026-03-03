@@ -344,4 +344,112 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("272"))
             .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("SignUpDiscount"));
     }
+
+    // --- Test 10: AllowedPromotionRules - category exemption ---
+    // EX001 is in LegacyBindingDiscount (would lose to EmployeeDiscount),
+    // but AllowedPromotionRules says EX001 is allowed with EmployeeDiscount.
+
+    @Test
+    void allowedRule_categoryExemption_promoSurvivesDespiteCategoryConflict() {
+        String body = """
+            {
+              "EligiblePromotions": [
+                {
+                  "promotionId": "EX001",
+                  "promotionName": "Exempted Binding Discount",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "LegacyBindingDiscount"
+                },
+                {
+                  "promotionId": "P100",
+                  "promotionName": "Employee Discount",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "EmployeeDiscount"
+                }
+              ]
+            }
+            """;
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/PromotionCompatibility")
+        .then()
+            .statusCode(200)
+            .body("CompatibilityResult.AllowedPromotions", hasSize(2))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(0));
+    }
+
+    // --- Test 11: AllowedPromotionRules - promotion exemption ---
+    // EX002 is in HWDiscount and would be blocked by promo 449,
+    // but AllowedPromotionRules says EX002 is allowed with promo 449.
+
+    @Test
+    void allowedRule_promotionExemption_promoSurvivesDespitePromoBlock() {
+        String body = """
+            {
+              "EligiblePromotions": [
+                {
+                  "promotionId": "EX002",
+                  "promotionName": "Exempted HW Discount",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "HWDiscount"
+                },
+                {
+                  "promotionId": "449",
+                  "promotionName": "Mobilrabatt - New or existing MPO",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "HWDiscount"
+                }
+              ]
+            }
+            """;
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/PromotionCompatibility")
+        .then()
+            .statusCode(200)
+            .body("CompatibilityResult.AllowedPromotions", hasSize(2))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(0));
+    }
+
+    // --- Test 12: Non-exempted promo still gets blocked (ensure exemptions are targeted) ---
+
+    @Test
+    void allowedRule_nonExemptedPromoStillBlocked() {
+        String body = """
+            {
+              "EligiblePromotions": [
+                {
+                  "promotionId": "P002",
+                  "promotionName": "Regular Binding Discount",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "LegacyBindingDiscount"
+                },
+                {
+                  "promotionId": "P100",
+                  "promotionName": "Employee Discount",
+                  "promotionBaseType": "SubscriptionPromotion",
+                  "discountCategory": "EmployeeDiscount"
+                }
+              ]
+            }
+            """;
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/PromotionCompatibility")
+        .then()
+            .statusCode(200)
+            .body("CompatibilityResult.AllowedPromotions", hasSize(1))
+            .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("P100"))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(1))
+            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("P002"));
+    }
 }

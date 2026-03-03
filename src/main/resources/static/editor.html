@@ -335,6 +335,7 @@
             color: #555;
         }
 
+        .step0 .step-number { background: #1565C0; }
         .step1 .step-number { background: #c62828; }
         .step2 .step-number { background: #e65100; }
         .step3 .step-number { background: #2e7d32; }
@@ -884,6 +885,7 @@
             const precedence = [];
             const categoryRules = [];
             const promotionRules = [];
+            const allowedRules = [];
 
             for (const el of definitions.drgElement || []) {
                 const dt = el.decisionLogic;
@@ -915,12 +917,20 @@
                             const winner = stripQuotes(outs[3] && outs[3].text);
                             if (promo) promotionRules.push({ promotion: promo, blockedByGroup: byGroup || null, blockedByPromotion: byPromo || null, winner: winner || null });
                         }
+                    } else if (el.name === 'AllowedPromotionRules') {
+                        for (const rule of dt.rule) {
+                            const outs = rule.outputEntry || [];
+                            const promo = stripQuotes(outs[0] && outs[0].text);
+                            const withGroup = stripQuotes(outs[1] && outs[1].text);
+                            const withPromo = stripQuotes(outs[2] && outs[2].text);
+                            if (promo) allowedRules.push({ promotion: promo, allowedWithGroup: withGroup || null, allowedWithPromotion: withPromo || null });
+                        }
                     }
                 }
             }
 
             precedence.sort((a, b) => a.rank - b.rank);
-            return { precedence, categoryRules, promotionRules };
+            return { precedence, categoryRules, promotionRules, allowedRules };
         }
 
         function stripQuotes(s) {
@@ -988,6 +998,28 @@
                 promoRulesHtml = '<p style="color:#999;">No promotion-level rules defined.</p>';
             }
 
+            // Build allowed rules list
+            let allowedRulesHtml = '';
+            if (data.allowedRules.length > 0) {
+                const allowedRows = data.allowedRules.map(r => {
+                    let allowedWith = '';
+                    if (r.allowedWithGroup && r.allowedWithPromotion)
+                        allowedWith = `Category <strong>${r.allowedWithGroup}</strong> or Promotion <strong>${r.allowedWithPromotion}</strong>`;
+                    else if (r.allowedWithGroup)
+                        allowedWith = `Category <strong>${r.allowedWithGroup}</strong>`;
+                    else if (r.allowedWithPromotion)
+                        allowedWith = `Promotion <strong>${r.allowedWithPromotion}</strong>`;
+                    return `<tr><td>${r.promotion}</td><td>${allowedWith}</td></tr>`;
+                }).join('');
+                allowedRulesHtml = `
+                    <table class="rules-table">
+                        <thead><tr><th>Promotion</th><th>Allowed to coexist with...</th></tr></thead>
+                        <tbody>${allowedRows}</tbody>
+                    </table>`;
+            } else {
+                allowedRulesHtml = '<p style="color:#999;">No exemptions defined yet. Add rows to the AllowedPromotionRules table to override blocking rules.</p>';
+            }
+
             container.innerHTML = `
                 <h2>How the Promotion Compatibility Rules Work</h2>
                 <p class="subtitle">A guide for business managers &mdash; all data below is read live from the current rules</p>
@@ -995,7 +1027,7 @@
                 <p>
                     When a customer is eligible for multiple promotions, the system decides
                     <strong>which ones can coexist</strong> and which must be removed.
-                    It works like a funnel with three steps:
+                    It works like a funnel:
                 </p>
 
                 <div class="funnel-diagram">
@@ -1005,7 +1037,9 @@
                     &#9660;<br>
                     <strong>Step 2:</strong> Remove specific promotions that conflict<br>
                     &#9660;<br>
-                    <strong>Step 3:</strong> Sort survivors by priority<br>
+                    <strong>Step 3:</strong> Rescue any promotions exempted by Allowed Promotion Rules<br>
+                    &#9660;<br>
+                    <strong>Step 4:</strong> Sort survivors by priority<br>
                     &#9660;<br>
                     Final Result: Allowed + Rejected lists
                 </div>
@@ -1035,13 +1069,31 @@
                     </div>
                 </div>
 
-                <div class="step-card step3">
+                <div class="step-card step0">
                     <span class="step-number">3</span>
+                    <span class="step-title">Allowed Promotion Rules &mdash; "Which promotions are exempt from blocking?" (Highest Priority)</span>
+                    <div class="step-body">
+                        <p>
+                            This table has the <strong>highest priority</strong> in the system. It overrides both
+                            Category Rules and Promotion Rules. If a promotion would normally be blocked, but has
+                            an entry here, it is <strong>rescued and allowed to survive</strong>.
+                        </p>
+                        <p>Use this to say:</p>
+                        <ul>
+                            <li><strong>Allowed with category:</strong> "Promotion X can coexist with Category Y, even if their categories conflict"</li>
+                            <li><strong>Allowed with promotion:</strong> "Promotion X can coexist with Promotion Y, even if a rule blocks them"</li>
+                        </ul>
+                        ${allowedRulesHtml}
+                    </div>
+                </div>
+
+                <div class="step-card step3">
+                    <span class="step-number">4</span>
                     <span class="step-title">Priority Table &mdash; "In what order are discounts applied?"</span>
                     <div class="step-body">
                         <p>
                             This table ranks every category. It is used in Steps 1 and 2 to pick winners,
-                            and in Step 3 to decide the order surviving discounts are applied (1 = first).
+                            and in Step 4 to decide the order surviving discounts are applied (1 = first).
                         </p>
                         <table class="rules-table">
                             <thead><tr><th style="width:70px;">Priority</th><th>Category</th></tr></thead>
