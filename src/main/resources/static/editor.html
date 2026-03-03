@@ -235,6 +235,144 @@
             padding: 20px;
         }
 
+        /* How It Works Panel */
+        .btn-help { background: #607D8B; color: white; }
+
+        .how-it-works-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+        }
+
+        .how-it-works-overlay.visible { display: flex; align-items: center; justify-content: center; }
+
+        .how-it-works-panel {
+            background: white;
+            border-radius: 10px;
+            width: 780px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            padding: 32px 36px;
+            position: relative;
+        }
+
+        .how-it-works-panel .close-btn {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .how-it-works-panel .close-btn:hover { color: #000; }
+
+        .how-it-works-panel h2 {
+            font-size: 22px;
+            margin: 0 0 6px 0;
+            color: #1a1a2e;
+        }
+
+        .how-it-works-panel .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .how-it-works-panel h3 {
+            font-size: 16px;
+            margin: 22px 0 8px 0;
+            color: #1a1a2e;
+        }
+
+        .how-it-works-panel p, .how-it-works-panel li {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .how-it-works-panel ul { padding-left: 20px; }
+        .how-it-works-panel li { margin-bottom: 4px; }
+
+        .step-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+        }
+
+        .step-card .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .step-card .step-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a1a2e;
+            vertical-align: middle;
+        }
+
+        .step-card .step-body {
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .step1 .step-number { background: #c62828; }
+        .step2 .step-number { background: #e65100; }
+        .step3 .step-number { background: #2e7d32; }
+
+        .funnel-diagram {
+            text-align: center;
+            padding: 16px 0;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #444;
+            background: #f0f4f8;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .rules-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .rules-table th {
+            background: #e8eaf6;
+            text-align: left;
+            padding: 6px 10px;
+            font-weight: 600;
+            border-bottom: 2px solid #c5cae9;
+        }
+
+        .rules-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rules-table tr:hover td { background: #f5f5f5; }
+
         /* Toast */
         .toast {
             position: fixed;
@@ -349,6 +487,7 @@
 <div id="app">
     <div class="toolbar">
         <h1>DMN Decision Table Editor</h1>
+        <button class="btn-help" onclick="toggleHowItWorks()" title="Learn how the rules engine works">How It Works</button>
         <button class="btn-download" onclick="downloadDmn()" title="Download current DMN as XML file to send to tech team">Download XML</button>
         <button class="btn-test" onclick="toggleTestPanel()" title="Toggle test panel">Test</button>
         <button class="btn-reload" onclick="loadDmn()" title="Reload from server">Reload</button>
@@ -416,6 +555,13 @@
     <div class="status-bar">
         <span id="status">Loading...</span>
         <span>Tip: Click the "Edit Table" button on any decision box to open its decision table</span>
+    </div>
+
+    <div id="howItWorksOverlay" class="how-it-works-overlay" onclick="if(event.target===this)toggleHowItWorks()">
+        <div class="how-it-works-panel">
+            <button class="close-btn" onclick="toggleHowItWorks()" title="Close">&times;</button>
+            <div id="howItWorksContent">Loading...</div>
+        </div>
     </div>
 
     <div id="toast" class="toast"></div>
@@ -720,6 +866,206 @@
             };
 
             (presets[name] || []).forEach(p => addPromoCard(p));
+        }
+
+        // --- How It Works Panel ---
+        function toggleHowItWorks() {
+            const overlay = document.getElementById('howItWorksOverlay');
+            const isOpening = !overlay.classList.contains('visible');
+            overlay.classList.toggle('visible');
+            if (isOpening) buildHowItWorksContent();
+        }
+
+        function parseDmnTables() {
+            // Parse the live DMN XML from the modeler to extract all table data
+            const definitions = modeler.getDefinitions();
+            if (!definitions) return null;
+
+            const precedence = [];
+            const categoryRules = [];
+            const promotionRules = [];
+
+            for (const el of definitions.drgElement || []) {
+                const dt = el.decisionLogic;
+                if (!dt) continue;
+
+                // Decision tables with COLLECT hit policy
+                if (dt.$type === 'dmn:DecisionTable' && dt.rule) {
+                    if (el.name === 'CategoryPrecedence') {
+                        for (const rule of dt.rule) {
+                            const outs = rule.outputEntry || [];
+                            const cat = stripQuotes(outs[0] && outs[0].text);
+                            const rank = outs[1] && outs[1].text;
+                            if (cat && rank) precedence.push({ category: cat, rank: Number(rank) });
+                        }
+                    } else if (el.name === 'CategoryRules') {
+                        for (const rule of dt.rule) {
+                            const outs = rule.outputEntry || [];
+                            const groupA = stripQuotes(outs[0] && outs[0].text);
+                            const groupB = stripQuotes(outs[1] && outs[1].text);
+                            const winner = stripQuotes(outs[2] && outs[2].text);
+                            if (groupA && groupB) categoryRules.push({ groupA, groupB, winner: winner || null });
+                        }
+                    } else if (el.name === 'PromotionRules') {
+                        for (const rule of dt.rule) {
+                            const outs = rule.outputEntry || [];
+                            const promo = stripQuotes(outs[0] && outs[0].text);
+                            const byGroup = stripQuotes(outs[1] && outs[1].text);
+                            const byPromo = stripQuotes(outs[2] && outs[2].text);
+                            const winner = stripQuotes(outs[3] && outs[3].text);
+                            if (promo) promotionRules.push({ promotion: promo, blockedByGroup: byGroup || null, blockedByPromotion: byPromo || null, winner: winner || null });
+                        }
+                    }
+                }
+            }
+
+            precedence.sort((a, b) => a.rank - b.rank);
+            return { precedence, categoryRules, promotionRules };
+        }
+
+        function stripQuotes(s) {
+            if (!s) return null;
+            s = s.trim();
+            if (s === '') return null;
+            if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) return s.slice(1, -1);
+            return s;
+        }
+
+        function buildHowItWorksContent() {
+            const container = document.getElementById('howItWorksContent');
+            const data = parseDmnTables();
+
+            if (!data || data.precedence.length === 0) {
+                container.innerHTML = '<p style="color:#999;">Could not read DMN data. Load the DMN first, then try again.</p>';
+                return;
+            }
+
+            // Build priority list
+            const priorityRows = data.precedence.map(p =>
+                `<tr><td style="text-align:center;font-weight:600;">${p.rank}</td><td>${p.category}</td></tr>`
+            ).join('');
+
+            // Build category rules list
+            let catRulesHtml = '';
+            if (data.categoryRules.length > 0) {
+                const catRows = data.categoryRules.map(r => {
+                    const resolution = r.winner ? `<strong>${r.winner}</strong> always wins` : 'Higher priority wins';
+                    return `<tr><td>${r.groupA}</td><td>${r.groupB}</td><td>${resolution}</td></tr>`;
+                }).join('');
+                catRulesHtml = `
+                    <table class="rules-table">
+                        <thead><tr><th>Category A</th><th>Category B</th><th>Who wins?</th></tr></thead>
+                        <tbody>${catRows}</tbody>
+                    </table>`;
+            } else {
+                catRulesHtml = '<p style="color:#999;">No category conflict rules defined.</p>';
+            }
+
+            // Build promotion rules list
+            let promoRulesHtml = '';
+            if (data.promotionRules.length > 0) {
+                const promoRows = data.promotionRules.map(r => {
+                    let trigger = '';
+                    if (r.blockedByGroup && r.blockedByPromotion)
+                        trigger = `Category <strong>${r.blockedByGroup}</strong> or Promotion <strong>${r.blockedByPromotion}</strong>`;
+                    else if (r.blockedByGroup)
+                        trigger = `Any <strong>${r.blockedByGroup}</strong> is present`;
+                    else if (r.blockedByPromotion)
+                        trigger = `Promotion <strong>${r.blockedByPromotion}</strong> is present`;
+
+                    let resolution = 'Promotion ' + r.promotion + ' is removed';
+                    if (r.winner === 'BY_PRECEDENCE') resolution = 'The one with higher priority wins';
+                    else if (r.winner) resolution = `Promotion <strong>${r.winner}</strong> always wins`;
+
+                    return `<tr><td>${r.promotion}</td><td>${trigger}</td><td>${resolution}</td></tr>`;
+                }).join('');
+                promoRulesHtml = `
+                    <table class="rules-table">
+                        <thead><tr><th>Promotion</th><th>Blocked when...</th><th>Result</th></tr></thead>
+                        <tbody>${promoRows}</tbody>
+                    </table>`;
+            } else {
+                promoRulesHtml = '<p style="color:#999;">No promotion-level rules defined.</p>';
+            }
+
+            container.innerHTML = `
+                <h2>How the Promotion Compatibility Rules Work</h2>
+                <p class="subtitle">A guide for business managers &mdash; all data below is read live from the current rules</p>
+
+                <p>
+                    When a customer is eligible for multiple promotions, the system decides
+                    <strong>which ones can coexist</strong> and which must be removed.
+                    It works like a funnel with three steps:
+                </p>
+
+                <div class="funnel-diagram">
+                    All Eligible Promotions<br>
+                    &#9660;<br>
+                    <strong>Step 1:</strong> Remove entire discount categories that conflict<br>
+                    &#9660;<br>
+                    <strong>Step 2:</strong> Remove specific promotions that conflict<br>
+                    &#9660;<br>
+                    <strong>Step 3:</strong> Sort survivors by priority<br>
+                    &#9660;<br>
+                    Final Result: Allowed + Rejected lists
+                </div>
+
+                <div class="step-card step1">
+                    <span class="step-number">1</span>
+                    <span class="step-title">Category Rules &mdash; "Which discount types can't live together?"</span>
+                    <div class="step-body">
+                        <p>
+                            Every promotion belongs to a discount category. The table below lists pairs of categories
+                            that are <strong>incompatible</strong>. When both are present, one entire category is removed.
+                            The winner is decided by <strong>priority</strong> (lower number wins) unless an explicit override is set.
+                        </p>
+                        ${catRulesHtml}
+                    </div>
+                </div>
+
+                <div class="step-card step2">
+                    <span class="step-number">2</span>
+                    <span class="step-title">Promotion Rules &mdash; "Which specific promotions can't live together?"</span>
+                    <div class="step-body">
+                        <p>
+                            After category filtering, these rules handle conflicts between <strong>individual promotions</strong>.
+                            They only affect promotions that survived Step 1.
+                        </p>
+                        ${promoRulesHtml}
+                    </div>
+                </div>
+
+                <div class="step-card step3">
+                    <span class="step-number">3</span>
+                    <span class="step-title">Priority Table &mdash; "In what order are discounts applied?"</span>
+                    <div class="step-body">
+                        <p>
+                            This table ranks every category. It is used in Steps 1 and 2 to pick winners,
+                            and in Step 3 to decide the order surviving discounts are applied (1 = first).
+                        </p>
+                        <table class="rules-table">
+                            <thead><tr><th style="width:70px;">Priority</th><th>Category</th></tr></thead>
+                            <tbody>${priorityRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h3>Output</h3>
+                <p>The system returns two lists:</p>
+                <ul>
+                    <li><strong style="color:#2e7d32;">Allowed Promotions</strong> &mdash; Survivors sorted by priority, each with an applied order number.</li>
+                    <li><strong style="color:#c62828;">Rejected Promotions</strong> &mdash; Removed promotions, each with a reason explaining why.</li>
+                </ul>
+
+                <h3>How to Edit</h3>
+                <ul>
+                    <li>Click <strong>"Edit Table"</strong> on any decision box in the diagram to open it.</li>
+                    <li>After changes, click <strong>Save</strong> to apply immediately.</li>
+                    <li>Use the <strong>Test</strong> panel to verify before going to production.</li>
+                    <li>Click <strong>Rollback</strong> to revert to the previous version if needed.</li>
+                    <li><strong>Do not edit the CompatibilityResult box</strong> &mdash; it contains the processing logic.</li>
+                </ul>
+            `;
         }
 
         // --- Utility ---
