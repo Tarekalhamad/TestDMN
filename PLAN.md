@@ -14,7 +14,7 @@ One DMN file (`src/main/resources/PromotionCompatibility.dmn`) with **4 decision
 - **3 lookup-table decisions** (Decision Tables) — edit these directly as spreadsheet grids
 - **1 main decision** (`CompatibilityResult`) — contains FEEL resolution logic, not touched by editors
 
-**Note:** The API response now includes `CategoryPrecedence`, `CategoryRules`, and `PromotionRules` as additional top-level keys (additive only, does not break existing consumers).
+**Note:** The API response now includes `CategoryPrecedence`, `CategoryBlockingRules`, and `PromotionBlockingRules` as additional top-level keys (additive only, does not break existing consumers).
 
 ```
 EligiblePromotions (Input)
@@ -23,7 +23,7 @@ EligiblePromotions (Input)
                     CompatibilityResult (Boxed Context - resolution logic)
                    /           |            \              \
                   /            |             \              \
- CategoryPrecedence      CategoryRules      PromotionRules    EligiblePromotions
+ CategoryPrecedence      CategoryBlockingRules      PromotionBlockingRules    EligiblePromotions
  (Decision Table)        (Decision Table)   (Decision Table)  (Input Data)
  18 rows, COLLECT        9 rows, COLLECT    6 rows, COLLECT
 
@@ -81,7 +81,7 @@ Lower rank = higher precedence = wins conflicts. End user reorder by changing th
 | MiscMigratedDiscount | 17 |
 | MiscMigratedDiscountLimited | 18 |
 
-### Table 2: CategoryRules
+### Table 2: CategoryBlockingRules
 Declares which discount group pairs CANNOT coexist. `overrideWinner` is normally empty (resolved by precedence), but can be set to force a specific winner for that pair.
 
 | groupA | groupB | overrideWinner |
@@ -98,7 +98,7 @@ Declares which discount group pairs CANNOT coexist. `overrideWinner` is normally
 
 End user add/remove rows in the Decision Table grid to change rules.
 
-### Table 3: PromotionRules
+### Table 3: PromotionBlockingRules
 Controls which specific promotions cannot coexist with a group or another promotion.
 
 | promotion | blockedByGroup | blockedByPromotion | overrideWinner | description |
@@ -114,7 +114,7 @@ Controls which specific promotions cannot coexist with a group or another promot
 - **promotion** — the promotion affected by this rule
 - **blockedByGroup** — if this discount group is present, the rule triggers (leave empty if not applicable)
 - **blockedByPromotion** — if this specific promotion is present, the rule triggers (leave empty if not applicable)
-- **overrideWinner** — who wins when both are present? (same concept as in CategoryRules)
+- **overrideWinner** — who wins when both are present? (same concept as in CategoryBlockingRules)
   - *Empty* = always block `promotion`
   - *A promotion ID* = that specific promotion wins, the other is rejected
   - `BY_PRECEDENCE` = compare both promotions' group precedence, higher precedence wins
@@ -130,10 +130,10 @@ End user managers add rows in the Decision Table grid as needed.
 
 1. **precedenceOf(cat)** — Helper function: looks up precedenceRank for a category (returns 999 if not found)
 2. **categoriesPresent** — Extracts distinct discountCategory values from EligiblePromotions
-3. **activeConflicts** — Filters categoryRules where BOTH groups are present in input
+3. **activeConflicts** — Filters categoryBlockingRules where BOTH groups are present in input
 4. **conflictResolutions** — For each active conflict, determines winner (lower rank or overrideWinner) and loser
 5. **losingCategories** — Distinct list of all losing categories from step 4
-6. **activeBlocks** — Evaluates promotionRules to find which rules are triggered
+6. **activeBlocks** — Evaluates promotionBlockingRules to find which rules are triggered
 7. **blockedPromotionIds** — Determines which promo IDs to block, considering the overrideWinner column
 8. **surviving** — Filters EligiblePromotions: removes promotions in losing categories + blocked IDs
 9. **sorted** — Sorts survivors by precedence rank (ascending)
@@ -151,16 +151,16 @@ Open `PromotionCompatibility.dmn` in a DMN editor (VS Code Kogito plugin or Kogi
 
 ### Add a new discount category
 1. Click **CategoryPrecedence** in the DRG → add a row with the category name and rank number
-2. If needed, click **CategoryRules** → add rows for conflict pairs
+2. If needed, click **CategoryBlockingRules** → add rows for conflict pairs
 
 ### Add a new group incompatibility rule
-Click **CategoryRules** → add a row: fill `groupA`, `groupB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the group name in `overrideWinner`.
+Click **CategoryBlockingRules** → add a row: fill `groupA`, `groupB`, leave `overrideWinner` empty (uses precedence). To force a winner, type the group name in `overrideWinner`.
 
 ### Block a specific promotion
-Click **PromotionRules** → add a row: fill `promotion`, `blockedByGroup` (or `blockedByPromotion`), and `description`. Leave `overrideWinner` empty to always block the promotion.
+Click **PromotionBlockingRules** → add a row: fill `promotion`, `blockedByGroup` (or `blockedByPromotion`), and `description`. Leave `overrideWinner` empty to always block the promotion.
 
 ### Make two promotions mutually exclusive
-Click **PromotionRules** → add a row: fill `promotion` with one promo ID, `blockedByPromotion` with the other. Set `overrideWinner` to the promo ID that should win, or `BY_PRECEDENCE` to let group rank decide.
+Click **PromotionBlockingRules** → add a row: fill `promotion` with one promo ID, `blockedByPromotion` with the other. Set `overrideWinner` to the promo ID that should win, or `BY_PRECEDENCE` to let group rank decide.
 
 ### Change category precedence
 Click **CategoryPrecedence** → change the `precedenceRank` number. Lower rank = higher precedence.

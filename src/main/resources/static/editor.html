@@ -509,7 +509,7 @@
                     <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Load Test Case</label>
                     <select id="presetSelect" onchange="loadPreset(this.value); this.value='';" style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:white;">
                         <option value="">-- Select a test case --</option>
-                        <optgroup label="PromotionRules">
+                        <optgroup label="PromotionBlockingRules">
                             <option value="tc1">TC1: R1 block by group (299 blocked by Employee)</option>
                             <option value="tc2">TC2: R1 no block (trigger absent)</option>
                             <option value="tc3">TC3: R2 block by promo (355 blocked by 449)</option>
@@ -525,10 +525,11 @@
                             <option value="tc13">TC13: R5 explicit winner (GEO 73 wins)</option>
                             <option value="tc14">TC14: R6 BY_PRECEDENCE (SignUp beats OTS)</option>
                         </optgroup>
-                        <optgroup label="CategoryRules">
+                        <optgroup label="CategoryBlockingRules">
                             <option value="cat-employee-binding">Employee vs Binding</option>
                             <option value="cat-geo-kombo">Geo + Kombo (compatible)</option>
                             <option value="cat-three-way">3-Way: Employee vs OTS vs Binding</option>
+                            <option value="cat-employee-ots-rejected">Employee vs OTS (OTS rejected, no exception)</option>
                         </optgroup>
                     </select>
                 </div>
@@ -789,7 +790,7 @@
             clearAll();
             const S = 'SubscriptionPromotion';
             const presets = {
-                // PromotionRules test cases
+                // PromotionBlockingRules test cases
                 'tc1': [
                     { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
                     { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S }
@@ -850,7 +851,7 @@
                     { id: '272', name: 'Discount OTS - New MPO 10, 30 GB and extra användare mobil', category: 'OTSDiscount', baseType: S },
                     { id: '306', name: 'New or Existing MPO main or Extra användare Mobil with binding', category: 'SignUpDiscount', baseType: S }
                 ],
-                // CategoryRules test cases
+                // CategoryBlockingRules test cases
                 'cat-employee-binding': [
                     { id: 'P001', name: 'Employee Discount 50%', category: 'EmployeeDiscount', baseType: S },
                     { id: 'P002', name: 'Binding Discount 24mo', category: 'LegacyBindingDiscount', baseType: S }
@@ -863,6 +864,10 @@
                     { id: 'P020', name: 'OTS Discount 200kr', category: 'OTSDiscount', baseType: S },
                     { id: 'P021', name: 'Employee Discount', category: 'EmployeeDiscount', baseType: S },
                     { id: 'P022', name: 'Binding Discount', category: 'LegacyBindingDiscount', baseType: S }
+                ],
+                'cat-employee-ots-rejected': [
+                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
+                    { id: '500', name: 'OTS Summer Campaign', category: 'OTSDiscount', baseType: S }
                 ]
             };
 
@@ -883,9 +888,9 @@
             if (!definitions) return null;
 
             const precedence = [];
-            const categoryRules = [];
-            const promotionRules = [];
-            const allowedRules = [];
+            const categoryBlockingRules = [];
+            const promotionBlockingRules = [];
+            const promotionExceptionRules = [];
 
             for (const el of definitions.drgElement || []) {
                 const dt = el.decisionLogic;
@@ -900,37 +905,37 @@
                             const rank = outs[1] && outs[1].text;
                             if (cat && rank) precedence.push({ category: cat, rank: Number(rank) });
                         }
-                    } else if (el.name === 'CategoryRules') {
+                    } else if (el.name === 'CategoryBlockingRules') {
                         for (const rule of dt.rule) {
                             const outs = rule.outputEntry || [];
                             const groupA = stripQuotes(outs[0] && outs[0].text);
                             const groupB = stripQuotes(outs[1] && outs[1].text);
                             const winner = stripQuotes(outs[2] && outs[2].text);
-                            if (groupA && groupB) categoryRules.push({ groupA, groupB, winner: winner || null });
+                            if (groupA && groupB) categoryBlockingRules.push({ groupA, groupB, winner: winner || null });
                         }
-                    } else if (el.name === 'PromotionRules') {
+                    } else if (el.name === 'PromotionBlockingRules') {
                         for (const rule of dt.rule) {
                             const outs = rule.outputEntry || [];
                             const promo = stripQuotes(outs[0] && outs[0].text);
                             const byGroup = stripQuotes(outs[1] && outs[1].text);
                             const byPromo = stripQuotes(outs[2] && outs[2].text);
                             const winner = stripQuotes(outs[3] && outs[3].text);
-                            if (promo) promotionRules.push({ promotion: promo, blockedByGroup: byGroup || null, blockedByPromotion: byPromo || null, winner: winner || null });
+                            if (promo) promotionBlockingRules.push({ promotion: promo, blockedByGroup: byGroup || null, blockedByPromotion: byPromo || null, winner: winner || null });
                         }
-                    } else if (el.name === 'AllowedPromotionRules') {
+                    } else if (el.name === 'PromotionExceptionRules') {
                         for (const rule of dt.rule) {
                             const outs = rule.outputEntry || [];
                             const promo = stripQuotes(outs[0] && outs[0].text);
                             const withGroup = stripQuotes(outs[1] && outs[1].text);
                             const withPromo = stripQuotes(outs[2] && outs[2].text);
-                            if (promo) allowedRules.push({ promotion: promo, allowedWithGroup: withGroup || null, allowedWithPromotion: withPromo || null });
+                            if (promo) promotionExceptionRules.push({ promotion: promo, allowedWithGroup: withGroup || null, allowedWithPromotion: withPromo || null });
                         }
                     }
                 }
             }
 
             precedence.sort((a, b) => a.rank - b.rank);
-            return { precedence, categoryRules, promotionRules, allowedRules };
+            return { precedence, categoryBlockingRules, promotionBlockingRules, promotionExceptionRules };
         }
 
         function stripQuotes(s) {
@@ -957,8 +962,8 @@
 
             // Build category rules list
             let catRulesHtml = '';
-            if (data.categoryRules.length > 0) {
-                const catRows = data.categoryRules.map(r => {
+            if (data.categoryBlockingRules.length > 0) {
+                const catRows = data.categoryBlockingRules.map(r => {
                     const resolution = r.winner ? `<strong>${r.winner}</strong> always wins` : 'Higher priority wins';
                     return `<tr><td>${r.groupA}</td><td>${r.groupB}</td><td>${resolution}</td></tr>`;
                 }).join('');
@@ -973,8 +978,8 @@
 
             // Build promotion rules list
             let promoRulesHtml = '';
-            if (data.promotionRules.length > 0) {
-                const promoRows = data.promotionRules.map(r => {
+            if (data.promotionBlockingRules.length > 0) {
+                const promoRows = data.promotionBlockingRules.map(r => {
                     let trigger = '';
                     if (r.blockedByGroup && r.blockedByPromotion)
                         trigger = `Category <strong>${r.blockedByGroup}</strong> or Promotion <strong>${r.blockedByPromotion}</strong>`;
@@ -999,9 +1004,9 @@
             }
 
             // Build allowed rules list
-            let allowedRulesHtml = '';
-            if (data.allowedRules.length > 0) {
-                const allowedRows = data.allowedRules.map(r => {
+            let exceptionRulesHtml = '';
+            if (data.promotionExceptionRules.length > 0) {
+                const allowedRows = data.promotionExceptionRules.map(r => {
                     let allowedWith = '';
                     if (r.allowedWithGroup && r.allowedWithPromotion)
                         allowedWith = `Category <strong>${r.allowedWithGroup}</strong> or Promotion <strong>${r.allowedWithPromotion}</strong>`;
@@ -1011,13 +1016,13 @@
                         allowedWith = `Promotion <strong>${r.allowedWithPromotion}</strong>`;
                     return `<tr><td>${r.promotion}</td><td>${allowedWith}</td></tr>`;
                 }).join('');
-                allowedRulesHtml = `
+                exceptionRulesHtml = `
                     <table class="rules-table">
                         <thead><tr><th>Promotion</th><th>Allowed to coexist with...</th></tr></thead>
                         <tbody>${allowedRows}</tbody>
                     </table>`;
             } else {
-                allowedRulesHtml = '<p style="color:#999;">No exemptions defined yet. Add rows to the AllowedPromotionRules table to override blocking rules.</p>';
+                exceptionRulesHtml = '<p style="color:#999;">No exemptions defined yet. Add rows to the PromotionExceptionRules table to override blocking rules.</p>';
             }
 
             container.innerHTML = `
@@ -1033,11 +1038,11 @@
                 <div class="funnel-diagram">
                     All Eligible Promotions<br>
                     &#9660;<br>
-                    <strong>Step 1:</strong> Remove entire discount categories that conflict<br>
+                    <strong>Step 1:</strong> Block entire discount categories that conflict (rejected)<br>
                     &#9660;<br>
-                    <strong>Step 2:</strong> Remove specific promotions that conflict<br>
+                    <strong>Step 2:</strong> Block specific promotions that conflict (rejected)<br>
                     &#9660;<br>
-                    <strong>Step 3:</strong> Rescue any promotions exempted by Allowed Promotion Rules<br>
+                    <strong>Step 3:</strong> Rescue any promotions exempted by Promotion Exception Rules<br>
                     &#9660;<br>
                     <strong>Step 4:</strong> Sort survivors by priority<br>
                     &#9660;<br>
@@ -1046,11 +1051,12 @@
 
                 <div class="step-card step1">
                     <span class="step-number">1</span>
-                    <span class="step-title">Category Rules &mdash; "Which discount types can't live together?"</span>
+                    <span class="step-title">Category Blocking Rules &mdash; "Which discount categories block each other?"</span>
                     <div class="step-body">
                         <p>
                             Every promotion belongs to a discount category. The table below lists pairs of categories
-                            that are <strong>incompatible</strong>. When both are present, one entire category is removed.
+                            that are <strong>incompatible</strong>. When both are present, all promotions in the losing category are
+                            <strong>blocked and added to the rejected list</strong>.
                             The winner is decided by <strong>priority</strong> (lower number wins) unless an explicit override is set.
                         </p>
                         ${catRulesHtml}
@@ -1059,11 +1065,12 @@
 
                 <div class="step-card step2">
                     <span class="step-number">2</span>
-                    <span class="step-title">Promotion Rules &mdash; "Which specific promotions can't live together?"</span>
+                    <span class="step-title">Promotion Blocking Rules &mdash; "Which specific promotions block each other?"</span>
                     <div class="step-body">
                         <p>
-                            After category filtering, these rules handle conflicts between <strong>individual promotions</strong>.
-                            They only affect promotions that survived Step 1.
+                            After category blocking, these rules handle conflicts between <strong>individual promotions</strong>.
+                            Blocked promotions are <strong>rejected and added to the rejected list</strong>.
+                            These rules only affect promotions that survived Step 1.
                         </p>
                         ${promoRulesHtml}
                     </div>
@@ -1071,11 +1078,11 @@
 
                 <div class="step-card step0">
                     <span class="step-number">3</span>
-                    <span class="step-title">Allowed Promotion Rules &mdash; "Which promotions are exempt from blocking?" (Highest Priority)</span>
+                    <span class="step-title">Promotion Exception Rules &mdash; "Which promotions are exempt from blocking?" (Highest Priority)</span>
                     <div class="step-body">
                         <p>
                             This table has the <strong>highest priority</strong> in the system. It overrides both
-                            Category Rules and Promotion Rules. If a promotion would normally be blocked, but has
+                            Category Blocking Rules and Promotion Blocking Rules. If a promotion would normally be blocked, but has
                             an entry here, it is <strong>rescued and allowed to survive</strong>.
                         </p>
                         <p>Use this to say:</p>
@@ -1083,7 +1090,7 @@
                             <li><strong>Allowed with category:</strong> "Promotion X can coexist with Category Y, even if their categories conflict"</li>
                             <li><strong>Allowed with promotion:</strong> "Promotion X can coexist with Promotion Y, even if a rule blocks them"</li>
                         </ul>
-                        ${allowedRulesHtml}
+                        ${exceptionRulesHtml}
                     </div>
                 </div>
 

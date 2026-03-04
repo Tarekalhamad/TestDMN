@@ -35,11 +35,11 @@ The `KogitoJunitActivator` (JUnit 4 `@RunWith`) discovers `.scesim` files by sca
 
 The test plan covers **two layers** of the DMN logic:
 
-### Layer 1: Category-level compatibility (CategoryRules decision table)
+### Layer 1: Category-level compatibility (CategoryBlockingRules decision table)
 
 These test that when two discount categories are incompatible, the higher-precedence category wins.
 
-### Layer 2: Individual promotion rules (PromotionRules decision table)
+### Layer 2: Individual promotion rules (PromotionBlockingRules decision table)
 
 These test specific users rules like "promo X is blocked when group Y is present" or "promo A and promo B can't coexist."
 
@@ -223,9 +223,9 @@ These test specific users rules like "promo X is blocked when group Y is present
 
 | Test | Layer | Rule(s) | Trigger | Fired? | What it verifies |
 |------|-------|---------|---------|--------|-----------------|
-| 1 | Category | CategoryRules | Employee vs Binding | Yes | Basic category conflict |
-| 2 | Category | CategoryRules | Geo + Kombo | No | Compatible categories |
-| 3 | Category | CategoryRules | 3-way conflict | Yes | Multi-category conflict |
+| 1 | Category | CategoryBlockingRules | Employee vs Binding | Yes | Basic category conflict |
+| 2 | Category | CategoryBlockingRules | Geo + Kombo | No | Compatible categories |
+| 3 | Category | CategoryBlockingRules | 3-way conflict | Yes | Multi-category conflict |
 | 4 | Promo | R1 | blockedByGroup | Yes | Block by group |
 | 5 | Promo | R1 | blockedByGroup | No | No block when trigger absent |
 | 6 | Promo | R2 | blockedByPromotion | Yes | Block by promo |
@@ -241,7 +241,7 @@ These test specific users rules like "promo X is blocked when group Y is present
 | 16 | Promo | R6 | BY_PRECEDENCE | Yes | overrideWinner by precedence |
 | 17 | Edge | — | Single promo | N/A | Pass-through |
 | 18 | Edge | — | Empty input | N/A | Edge case |
-| 19 | Category | CategoryRules | Binding vs HW | Yes | Another category conflict |
+| 19 | Category | CategoryBlockingRules | Binding vs HW | Yes | Another category conflict |
 
 ## Implementation Options
 

@@ -378,10 +378,10 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_CAT_RULES" name="CategoryRules">
+  <dmn:decision id="_DECISION_CAT_RULES" name="CategoryBlockingRules">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_CAT_RULES" name="CategoryRules" typeRef="tCategoryRuleList" />
-    <dmn:decisionTable id="_DT_CAT_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryRules">
+    <dmn:variable id="_VAR_CAT_RULES" name="CategoryBlockingRules" typeRef="tCategoryRuleList" />
+    <dmn:decisionTable id="_DT_CAT_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryBlockingRules">
       <dmn:input id="_DT_CR_IN1">
         <dmn:inputExpression id="_DT_CR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
@@ -546,10 +546,10 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_PROMO_RULES" name="PromotionRules">
+  <dmn:decision id="_DECISION_PROMO_RULES" name="PromotionBlockingRules">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionRules" typeRef="tPromotionRuleList" />
-    <dmn:decisionTable id="_DT_PROMO_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionRules">
+    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionBlockingRules" typeRef="tPromotionRuleList" />
+    <dmn:decisionTable id="_DT_PROMO_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionBlockingRules">
       <dmn:input id="_DT_PR_IN1">
         <dmn:inputExpression id="_DT_PR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
@@ -708,21 +708,21 @@
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_RULES" name="categoryRules" typeRef="Any" />
+        <dmn:variable id="_CE_CAT_RULES" name="categoryBlockingRules" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CAT_RULES">
-          <dmn:text>CategoryRules</dmn:text>
+          <dmn:text>CategoryBlockingRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_RULES" name="promotionRules" typeRef="Any" />
+        <dmn:variable id="_CE_PROMO_RULES" name="promotionBlockingRules" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PROMO_RULES">
-          <dmn:text>PromotionRules</dmn:text>
+          <dmn:text>PromotionBlockingRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_ALLOWED_RULES" name="allowedRules" typeRef="Any" />
+        <dmn:variable id="_CE_ALLOWED_RULES" name="promotionExceptionRules" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_ALLOWED_RULES">
-          <dmn:text>AllowedPromotionRules</dmn:text>
+          <dmn:text>PromotionExceptionRules</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -740,7 +740,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CONFLICTS">
-          <dmn:text>categoryRules[list contains(categoriesPresent, groupA) and list contains(categoriesPresent, groupB)]</dmn:text>
+          <dmn:text>categoryBlockingRules[list contains(categoriesPresent, groupA) and list contains(categoriesPresent, groupB)]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -758,13 +758,13 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_CAT_EXEMPTED" name="categoryExemptedIds" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_CAT_EXEMPTED">
-          <dmn:text>distinct values((for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return if (some rule in allowedRules satisfies rule.promotion = p.promotionId and (rule.allowedWithGroup = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory or (rule.allowedWithPromotion != null and (some winner in EligiblePromotions[discountCategory = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory] satisfies winner.promotionId = rule.allowedWithPromotion)))) then p.promotionId else null)[item != null])</dmn:text>
+          <dmn:text>distinct values((for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return if (some rule in promotionExceptionRules satisfies rule.promotion = p.promotionId and (rule.allowedWithGroup = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory or (rule.allowedWithPromotion != null and (some winner in EligiblePromotions[discountCategory = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory] satisfies winner.promotionId = rule.allowedWithPromotion)))) then p.promotionId else null)[item != null])</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
         <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
-          <dmn:text>(for rule in promotionRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
+          <dmn:text>(for rule in promotionBlockingRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -776,7 +776,7 @@
       <dmn:contextEntry>
         <dmn:variable id="_CE_PROMO_EXEMPTED" name="promoExemptedIds" typeRef="Any" />
         <dmn:literalExpression id="_EXPR_PROMO_EXEMPTED">
-          <dmn:text>distinct values((for pid in blockedPromotionIds return if (some rule in allowedRules satisfies rule.promotion = pid and ((rule.allowedWithGroup != null and list contains(categoriesPresent, rule.allowedWithGroup)) or (rule.allowedWithPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.allowedWithPromotion)))) then pid else null)[item != null])</dmn:text>
+          <dmn:text>distinct values((for pid in blockedPromotionIds return if (some rule in promotionExceptionRules satisfies rule.promotion = pid and ((rule.allowedWithGroup != null and list contains(categoriesPresent, rule.allowedWithGroup)) or (rule.allowedWithPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.allowedWithPromotion)))) then pid else null)[item != null])</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
@@ -828,10 +828,10 @@
       </dmn:contextEntry>
     </dmn:context>
   </dmn:decision>
-  <dmn:decision id="_DECISION_ALLOWED_RULES" name="AllowedPromotionRules">
+  <dmn:decision id="_DECISION_ALLOWED_RULES" name="PromotionExceptionRules">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_ALLOWED_RULES" name="AllowedPromotionRules" typeRef="tAllowedRuleList" />
-    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="AllowedPromotionRules">
+    <dmn:variable id="_VAR_ALLOWED_RULES" name="PromotionExceptionRules" typeRef="tAllowedRuleList" />
+    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionExceptionRules">
       <dmn:input id="_DT_AR_IN1">
         <dmn:inputExpression id="_DT_AR_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>

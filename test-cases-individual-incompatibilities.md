@@ -1,4 +1,4 @@
-# PromotionRules - Test Cases
+# PromotionBlockingRules - Test Cases
 
 Endpoint: `POST /PromotionCompatibility`
 

@@ -306,7 +306,7 @@ class DiscountRulesTest {
     }
 
     // --- Test 9: BY_PRECEDENCE overrideWinner - SignUpDiscount (rank 5) beats OTSDiscount (rank 8) ---
-    // Note: OTSDiscount vs SignUpDiscount is also a CategoryRules conflict, so the category
+    // Note: OTSDiscount vs SignUpDiscount is also a CategoryBlockingRules conflict, so the category
     // rule fires first. The result is the same (272 rejected, 306 survives) but the rejection
     // reason comes from the category-level rule rather than the promotion-level rule.
 
