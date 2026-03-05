@@ -18,7 +18,7 @@
     <description>POC: Drools 10 DMN decision tables with auto-generated REST endpoints</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>21</java.version>
         <drools.version>10.1.0</drools.version>
         <kogito.version>10.1.0</kogito.version>
     </properties>
