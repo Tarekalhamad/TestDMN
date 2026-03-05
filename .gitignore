@@ -1,16 +1,21 @@
-# Build output
 target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# IDE
+### IDE ###
 .idea/
+*.iws
 *.iml
+*.ipr
+.vscode/
 .project
 .classpath
 .settings/
 
-# OS
+### OS ###
 .DS_Store
 Thumbs.db
 
-# Logs
+### Maven ###
 *.log
