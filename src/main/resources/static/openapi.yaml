@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Discount Rules DMN API
+  version: 1.0.0
+  description: Drools DMN decision table REST endpoints for promotion compatibility
+paths:
+  /PromotionCompatibility:
+    post:
+      summary: Evaluate promotion compatibility
+      description: Evaluates which promotions are compatible and returns allowed/rejected promotions
+      operationId: evaluatePromotionCompatibility
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionCompatibilityInput'
+            example:
+              EligiblePromotions:
+                - promotionId: "P001"
+                  promotionName: "Employee Discount 50%"
+                  promotionBaseType: "SubscriptionPromotion"
+                  discountCategory: "EmployeeDiscount"
+                - promotionId: "P002"
+                  promotionName: "Binding Discount 24mo"
+                  promotionBaseType: "SubscriptionPromotion"
+                  discountCategory: "LegacyBindingDiscount"
+      responses:
+        '200':
+          description: Successful evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionCompatibilityOutput'
+        '500':
+          description: DMN evaluation error
+    get:
+      summary: Get DMN model XML
+      description: Returns the DMN XML definition
+      operationId: getDmnModel
+      responses:
+        '200':
+          description: DMN XML
+          content:
+            application/xml:
+              schema:
+                type: string
+  /PromotionCompatibility/dmnresult:
+    post:
+      summary: Evaluate with full DMN result
+      description: Returns the full DMN result including messages and execution metadata
+      operationId: evaluatePromotionCompatibilityDmnResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionCompatibilityInput'
+      responses:
+        '200':
+          description: Full DMN result
+          content:
+            application/json:
+              schema:
+                type: object
+
+components:
+  schemas:
+    PromotionCompatibilityInput:
+      type: object
+      required:
+        - EligiblePromotions
+      properties:
+        EligiblePromotions:
+          type: array
+          description: List of promotions to evaluate for compatibility
+          items:
+            $ref: '#/components/schemas/Promotion'
+    Promotion:
+      type: object
+      properties:
+        promotionId:
+          type: string
+          example: "P001"
+        promotionName:
+          type: string
+          example: "Employee Discount 50%"
+        promotionBaseType:
+          type: string
+          example: "SubscriptionPromotion"
+        discountCategory:
+          type: string
+          example: "EmployeeDiscount"
+          description: "e.g. EmployeeDiscount, LegacyBindingDiscount, FriendDiscount, HalfPrice, LoyaltyDiscount, RetentionOffer, StaffDiscount"
+    PromotionCompatibilityOutput:
+      type: object
+      properties:
+        CompatibilityResult:
+          type: object
+          properties:
+            AllowedPromotions:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllowedPromotion'
+            RejectedPromotions:
+              type: array
+              items:
+                $ref: '#/components/schemas/RejectedPromotion'
+    AllowedPromotion:
+      type: object
+      properties:
+        promotionId:
+          type: string
+        promotionName:
+          type: string
+        discountCategory:
+          type: string
+        appliedOrder:
+          type: integer
+    RejectedPromotion:
+      type: object
+      properties:
+        promotionId:
+          type: string
+        promotionName:
+          type: string
+        discountCategory:
+          type: string
+        reason:
+          type: string
