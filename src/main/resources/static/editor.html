@@ -509,27 +509,27 @@
                     <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Load Test Case</label>
                     <select id="presetSelect" onchange="loadPreset(this.value); this.value='';" style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:white;">
                         <option value="">-- Select a test case --</option>
-                        <optgroup label="PromotionBlockingRules">
-                            <option value="tc1">TC1: R1 block by group (299 blocked by Employee)</option>
-                            <option value="tc2">TC2: R1 no block (trigger absent)</option>
-                            <option value="tc3">TC3: R2 block by promo (355 blocked by 449)</option>
-                            <option value="tc4">TC4: R2 no block (trigger promo absent)</option>
-                            <option value="tc5">TC5: R3 OR-rule group leg (263 blocked by OTS)</option>
-                            <option value="tc6">TC6: R3 OR-rule promo leg (263 blocked by 389)</option>
-                            <option value="tc7">TC7: R3 OR-rule both legs (no duplicate)</option>
-                            <option value="tc8">TC8: R3 OR-rule neither leg (no block)</option>
-                            <option value="tc9">TC9: R1+R4 multiple blocks (299+400)</option>
-                            <option value="tc10">TC10: Category + promo rule combined</option>
-                            <option value="tc11">TC11: Trigger present, target absent</option>
-                            <option value="tc12">TC12: Target present, trigger absent</option>
-                            <option value="tc13">TC13: R5 explicit winner (GEO 73 wins)</option>
-                            <option value="tc14">TC14: R6 BY_PRECEDENCE (SignUp beats OTS)</option>
+                        <optgroup label="Promotion-Level Blocking Rules">
+                            <option value="tc1">Promo 299 (SignUp) blocked when EmployeeDiscount category is present</option>
+                            <option value="tc2">Promo 299 (SignUp) survives when no EmployeeDiscount is present</option>
+                            <option value="tc3">Promo 355 (HWDiscount) blocked by specific promo 449 (HWDiscount)</option>
+                            <option value="tc4">Promo 355 (HWDiscount) survives when blocker promo 449 is absent</option>
+                            <option value="tc5">Promo 263 (SignUp) blocked by OTSDiscount category (OR-rule, group leg)</option>
+                            <option value="tc6">Promo 263 (SignUp) blocked by specific promo 389 (OR-rule, promo leg)</option>
+                            <option value="tc7">Promo 263 blocked when both OTS category and promo 389 present (no duplicate rejection)</option>
+                            <option value="tc8">Promo 263 (SignUp) survives when neither OTS nor promo 389 is present</option>
+                            <option value="tc9">Multiple blocks: promos 299 and 400 each blocked by different categories (Employee + SaveDesk)</option>
+                            <option value="tc10">Combined: category rule (Employee vs Binding) plus promo rule (299 blocked by Employee)</option>
+                            <option value="tc11">Blocking trigger category present but target promo absent - no effect</option>
+                            <option value="tc12">Target promo present but blocking trigger absent - promo survives</option>
+                            <option value="tc13">Explicit winner: GEO promo 73 (internal) always wins over GEO promo 72 (external)</option>
+                            <option value="tc14">BY_PRECEDENCE winner: SignUp (rank 5) beats OTS (rank 8) by precedence order</option>
                         </optgroup>
-                        <optgroup label="CategoryBlockingRules">
-                            <option value="cat-employee-binding">Employee vs Binding</option>
-                            <option value="cat-geo-kombo">Geo + Kombo (compatible)</option>
-                            <option value="cat-three-way">3-Way: Employee vs OTS vs Binding</option>
-                            <option value="cat-employee-ots-rejected">Employee vs OTS (OTS rejected, no exception)</option>
+                        <optgroup label="Category-Level Blocking Rules">
+                            <option value="cat-employee-binding">EmployeeDiscount vs LegacyBindingDiscount - Employee wins by higher precedence</option>
+                            <option value="cat-geo-kombo">GeoDiscount + KomboDiscount - compatible categories, both survive</option>
+                            <option value="cat-three-way">3-way conflict: Employee vs OTS vs Binding - only Employee survives</option>
+                            <option value="cat-employee-ots-rejected">EmployeeDiscount vs OTSDiscount - OTS rejected, no exception rule to rescue it</option>
                         </optgroup>
                     </select>
                 </div>

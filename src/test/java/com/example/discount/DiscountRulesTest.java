@@ -98,10 +98,10 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions", hasSize(0));
     }
 
-    // --- Test 3: Three-way conflict, only highest precedence survives ---
+    // --- Test 3: Employee vs OTS vs Binding - Employee blocks Binding, OTS survives ---
 
     @Test
-    void employeeVsOtsVsBinding_onlyEmployeeSurvives() {
+    void employeeVsOtsVsBinding_employeeAndOtsSurvive() {
         String body = """
             {
               "EligiblePromotions": [
@@ -134,10 +134,13 @@ class DiscountRulesTest {
             .post("/PromotionCompatibility")
         .then()
             .statusCode(200)
-            .body("CompatibilityResult.AllowedPromotions", hasSize(1))
+            .body("CompatibilityResult.AllowedPromotions", hasSize(2))
             .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("P021"))
             .body("CompatibilityResult.AllowedPromotions[0].discountCategory", is("EmployeeDiscount"))
-            .body("CompatibilityResult.RejectedPromotions", hasSize(2));
+            .body("CompatibilityResult.AllowedPromotions[1].promotionId", is("P020"))
+            .body("CompatibilityResult.AllowedPromotions[1].discountCategory", is("OTSDiscount"))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(1))
+            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("P022"));
     }
 
     // --- Test 4: Individual block by category (R1: promo 299 blocked by EmployeeDiscount) ---
@@ -229,10 +232,10 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions", hasSize(0));
     }
 
-    // --- Test 7: Binding vs HW subscription, binding wins by precedence ---
+    // --- Test 7: Binding and HW subscription are now compatible, both survive ---
 
     @Test
-    void bindingVsHwSubscription_bindingShouldWin() {
+    void bindingAndHwSubscription_bothShouldSurvive() {
         String body = """
             {
               "EligiblePromotions": [
@@ -259,12 +262,12 @@ class DiscountRulesTest {
             .post("/PromotionCompatibility")
         .then()
             .statusCode(200)
-            .body("CompatibilityResult.AllowedPromotions", hasSize(1))
+            .body("CompatibilityResult.AllowedPromotions", hasSize(2))
             .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("P051"))
             .body("CompatibilityResult.AllowedPromotions[0].discountCategory", is("LegacyBindingDiscount"))
-            .body("CompatibilityResult.RejectedPromotions", hasSize(1))
-            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("P050"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("LegacyBindingDiscount"));
+            .body("CompatibilityResult.AllowedPromotions[1].promotionId", is("P050"))
+            .body("CompatibilityResult.AllowedPromotions[1].discountCategory", is("HWSubscriptionDiscount"))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(0));
     }
 
     // --- Test 8: Explicit overrideWinner - promo 73 (internal GEO) wins over promo 72 (external GEO) ---
@@ -305,13 +308,10 @@ class DiscountRulesTest {
             .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("winner"));
     }
 
-    // --- Test 9: BY_PRECEDENCE overrideWinner - SignUpDiscount (rank 5) beats OTSDiscount (rank 8) ---
-    // Note: OTSDiscount vs SignUpDiscount is also a CategoryBlockingRules conflict, so the category
-    // rule fires first. The result is the same (272 rejected, 306 survives) but the rejection
-    // reason comes from the category-level rule rather than the promotion-level rule.
+    // --- Test 9: OTS and SignUp are now compatible, both survive ---
 
     @Test
-    void byPrecedenceWinner_higherPrecedenceWins() {
+    void otsAndSignUp_bothShouldSurvive() {
         String body = """
             {
               "EligiblePromotions": [
@@ -338,11 +338,12 @@ class DiscountRulesTest {
             .post("/PromotionCompatibility")
         .then()
             .statusCode(200)
-            .body("CompatibilityResult.AllowedPromotions", hasSize(1))
+            .body("CompatibilityResult.AllowedPromotions", hasSize(2))
             .body("CompatibilityResult.AllowedPromotions[0].promotionId", is("306"))
-            .body("CompatibilityResult.RejectedPromotions", hasSize(1))
-            .body("CompatibilityResult.RejectedPromotions[0].promotionId", is("272"))
-            .body("CompatibilityResult.RejectedPromotions[0].reason", containsString("SignUpDiscount"));
+            .body("CompatibilityResult.AllowedPromotions[0].discountCategory", is("SignUpDiscount"))
+            .body("CompatibilityResult.AllowedPromotions[1].promotionId", is("272"))
+            .body("CompatibilityResult.AllowedPromotions[1].discountCategory", is("OTSDiscount"))
+            .body("CompatibilityResult.RejectedPromotions", hasSize(0));
     }
 
 }
