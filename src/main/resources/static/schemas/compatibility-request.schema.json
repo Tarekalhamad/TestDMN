@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://telenor.se/promotion-compatibility/schemas/compatibility-request.schema.json",
+  "title": "CompatibilityRequest",
+  "description": "The union of inventory and shopping-cart items to validate. Stateless: the same request always yields the same verdict.",
+  "type": "object",
+  "required": ["Items"],
+  "additionalProperties": false,
+  "properties": {
+    "Channel": {
+      "type": ["string", "null"],
+      "description": "Sales channel of the transaction. Request-level, not per item. Rules carrying a channel apply only when it matches."
+    },
+    "Items": {
+      "type": "array",
+      "description": "Every promotion and add-on offering under consideration, from inventory and cart alike.",
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["itemId", "itemName", "itemType", "discountCategory"],
+      "additionalProperties": false,
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique within the request. Referenced by ItemIncompatibility and Exceptions rules."
+        },
+        "itemName": { "type": "string", "description": "Used in human-readable explanations." },
+        "itemType": {
+          "type": "string",
+          "enum": ["PROMOTION", "ADDON"],
+          "description": "An add-on is just an item, so every rule works on both."
+        },
+        "discountCategory": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Must exist in the CategoryPrecedence table; unknown categories rank last."
+        },
+        "origin": {
+          "type": ["string", "null"],
+          "enum": ["INVENTORY", "CART", null],
+          "description": "Which side the item came from. Defaults to CART. Inventory items win ties."
+        },
+        "scopeId": {
+          "type": ["string", "null"],
+          "description": "The contract/subscription the item applies to. Conflicts are evaluated within a scope, never across scopes. Omitted means one implicit shared scope."
+        },
+        "serviceType": {
+          "type": ["string", "null"],
+          "description": "Enables per-service-type rules. A rule with a blank serviceType is global."
+        }
+      }
+    }
+  }
+}

@@ -19,3 +19,10 @@ Thumbs.db
 
 ### Maven ###
 *.log
+
+### Runtime rule storage ###
+# The live, editable model and its version history. Written by the service at runtime and
+# seeded from src/main/resources/PromotionCompatibility.dmn when absent, so it is a working
+# directory rather than source. To promote a GUI edit, copy the model back over the one in
+# src/main/resources and rebuild.
+dmn-storage/

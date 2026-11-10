@@ -1,2 +1,55 @@
-.\mvnw.cmd clean install -DskipTests
-.\mvnw.cmd spring-boot:run
+discount-rules — how to build and run
+=====================================
+
+Use dev.ps1. It finds a working JDK itself, so a stale JAVA_HOME cannot stop the build, and it
+builds offline because everything this project needs is already cached.
+
+    .\dev.ps1 build                 compile, run all tests, package the jar
+    .\dev.ps1 quick                 build without tests
+    .\dev.ps1 test                  run the tests
+    .\dev.ps1 test RuleContract     run one test class (substring match)
+    .\dev.ps1 run                   start the service on http://localhost:8080
+    .\dev.ps1 jar                   run the already-built jar
+    .\dev.ps1 rules                 print the rules the running service is using
+    .\dev.ps1 clean                 delete target\
+    .\dev.ps1 doctor                check JDK, build, network and service
+    .\dev.ps1                       this list
+
+Add -Online to any of them when you have added a dependency and Maven needs to download it.
+
+In VS Code: Ctrl+Shift+B builds. Ctrl+Shift+P -> "Run Task" for the rest.
+
+Once it is running
+------------------
+
+    http://localhost:8080/editor.html        edit the rules in the browser, no redeploy
+    http://localhost:8080/swagger-ui.html    the API
+    http://localhost:8080/api/rules          the rules as currently configured
+    http://localhost:8080/api/rules/version  the hash a verdict can be traced back to
+
+Try it:
+
+    curl -s -X POST http://localhost:8080/api/compatibility/check ^
+      -H "Content-Type: application/json" ^
+      -d "{\"Items\":[{\"itemId\":\"103\",\"itemName\":\"Employee discount\",\"itemType\":\"PROMOTION\",\"discountCategory\":\"EmployeeDiscount\"},{\"itemId\":\"600\",\"itemName\":\"Binding 24mo\",\"itemType\":\"PROMOTION\",\"discountCategory\":\"LegacyBindingDiscount\"}]}"
+
+If something is wrong
+---------------------
+
+Run `.\dev.ps1 doctor` first. Two known environment traps:
+
+  JAVA_HOME points at a JDK that is not installed.
+      dev.ps1 works around it. To fix it for good, in a new terminal:
+      [Environment]::SetEnvironmentVariable("JAVA_HOME","C:\Program Files\Java\jdk-26","User")
+
+  PKIX path building failed / certificate_unknown when Maven downloads.
+      The corporate proxy intercepts TLS with a CA the JDK does not trust. Builds run offline
+      to avoid it. If you genuinely need a new dependency, get the proxy CA installed or use a
+      connection that is not intercepted.
+
+Raw Maven, if you prefer it
+---------------------------
+
+    $env:JAVA_HOME = "C:\Program Files\Java\jdk-26"
+    .\mvnw.cmd -o clean install
+    .\mvnw.cmd -o spring-boot:run

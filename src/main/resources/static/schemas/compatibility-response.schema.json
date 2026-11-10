@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://telenor.se/promotion-compatibility/schemas/compatibility-response.schema.json",
+  "title": "CompatibilityResponse",
+  "description": "A complete verdict over the submitted set: what may be applied, what may not and why, and which items conflict with which.",
+  "type": "object",
+  "required": ["valid", "ruleSetVersion", "allowed", "rejected", "conflicts"],
+  "additionalProperties": false,
+  "properties": {
+    "valid": {
+      "type": "boolean",
+      "description": "True when rejected is empty. This is the checkout gate."
+    },
+    "ruleSetVersion": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Hash of the live rule set that produced this verdict."
+    },
+    "allowed": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/allowedItem" }
+    },
+    "rejected": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rejectedItem" }
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "Every rule that fired, whether or not it resulted in a rejection.",
+      "items": { "$ref": "#/$defs/conflict" }
+    }
+  },
+  "$defs": {
+    "allowedItem": {
+      "type": "object",
+      "required": ["itemId", "itemName", "itemType", "discountCategory", "appliedOrder"],
+      "additionalProperties": false,
+      "properties": {
+        "itemId": { "type": "string" },
+        "itemName": { "type": ["string", "null"] },
+        "itemType": { "type": "string", "enum": ["PROMOTION", "ADDON"] },
+        "discountCategory": { "type": "string" },
+        "origin": { "type": ["string", "null"], "enum": ["INVENTORY", "CART", null] },
+        "scopeId": { "type": ["string", "null"] },
+        "serviceType": { "type": ["string", "null"] },
+        "appliedOrder": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "rejectedItem": {
+      "type": "object",
+      "required": ["itemId", "itemName", "itemType", "discountCategory", "reasonCode", "ruleId", "reasonText"],
+      "additionalProperties": false,
+      "properties": {
+        "itemId": { "type": "string" },
+        "itemName": { "type": ["string", "null"] },
+        "itemType": { "type": "string", "enum": ["PROMOTION", "ADDON"] },
+        "discountCategory": { "type": "string" },
+        "origin": { "type": ["string", "null"], "enum": ["INVENTORY", "CART", null] },
+        "scopeId": { "type": ["string", "null"] },
+        "serviceType": { "type": ["string", "null"] },
+        "reasonCode": {
+          "type": "string",
+          "enum": ["CATEGORY_INCOMPATIBLE", "ITEM_INCOMPATIBLE", "ITEM_CATEGORY_INCOMPATIBLE", "CARDINALITY_EXCEEDED"]
+        },
+        "ruleId": { "type": "string", "description": "The rule that caused this rejection." },
+        "reasonText": { "type": "string", "description": "Human-readable; may be reworded or localised without breaking callers. Assert on reasonCode instead." }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "required": ["ruleId", "ruleType", "scopeId", "participants", "resolution", "loserItemIds", "explanation"],
+      "additionalProperties": false,
+      "properties": {
+        "ruleId": { "type": "string" },
+        "ruleType": {
+          "type": "string",
+          "enum": ["CATEGORY_INCOMPATIBILITY", "ITEM_INCOMPATIBILITY", "CARDINALITY"]
+        },
+        "scopeId": { "type": ["string", "null"] },
+        "participants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["itemId", "discountCategory", "origin"],
+            "additionalProperties": false,
+            "properties": {
+              "itemId": { "type": "string" },
+              "discountCategory": { "type": "string" },
+              "origin": { "type": ["string", "null"], "enum": ["INVENTORY", "CART", null] }
+            }
+          }
+        },
+        "resolution": {
+          "type": "string",
+          "enum": ["AUTO_BY_PRECEDENCE", "AUTO_BY_OVERRIDE", "AUTO_BY_CARDINALITY", "EXEMPTED"]
+        },
+        "winnerItemId": {
+          "type": ["string", "null"],
+          "description": "Highest-ranked surviving participant, or null when the whole conflict was exempted."
+        },
+        "loserItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Participants this rule rejects. Empty when an exception rescued them all."
+        },
+        "exemptedItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Participants an Exceptions rule rescued from this rule."
+        },
+        "exemptedByRuleIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The Exceptions rules that did the rescuing, so exception rules are traceable too."
+        },
+        "explanation": { "type": "string" }
+      }
+    }
+  }
+}

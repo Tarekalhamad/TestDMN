@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DMN Decision Table Editor</title>
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/diagram-js.css">
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-shared.css">
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-drd.css">
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-decision-table.css">
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-literal-expression.css">
-    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.6.0/dist/assets/dmn-js-boxed-expression.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/diagram-js.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/dmn-js-shared.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/dmn-js-drd.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/dmn-js-decision-table.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/dmn-js-literal-expression.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@17.10.1/dist/assets/dmn-js-boxed-expression.css">
     <style>
         html, body {
             margin: 0;
@@ -487,8 +487,8 @@
 <body>
 <div id="app">
     <div class="toolbar">
-        <h1>DMN Decision Table Editor</h1>
-        <button class="btn-help" onclick="toggleHowItWorks()" title="Learn how the rules engine works">How It Works</button>
+        <h1>Promotion Compatibility Rules</h1>
+        <button class="btn-help" onclick="toggleHowItWorks()" title="What these rules do">How it works</button>
         <button class="btn-download" onclick="downloadDmn()" title="Download current DMN as XML file to send to tech team">Download Config</button>
         <button class="btn-test" onclick="toggleTestPanel()" title="Toggle test panel">Test</button>
         <button class="btn-reload" onclick="loadDmn()" title="Reload from server">Reload</button>
@@ -501,54 +501,42 @@
 
         <div id="testPanel" class="test-panel hidden">
             <div class="test-panel-header">
-                <span>Test Promotions</span>
+                <span>Try the rules</span>
                 <button onclick="toggleTestPanel()" title="Close">&times;</button>
             </div>
             <div class="test-panel-body">
                 <div style="margin-bottom:10px;">
-                    <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Load Test Case</label>
+                    <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Case generated from a rule</label>
                     <select id="presetSelect" onchange="loadPreset(this.value); this.value='';" style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:white;">
-                        <option value="">-- Select a test case --</option>
-                        <optgroup label="Promotion-Level Blocking Rules">
-                            <option value="tc1">Promo 299 (SignUp) blocked when EmployeeDiscount category is present</option>
-                            <option value="tc2">Promo 299 (SignUp) survives when no EmployeeDiscount is present</option>
-                            <option value="tc3">Promo 355 (HWDiscount) blocked by specific promo 449 (HWDiscount)</option>
-                            <option value="tc4">Promo 355 (HWDiscount) survives when blocker promo 449 is absent</option>
-                            <option value="tc5">Promo 263 (SignUp) blocked by OTSDiscount category (OR-rule, group leg)</option>
-                            <option value="tc6">Promo 263 (SignUp) blocked by specific promo 389 (OR-rule, promo leg)</option>
-                            <option value="tc7">Promo 263 blocked when both OTS category and promo 389 present (no duplicate rejection)</option>
-                            <option value="tc8">Promo 263 (SignUp) survives when neither OTS nor promo 389 is present</option>
-                            <option value="tc9">Multiple blocks: promos 299 and 400 each blocked by different categories (Employee + SaveDesk)</option>
-                            <option value="tc10">Combined: category rule (Employee vs Binding) plus promo rule (299 blocked by Employee)</option>
-                            <option value="tc11">Blocking trigger category present but target promo absent - no effect</option>
-                            <option value="tc12">Target promo present but blocking trigger absent - promo survives</option>
-                            <option value="tc13">Explicit winner: GEO promo 73 (internal) always wins over GEO promo 72 (external)</option>
-                            <option value="tc14">BY_PRECEDENCE winner: SignUp (rank 5) beats OTS (rank 8) by precedence order</option>
-                        </optgroup>
-                        <optgroup label="Category-Level Blocking Rules">
-                            <option value="cat-employee-binding">EmployeeDiscount vs LegacyBindingDiscount - Employee wins by higher precedence</option>
-                            <option value="cat-geo-kombo">GeoDiscount + KomboDiscount - compatible categories, both survive</option>
-                            <option value="cat-three-way">3-way conflict: Employee vs OTS vs Binding - only Employee survives</option>
-                            <option value="cat-employee-ots-rejected">EmployeeDiscount vs OTSDiscount - OTS rejected, no exception rule to rescue it</option>
-                        </optgroup>
+                        <option value="">-- pick a rule to see it fire --</option>
                     </select>
+                    <div style="font-size:11px;color:#888;margin-top:4px;">
+                        Built from the rules in the model, so every rule you add appears here.
+                    </div>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;display:block;margin-bottom:4px;">Channel (optional)</label>
+                    <input type="text" id="channelInput" placeholder="e.g. ONLINE" style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;">
                 </div>
                 <div style="display:flex;gap:4px;margin-bottom:10px;">
-                    <button onclick="clearAll()" style="padding:4px 10px;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;background:white;">Clear All</button>
+                    <button onclick="clearAll()" style="padding:4px 10px;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;background:white;">Clear all</button>
                 </div>
 
                 <div id="promoCards"></div>
 
                 <div class="test-actions">
-                    <button class="btn-add" onclick="addPromoCard()">+ Add Promotion</button>
-                    <button class="btn-run" onclick="runTest()">Run Test</button>
+                    <button class="btn-add" onclick="addItemCard()">+ Add item</button>
+                    <button class="btn-run" onclick="runTest()">Run</button>
                 </div>
 
                 <div id="resultsSection" class="results-section" style="display:none;">
-                    <h3>Allowed Promotions</h3>
+                    <div id="verdictBanner" style="padding:8px 10px;border-radius:4px;font-weight:600;font-size:12px;margin-bottom:10px;"></div>
+                    <h3>Allowed</h3>
                     <div id="allowedResults"></div>
-                    <h3 style="margin-top:12px;">Rejected Promotions</h3>
+                    <h3 style="margin-top:12px;">Rejected</h3>
                     <div id="rejectedResults"></div>
+                    <h3 style="margin-top:12px;">Conflicts</h3>
+                    <div id="conflictResults"></div>
                 </div>
             </div>
         </div>
@@ -569,21 +557,17 @@
     <div id="toast" class="toast"></div>
 </div>
 
-    <script src="https://unpkg.com/dmn-js@17.6.0/dist/dmn-modeler.production.min.js"></script>
+    <script src="https://unpkg.com/dmn-js@17.10.1/dist/dmn-modeler.production.min.js"></script>
     <script>
         let modeler;
         let promoCounter = 0;
 
-        const DISCOUNT_CATEGORIES = [
-            'EmployeeDiscount', 'ComplaintDiscount', 'SaveDeskDiscount',
-            'ChurnBlockerDiscount', 'SignUpDiscount', 'SignUpDiscountLimited',
-            'LegacyBindingDiscount', 'OTSDiscount', 'HWSubscriptionDiscount',
-            'HWSubscriptionDiscountLimited', 'HWSubscriptionDiscountAccessory',
-            'HWDiscount', 'GeoDiscount', 'KomboDiscount', 'PromotionOffering',
-            'RecurringExtraSurf', 'MiscMigratedDiscount', 'MiscMigratedDiscountLimited'
-        ];
+        // Read from the model at load time. Nothing about the rules is written down here.
+        let RULES = null;
 
-        const BASE_TYPES = ['SubscriptionPromotion', 'HWSubscriptionPromotion', 'HWPromotion'];
+        const ITEM_TYPES = ['PROMOTION', 'ADDON'];
+        const ORIGINS = ['CART', 'INVENTORY'];
+
 
         // --- DMN Editor Functions ---
         function initModeler() {
@@ -597,7 +581,9 @@
                 if (!response.ok) throw new Error('Failed to load DMN: ' + response.statusText);
                 const xml = await response.text();
                 await modeler.importXML(xml);
-                setStatus('DMN loaded successfully');
+                RULES = parseDmnTables();
+                refreshPresets();
+                setStatus('Rules loaded');
                 showToast('DMN loaded', 'info');
             } catch (err) {
                 setStatus('Error loading DMN');
@@ -676,33 +662,42 @@
             document.getElementById('testPanel').classList.toggle('hidden');
         }
 
-        function addPromoCard(data) {
+        function categoryOptions(selected) {
+            const cats = (RULES && RULES.precedence.length)
+                ? RULES.precedence.map(p => p.discountCategory)
+                : [];
+            if (selected && !cats.includes(selected)) cats.push(selected);
+            return cats.map(c => `<option value="${c}" ${selected === c ? 'selected' : ''}>${c}</option>`).join('');
+        }
+
+        function selectOptions(values, selected) {
+            return values.map(v => `<option value="${v}" ${selected === v ? 'selected' : ''}>${v}</option>`).join('');
+        }
+
+        function addItemCard(data) {
             promoCounter++;
-            const id = 'promo-' + promoCounter;
+            const id = 'item-' + promoCounter;
+            const d = data || {};
             const card = document.createElement('div');
             card.className = 'promo-card';
             card.id = id;
-
-            const catOptions = DISCOUNT_CATEGORIES.map(c =>
-                `<option value="${c}" ${data && data.category === c ? 'selected' : ''}>${c}</option>`
-            ).join('');
-
-            const baseOptions = BASE_TYPES.map(b =>
-                `<option value="${b}" ${data && data.baseType === b ? 'selected' : ''}>${b}</option>`
-            ).join('');
-
             card.innerHTML = `
                 <button class="remove-btn" onclick="document.getElementById('${id}').remove()" title="Remove">&times;</button>
-                <label>Promotion ID</label>
-                <input type="text" class="promo-id" value="${data ? data.id : 'P' + (100 + promoCounter)}" placeholder="e.g. 299">
-                <label>Promotion Name</label>
-                <input type="text" class="promo-name" value="${data ? data.name : ''}" placeholder="e.g. Employee Discount 50%">
-                <label>Discount Category</label>
-                <select class="promo-category">${catOptions}</select>
-                <label>Base Type</label>
-                <select class="promo-base-type">${baseOptions}</select>
+                <label>Item ID</label>
+                <input type="text" class="f-itemId" value="${d.itemId || 'ITEM-' + promoCounter}" placeholder="e.g. 299">
+                <label>Name</label>
+                <input type="text" class="f-itemName" value="${d.itemName || ''}" placeholder="e.g. Employee Discount 50%">
+                <label>Type</label>
+                <select class="f-itemType">${selectOptions(ITEM_TYPES, d.itemType || 'PROMOTION')}</select>
+                <label>Discount category</label>
+                <select class="f-discountCategory">${categoryOptions(d.discountCategory)}</select>
+                <label>Origin</label>
+                <select class="f-origin">${selectOptions(ORIGINS, d.origin || 'CART')}</select>
+                <label>Contract (scopeId, optional)</label>
+                <input type="text" class="f-scopeId" value="${d.scopeId || ''}" placeholder="e.g. SUB-100200">
+                <label>Service type (optional)</label>
+                <input type="text" class="f-serviceType" value="${d.serviceType || ''}" placeholder="e.g. Mobile">
             `;
-
             document.getElementById('promoCards').appendChild(card);
         }
 
@@ -712,166 +707,225 @@
             promoCounter = 0;
         }
 
-        function getPromotions() {
-            const cards = document.querySelectorAll('.promo-card');
-            return Array.from(cards).map(card => ({
-                promotionId: card.querySelector('.promo-id').value,
-                promotionName: card.querySelector('.promo-name').value,
-                promotionBaseType: card.querySelector('.promo-base-type').value,
-                discountCategory: card.querySelector('.promo-category').value
-            }));
+        function getItems() {
+            return Array.from(document.querySelectorAll('.promo-card')).map(card => {
+                const v = sel => card.querySelector(sel).value.trim();
+                const item = {
+                    itemId: v('.f-itemId'),
+                    itemName: v('.f-itemName'),
+                    itemType: v('.f-itemType'),
+                    discountCategory: v('.f-discountCategory')
+                };
+                if (v('.f-origin')) item.origin = v('.f-origin');
+                if (v('.f-scopeId')) item.scopeId = v('.f-scopeId');
+                if (v('.f-serviceType')) item.serviceType = v('.f-serviceType');
+                return item;
+            });
         }
 
         async function runTest() {
-            const promotions = getPromotions();
-            if (promotions.length === 0) {
-                showToast('Add at least one promotion to test', 'error');
+            const items = getItems();
+            if (items.length === 0) {
+                showToast('Add at least one item to test', 'error');
                 return;
             }
+            const body = { Items: items };
+            const channel = document.getElementById('channelInput').value.trim();
+            if (channel) body.Channel = channel;
 
             try {
-                const response = await fetch('/api/dmn/evaluate', {
+                const response = await fetch('/api/compatibility/check', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ EligiblePromotions: promotions })
+                    body: JSON.stringify(body)
                 });
-
+                const result = await response.json();
                 if (!response.ok) {
-                    const err = await response.json();
-                    showToast('Test failed: ' + err.message, 'error');
+                    showToast('Test failed: ' + (result.message || response.statusText), 'error');
                     return;
                 }
-
-                const result = await response.json();
-                const compat = result.CompatibilityResult;
-                displayResults(compat.AllowedPromotions || [], compat.RejectedPromotions || []);
-                showToast('Test completed', 'success');
+                displayResults(result);
+                showToast(result.valid ? 'Valid - nothing was rejected' : 'Not valid - see rejected items', result.valid ? 'success' : 'info');
             } catch (err) {
                 showToast('Test failed: ' + err.message, 'error');
                 console.error(err);
             }
         }
 
-        function displayResults(allowed, rejected) {
-            const section = document.getElementById('resultsSection');
-            section.style.display = 'block';
+        function displayResults(result) {
+            document.getElementById('resultsSection').style.display = 'block';
 
-            const allowedDiv = document.getElementById('allowedResults');
-            const rejectedDiv = document.getElementById('rejectedResults');
+            const banner = document.getElementById('verdictBanner');
+            banner.textContent = result.valid
+                ? 'valid: true - this basket may be checked out'
+                : 'valid: false - checkout must be blocked';
+            banner.style.background = result.valid ? '#e8f5e9' : '#ffebee';
+            banner.style.color = result.valid ? '#2e7d32' : '#c62828';
 
-            if (allowed.length === 0) {
-                allowedDiv.innerHTML = '<div class="no-results">No promotions allowed</div>';
-            } else {
-                allowedDiv.innerHTML = allowed.map(p => `
+            const allowed = result.allowed || [];
+            const rejected = result.rejected || [];
+            const conflicts = result.conflicts || [];
+
+            document.getElementById('allowedResults').innerHTML = allowed.length === 0
+                ? '<div class="no-results">Nothing allowed</div>'
+                : allowed.map(a => `
                     <div class="result-item allowed">
-                        <div class="promo-name">${p.promotionName || p.promotionId}</div>
-                        <div class="promo-detail">ID: ${p.promotionId} | Category: ${p.discountCategory}</div>
-                        <div class="promo-order">Applied Order: #${p.appliedOrder}</div>
-                    </div>
-                `).join('');
-            }
+                        <div class="promo-name">${a.itemName || a.itemId}</div>
+                        <div class="promo-detail">${a.itemId} &middot; ${a.discountCategory} &middot; ${a.itemType}${a.scopeId ? ' &middot; ' + a.scopeId : ''}</div>
+                        <div class="promo-order">Applied order: #${a.appliedOrder}</div>
+                    </div>`).join('');
 
-            if (rejected.length === 0) {
-                rejectedDiv.innerHTML = '<div class="no-results">No promotions rejected</div>';
-            } else {
-                rejectedDiv.innerHTML = rejected.map(p => `
+            document.getElementById('rejectedResults').innerHTML = rejected.length === 0
+                ? '<div class="no-results">Nothing rejected</div>'
+                : rejected.map(r => `
                     <div class="result-item rejected">
-                        <div class="promo-name">${p.promotionName || p.promotionId}</div>
-                        <div class="promo-detail">ID: ${p.promotionId} | Category: ${p.discountCategory}</div>
-                        <div class="promo-reason">${p.reason}</div>
-                    </div>
-                `).join('');
-            }
+                        <div class="promo-name">${r.itemName || r.itemId}</div>
+                        <div class="promo-detail">${r.itemId} &middot; ${r.discountCategory} &middot; <strong>${r.reasonCode}</strong> by rule <strong>${r.ruleId}</strong></div>
+                        <div class="promo-reason">${r.reasonText}</div>
+                    </div>`).join('');
+
+            document.getElementById('conflictResults').innerHTML = conflicts.length === 0
+                ? '<div class="no-results">No rule fired</div>'
+                : conflicts.map(c => `
+                    <div class="result-item" style="border-left:3px solid #1565C0;">
+                        <div class="promo-name">${c.ruleId} &middot; ${c.resolution}</div>
+                        <div class="promo-detail">${(c.participants || []).map(p => p.itemId).join(' vs ')}${c.scopeId ? ' &middot; on ' + c.scopeId : ''}</div>
+                        <div class="promo-reason">${c.explanation}</div>
+                        ${(c.exemptedItemIds || []).length ? `<div class="promo-detail">Rescued: ${c.exemptedItemIds.join(', ')} by ${(c.exemptedByRuleIds || []).join(', ')}</div>` : ''}
+                    </div>`).join('');
         }
 
-        // --- Preset Test Scenarios (from test-cases-individual-incompatibilities.md) ---
-        function loadPreset(name) {
-            if (!name) return;
-            clearAll();
-            const S = 'SubscriptionPromotion';
-            const presets = {
-                // PromotionBlockingRules test cases
-                'tc1': [
-                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
-                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S }
-                ],
-                'tc2': [
-                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
-                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
-                ],
-                'tc3': [
-                    { id: '355', name: 'Mobilrabatt - New or existing MPO - 1', category: 'HWDiscount', baseType: S },
-                    { id: '449', name: 'Mobilrabatt - New or existing MPO', category: 'HWDiscount', baseType: S }
-                ],
-                'tc4': [
-                    { id: '355', name: 'Mobilrabatt - New or existing MPO - 1', category: 'HWDiscount', baseType: S },
-                    { id: '5', name: 'Kombo Mobile Discount', category: 'KomboDiscount', baseType: S }
-                ],
-                'tc5': [
-                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
-                    { id: '314', name: 'Discount OTS - New or existing MPO 5, 20 GB with binding', category: 'OTSDiscount', baseType: S }
-                ],
-                'tc6': [
-                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
-                    { id: '389', name: 'One to One campaigning - high-risk segment', category: 'SignUpDiscount', baseType: S }
-                ],
-                'tc7': [
-                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
-                    { id: '389', name: 'One to One campaigning - high-risk segment', category: 'SignUpDiscount', baseType: S },
-                    { id: '446', name: 'OTS Nykundsrabatt', category: 'OTSDiscount', baseType: S }
-                ],
-                'tc8': [
-                    { id: '263', name: 'BTL voucher Boost - New main with binding', category: 'SignUpDiscount', baseType: S },
-                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
-                ],
-                'tc9': [
-                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
-                    { id: '400', name: 'One to One campaigning - mid-risk segment', category: 'SignUpDiscount', baseType: S },
-                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
-                    { id: '408', name: 'Savedesk - 12 months discount main sim', category: 'SaveDeskDiscount', baseType: S }
-                ],
-                'tc10': [
-                    { id: '299', name: 'BTL Boost - New or Existing MPO with binding 24 months', category: 'SignUpDiscount', baseType: S },
-                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
-                    { id: '291', name: 'Bindningsrabatt Nytt eller befintligt MPO med bindningstid', category: 'LegacyBindingDiscount', baseType: S }
-                ],
-                'tc11': [
-                    { id: '104', name: 'Employee discount on member voice sim', category: 'EmployeeDiscount', baseType: S },
-                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S }
-                ],
-                'tc12': [
-                    { id: '400', name: 'One to One campaigning - mid-risk segment', category: 'SignUpDiscount', baseType: S },
-                    { id: '5', name: 'Kombo Mobile Discount', category: 'KomboDiscount', baseType: S }
-                ],
-                'tc13': [
-                    { id: '72', name: 'GEO rabatt external retail', category: 'GeoDiscount', baseType: S },
-                    { id: '73', name: 'GEO rabatt interna kanaler', category: 'GeoDiscount', baseType: S }
-                ],
-                'tc14': [
-                    { id: '272', name: 'Discount OTS - New MPO 10, 30 GB and extra användare mobil', category: 'OTSDiscount', baseType: S },
-                    { id: '306', name: 'New or Existing MPO main or Extra användare Mobil with binding', category: 'SignUpDiscount', baseType: S }
-                ],
-                // CategoryBlockingRules test cases
-                'cat-employee-binding': [
-                    { id: 'P001', name: 'Employee Discount 50%', category: 'EmployeeDiscount', baseType: S },
-                    { id: 'P002', name: 'Binding Discount 24mo', category: 'LegacyBindingDiscount', baseType: S }
-                ],
-                'cat-geo-kombo': [
-                    { id: 'P010', name: 'Geo Discount Stockholm', category: 'GeoDiscount', baseType: S },
-                    { id: 'P011', name: 'Kombo Bundle Discount', category: 'KomboDiscount', baseType: S }
-                ],
-                'cat-three-way': [
-                    { id: 'P020', name: 'OTS Discount 200kr', category: 'OTSDiscount', baseType: S },
-                    { id: 'P021', name: 'Employee Discount', category: 'EmployeeDiscount', baseType: S },
-                    { id: 'P022', name: 'Binding Discount', category: 'LegacyBindingDiscount', baseType: S }
-                ],
-                'cat-employee-ots-rejected': [
-                    { id: '103', name: 'Employee discount on mobile main sim', category: 'EmployeeDiscount', baseType: S },
-                    { id: '500', name: 'OTS Summer Campaign', category: 'OTSDiscount', baseType: S }
-                ]
-            };
+        // --- Cases generated from the configured rules -------------------------
+        // The same idea as the JUnit suite: never restate a rule, derive the case from it.
 
-            (presets[name] || []).forEach(p => addPromoCard(p));
+        function rankOf(category) {
+            const row = (RULES.precedence || []).find(p => p.discountCategory === category);
+            return row ? Number(row.precedenceRank) : 999;
+        }
+
+        function probeItem(itemId, category, serviceType) {
+            const item = { itemId: itemId, itemName: 'Test ' + itemId, itemType: 'PROMOTION', discountCategory: category };
+            if (serviceType) item.serviceType = serviceType;
+            return item;
+        }
+
+        function firstCategoryOtherThan(excluded) {
+            const found = (RULES.precedence || []).map(p => p.discountCategory).find(c => c !== excluded);
+            return found || 'UnknownCategory';
+        }
+
+        function findRule(ruleId) {
+            return [].concat(RULES.categoryRules, RULES.itemRules, RULES.cardinalityRules)
+                     .find(r => r && r.ruleId === ruleId) || null;
+        }
+
+        function generatedCases() {
+            if (!RULES) return [];
+            const cases = [];
+
+            (RULES.categoryRules || []).forEach(r => cases.push({
+                group: 'Category incompatibility',
+                label: r.ruleId + ': ' + r.categoryA + ' with ' + r.categoryB,
+                channel: r.channel,
+                items: [probeItem('TEST-A', r.categoryA, r.serviceType),
+                        probeItem('TEST-B', r.categoryB, r.serviceType)]
+            }));
+
+            (RULES.itemRules || []).forEach(r => {
+                const counterpartCategory = r.conflictsWithCategory || firstCategoryOtherThan(null);
+                const subjectCategory = firstCategoryOtherThan(counterpartCategory);
+                const items = [probeItem(r.itemId, subjectCategory, r.serviceType)];
+                if (r.conflictsWithItemId) items.push(probeItem(r.conflictsWithItemId, counterpartCategory, r.serviceType));
+                if (r.conflictsWithCategory) items.push(probeItem('TEST-B', r.conflictsWithCategory, r.serviceType));
+                cases.push({
+                    group: 'Item incompatibility',
+                    label: r.ruleId + ': item ' + r.itemId + ' with ' + (r.conflictsWithItemId || r.conflictsWithCategory),
+                    channel: r.channel,
+                    items: items
+                });
+            });
+
+            (RULES.cardinalityRules || []).forEach(r => {
+                const max = Number(r.maxAllowed) || 1;
+                const items = [];
+                for (let i = 1; i <= max + 1; i++) {
+                    items.push(probeItem('TEST-C' + String(i).padStart(2, '0'), r.discountCategory, r.serviceType));
+                }
+                cases.push({
+                    group: 'Cardinality',
+                    label: r.ruleId + ': ' + (max + 1) + ' x ' + r.discountCategory + ', at most ' + max,
+                    channel: r.channel,
+                    items: items
+                });
+            });
+
+            (RULES.exceptions || []).forEach(e => {
+                const target = e.appliesToRuleId ? findRule(e.appliesToRuleId) : (RULES.categoryRules || [])[0];
+                if (!target) return;
+                const items = [];
+                let what;
+                if (target.categoryA) {
+                    const aWins = target.winner === 'A' ? true
+                                : target.winner === 'B' ? false
+                                : rankOf(target.categoryA) <= rankOf(target.categoryB);
+                    items.push(probeItem(e.exemptItemId, aWins ? target.categoryB : target.categoryA, target.serviceType));
+                    items.push(probeItem('TEST-W', aWins ? target.categoryA : target.categoryB, target.serviceType));
+                    what = target.ruleId;
+                } else if (target.maxAllowed) {
+                    const max = Number(target.maxAllowed) || 1;
+                    items.push(probeItem(e.exemptItemId, target.discountCategory, target.serviceType));
+                    for (let i = 1; i <= max + 1; i++) {
+                        items.push(probeItem('TEST-C' + String(i).padStart(2, '0'), target.discountCategory, target.serviceType));
+                    }
+                    what = target.ruleId;
+                } else {
+                    const counterpartCategory = target.conflictsWithCategory || firstCategoryOtherThan(null);
+                    items.push(probeItem(target.itemId, firstCategoryOtherThan(counterpartCategory), target.serviceType));
+                    if (target.conflictsWithItemId) items.push(probeItem(target.conflictsWithItemId, counterpartCategory, target.serviceType));
+                    if (target.conflictsWithCategory) items.push(probeItem('TEST-B', target.conflictsWithCategory, target.serviceType));
+                    what = target.ruleId;
+                }
+                if (e.whenCategoryPresent && !items.some(i => i.discountCategory === e.whenCategoryPresent)) {
+                    items.push(probeItem('TEST-COND', e.whenCategoryPresent, null));
+                }
+                if (e.whenItemPresent && !items.some(i => i.itemId === e.whenItemPresent)) {
+                    items.push(probeItem(e.whenItemPresent, firstCategoryOtherThan(null), null));
+                }
+                cases.push({
+                    group: 'Exception',
+                    label: e.ruleId + ': rescues ' + e.exemptItemId + ' from ' + what,
+                    channel: target.channel,
+                    items: items
+                });
+            });
+
+            return cases;
+        }
+
+        function refreshPresets() {
+            const select = document.getElementById('presetSelect');
+            const cases = generatedCases();
+            let html = '<option value="">-- pick a rule to see it fire --</option>';
+            let group = null;
+            cases.forEach((c, index) => {
+                if (c.group !== group) {
+                    if (group !== null) html += '</optgroup>';
+                    html += '<optgroup label="' + c.group + '">';
+                    group = c.group;
+                }
+                html += '<option value="' + index + '">' + c.label + '</option>';
+            });
+            if (group !== null) html += '</optgroup>';
+            select.innerHTML = html;
+        }
+
+        function loadPreset(index) {
+            if (index === '') return;
+            const testCase = generatedCases()[Number(index)];
+            if (!testCase) return;
+            clearAll();
+            document.getElementById('channelInput').value = testCase.channel || '';
+            testCase.items.forEach(item => addItemCard(item));
         }
 
         // --- How It Works Panel ---
@@ -882,60 +936,43 @@
             if (isOpening) buildHowItWorksContent();
         }
 
+        /**
+         * Reads every decision table straight out of the model, taking the column names from the
+         * table itself. Reordering or renaming a column in the editor cannot break this.
+         */
         function parseDmnTables() {
-            // Parse the live DMN XML from the modeler to extract all table data
             const definitions = modeler.getDefinitions();
             if (!definitions) return null;
 
-            const precedence = [];
-            const categoryBlockingRules = [];
-            const promotionBlockingRules = [];
-            const promotionExceptionRules = [];
+            const buckets = {
+                CategoryPrecedence: 'precedence',
+                CategoryIncompatibility: 'categoryRules',
+                ItemIncompatibility: 'itemRules',
+                CategoryCardinality: 'cardinalityRules',
+                Exceptions: 'exceptions'
+            };
+            const out = { precedence: [], categoryRules: [], itemRules: [], cardinalityRules: [], exceptions: [] };
 
             for (const el of definitions.drgElement || []) {
                 const dt = el.decisionLogic;
-                if (!dt) continue;
+                if (!dt || dt.$type !== 'dmn:DecisionTable' || !dt.rule) continue;
+                const bucket = buckets[el.name];
+                if (!bucket) continue;
 
-                // Decision tables with COLLECT hit policy
-                if (dt.$type === 'dmn:DecisionTable' && dt.rule) {
-                    if (el.name === 'CategoryPrecedence') {
-                        for (const rule of dt.rule) {
-                            const outs = rule.outputEntry || [];
-                            const cat = stripQuotes(outs[0] && outs[0].text);
-                            const rank = outs[1] && outs[1].text;
-                            if (cat && rank) precedence.push({ category: cat, rank: Number(rank) });
-                        }
-                    } else if (el.name === 'CategoryBlockingRules') {
-                        for (const rule of dt.rule) {
-                            const outs = rule.outputEntry || [];
-                            const groupA = stripQuotes(outs[0] && outs[0].text);
-                            const groupB = stripQuotes(outs[1] && outs[1].text);
-                            const winner = stripQuotes(outs[2] && outs[2].text);
-                            if (groupA && groupB) categoryBlockingRules.push({ groupA, groupB, winner: winner || null });
-                        }
-                    } else if (el.name === 'PromotionBlockingRules') {
-                        for (const rule of dt.rule) {
-                            const outs = rule.outputEntry || [];
-                            const promo = stripQuotes(outs[0] && outs[0].text);
-                            const byGroup = stripQuotes(outs[1] && outs[1].text);
-                            const byPromo = stripQuotes(outs[2] && outs[2].text);
-                            const winner = stripQuotes(outs[3] && outs[3].text);
-                            if (promo) promotionBlockingRules.push({ promotion: promo, blockedByGroup: byGroup || null, blockedByPromotion: byPromo || null, winner: winner || null });
-                        }
-                    } else if (el.name === 'PromotionExceptionRules') {
-                        for (const rule of dt.rule) {
-                            const outs = rule.outputEntry || [];
-                            const promo = stripQuotes(outs[0] && outs[0].text);
-                            const withGroup = stripQuotes(outs[1] && outs[1].text);
-                            const withPromo = stripQuotes(outs[2] && outs[2].text);
-                            if (promo) promotionExceptionRules.push({ promotion: promo, allowedWithGroup: withGroup || null, allowedWithPromotion: withPromo || null });
-                        }
-                    }
+                for (const rule of dt.rule) {
+                    const outs = rule.outputEntry || [];
+                    const row = {};
+                    (dt.output || []).forEach((col, i) => {
+                        row[col.name] = stripQuotes(outs[i] && outs[i].text);
+                    });
+                    const note = (rule.annotationEntry || [])[0];
+                    if (note && note.text && note.text.trim()) row.note = note.text.trim();
+                    out[bucket].push(row);
                 }
             }
 
-            precedence.sort((a, b) => a.rank - b.rank);
-            return { precedence, categoryBlockingRules, promotionBlockingRules, promotionExceptionRules };
+            out.precedence.sort((a, b) => Number(a.precedenceRank) - Number(b.precedenceRank));
+            return out;
         }
 
         function stripQuotes(s) {
@@ -943,7 +980,23 @@
             s = s.trim();
             if (s === '') return null;
             if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) return s.slice(1, -1);
-            return s;
+            return s || null;
+        }
+
+        function cell(value) {
+            return value === null || value === undefined || value === ''
+                ? '<span style="color:#bbb;">&mdash;</span>'
+                : String(value);
+        }
+
+        function rulesTable(headers, rows, renderRow) {
+            if (!rows.length) {
+                return '<p style="color:#999;">None configured.</p>';
+            }
+            return `<table class="rules-table">
+                <thead><tr>${headers.map(h => '<th>' + h + '</th>').join('')}</tr></thead>
+                <tbody>${rows.map(renderRow).join('')}</tbody>
+            </table>`;
         }
 
         function buildHowItWorksContent() {
@@ -951,156 +1004,122 @@
             const data = parseDmnTables();
 
             if (!data || data.precedence.length === 0) {
-                container.innerHTML = '<p style="color:#999;">Could not read DMN data. Load the DMN first, then try again.</p>';
+                container.innerHTML = '<p style="color:#999;">Could not read the model. Reload, then try again.</p>';
                 return;
             }
+            RULES = data;
 
-            // Build priority list
             const priorityRows = data.precedence.map(p =>
-                `<tr><td style="text-align:center;font-weight:600;">${p.rank}</td><td>${p.category}</td></tr>`
+                `<tr><td style="text-align:center;font-weight:600;">${p.precedenceRank}</td><td>${p.discountCategory}</td></tr>`
             ).join('');
 
-            // Build category rules list
-            let catRulesHtml = '';
-            if (data.categoryBlockingRules.length > 0) {
-                const catRows = data.categoryBlockingRules.map(r => {
-                    const resolution = r.winner ? `<strong>${r.winner}</strong> always wins` : 'Higher priority wins';
-                    return `<tr><td>${r.groupA}</td><td>${r.groupB}</td><td>${resolution}</td></tr>`;
-                }).join('');
-                catRulesHtml = `
-                    <table class="rules-table">
-                        <thead><tr><th>Category A</th><th>Category B</th><th>Who wins?</th></tr></thead>
-                        <tbody>${catRows}</tbody>
-                    </table>`;
-            } else {
-                catRulesHtml = '<p style="color:#999;">No category conflict rules defined.</p>';
-            }
+            const winnerText = (r, a, b) => r.winner === 'A' ? `<strong>${a}</strong> always wins`
+                                          : r.winner === 'B' ? `<strong>${b}</strong> always wins`
+                                          : 'Higher priority wins';
 
-            // Build promotion rules list
-            let promoRulesHtml = '';
-            if (data.promotionBlockingRules.length > 0) {
-                const promoRows = data.promotionBlockingRules.map(r => {
-                    let trigger = '';
-                    if (r.blockedByGroup && r.blockedByPromotion)
-                        trigger = `Category <strong>${r.blockedByGroup}</strong> or Promotion <strong>${r.blockedByPromotion}</strong>`;
-                    else if (r.blockedByGroup)
-                        trigger = `Any <strong>${r.blockedByGroup}</strong> is present`;
-                    else if (r.blockedByPromotion)
-                        trigger = `Promotion <strong>${r.blockedByPromotion}</strong> is present`;
+            const categoryRows = rulesTable(
+                ['Rule', 'Cannot be combined', 'Who wins', 'Only when', 'What it is for'],
+                data.categoryRules,
+                r => `<tr>
+                        <td><strong>${cell(r.ruleId)}</strong></td>
+                        <td>${cell(r.categoryA)} + ${cell(r.categoryB)}</td>
+                        <td>${winnerText(r, r.categoryA, r.categoryB)}</td>
+                        <td>${r.serviceType || r.channel ? [r.serviceType, r.channel].filter(Boolean).join(' / ') : '<span style="color:#bbb;">always</span>'}</td>
+                        <td>${cell(r.description)}</td>
+                      </tr>`);
 
-                    let resolution = 'Promotion ' + r.promotion + ' is removed';
-                    if (r.winner === 'BY_PRECEDENCE') resolution = 'The one with higher priority wins';
-                    else if (r.winner) resolution = `Promotion <strong>${r.winner}</strong> always wins`;
+            const itemRows = rulesTable(
+                ['Rule', 'Item', 'Conflicts with', 'Who wins', 'Only when', 'What it is for'],
+                data.itemRules,
+                r => `<tr>
+                        <td><strong>${cell(r.ruleId)}</strong></td>
+                        <td>${cell(r.itemId)}</td>
+                        <td>${r.conflictsWithItemId ? 'item ' + r.conflictsWithItemId : ''}${r.conflictsWithItemId && r.conflictsWithCategory ? ' or ' : ''}${r.conflictsWithCategory ? 'any ' + r.conflictsWithCategory : ''}</td>
+                        <td>${winnerText(r, 'the item', 'the other side')}</td>
+                        <td>${r.serviceType || r.channel ? [r.serviceType, r.channel].filter(Boolean).join(' / ') : '<span style="color:#bbb;">always</span>'}</td>
+                        <td>${cell(r.description)}</td>
+                      </tr>`);
 
-                    return `<tr><td>${r.promotion}</td><td>${trigger}</td><td>${resolution}</td></tr>`;
-                }).join('');
-                promoRulesHtml = `
-                    <table class="rules-table">
-                        <thead><tr><th>Promotion</th><th>Blocked when...</th><th>Result</th></tr></thead>
-                        <tbody>${promoRows}</tbody>
-                    </table>`;
-            } else {
-                promoRulesHtml = '<p style="color:#999;">No promotion-level rules defined.</p>';
-            }
+            const cardinalityRows = rulesTable(
+                ['Rule', 'Category', 'At most', 'Only when', 'What it is for'],
+                data.cardinalityRules,
+                r => `<tr>
+                        <td><strong>${cell(r.ruleId)}</strong></td>
+                        <td>${cell(r.discountCategory)}</td>
+                        <td style="text-align:center;">${cell(r.maxAllowed)}</td>
+                        <td>${r.serviceType || r.channel ? [r.serviceType, r.channel].filter(Boolean).join(' / ') : '<span style="color:#bbb;">always</span>'}</td>
+                        <td>${cell(r.description)}</td>
+                      </tr>`);
 
-            // Build allowed rules list
-            let exceptionRulesHtml = '';
-            if (data.promotionExceptionRules.length > 0) {
-                const allowedRows = data.promotionExceptionRules.map(r => {
-                    let allowedWith = '';
-                    if (r.allowedWithGroup && r.allowedWithPromotion)
-                        allowedWith = `Category <strong>${r.allowedWithGroup}</strong> or Promotion <strong>${r.allowedWithPromotion}</strong>`;
-                    else if (r.allowedWithGroup)
-                        allowedWith = `Category <strong>${r.allowedWithGroup}</strong>`;
-                    else if (r.allowedWithPromotion)
-                        allowedWith = `Promotion <strong>${r.allowedWithPromotion}</strong>`;
-                    return `<tr><td>${r.promotion}</td><td>${allowedWith}</td></tr>`;
-                }).join('');
-                exceptionRulesHtml = `
-                    <table class="rules-table">
-                        <thead><tr><th>Promotion</th><th>Allowed to coexist with...</th></tr></thead>
-                        <tbody>${allowedRows}</tbody>
-                    </table>`;
-            } else {
-                exceptionRulesHtml = '<p style="color:#999;">No exemptions defined yet. Add rows to the PromotionExceptionRules table to override blocking rules.</p>';
-            }
+            const exceptionRows = rulesTable(
+                ['Rule', 'Rescues item', 'From rule', 'When present', 'What it is for'],
+                data.exceptions,
+                r => `<tr>
+                        <td><strong>${cell(r.ruleId)}</strong></td>
+                        <td>${cell(r.exemptItemId)}</td>
+                        <td>${r.appliesToRuleId ? r.appliesToRuleId : '<span style="color:#bbb;">any rule</span>'}</td>
+                        <td>${r.whenCategoryPresent || r.whenItemPresent ? cell(r.whenCategoryPresent || 'item ' + r.whenItemPresent) : '<span style="color:#bbb;">always</span>'}</td>
+                        <td>${cell(r.description)}</td>
+                      </tr>`);
 
             container.innerHTML = `
-                <h2>How the Promotion Compatibility Rules Work</h2>
-                <p class="subtitle">A guide for users &mdash; all data below is read live from the current rules</p>
-
+                <h2>How the rules work</h2>
                 <p>
-                    When a customer is eligible for multiple promotions, the system decides
-                    <strong>which ones can coexist</strong> and which must be removed.
-                    It works like a funnel:
+                    You send the promotions and add-on offerings a customer could have &mdash; everything
+                    already on their contracts plus everything in the cart. The whole set is judged at
+                    once, so the answer never depends on the order things were added.
+                </p>
+                <p>
+                    Anything no rule mentions is allowed. Only conflicts are written down.
                 </p>
 
-                <div class="funnel-diagram">
-                    All Eligible Promotions<br>
-                    &#9660;<br>
-                    <strong>Step 1:</strong> Block entire discount categories that conflict (rejected)<br>
-                    &#9660;<br>
-                    <strong>Step 2:</strong> Block specific promotions that conflict (rejected)<br>
-                    &#9660;<br>
-                    <strong>Step 3:</strong> Rescue any promotions exempted by Promotion Exception Rules<br>
-                    &#9660;<br>
-                    <strong>Step 4:</strong> Sort survivors by priority<br>
-                    &#9660;<br>
-                    Final Result: Allowed + Rejected lists
-                </div>
-
-                <div class="step-card step1">
-                    <span class="step-number">1</span>
-                    <span class="step-title">Category Blocking Rules &mdash; "Which discount categories block each other?"</span>
+                <div class="step">
+                    <div class="step-header">Step 1 &middot; Two categories that cannot be combined</div>
                     <div class="step-body">
-                        <p>
-                            Every promotion belongs to a discount category. The table below lists pairs of categories
-                            that are <strong>incompatible</strong>. When both are present, all promotions in the losing category are
-                            <strong>blocked and added to the rejected list</strong>.
-                            The winner is decided by <strong>priority</strong> (lower number wins) unless an explicit override is set.
-                        </p>
-                        ${catRulesHtml}
+                        <p>When both categories are present on the same contract, one has to go.</p>
+                        ${categoryRows}
                     </div>
                 </div>
 
-                <div class="step-card step2">
-                    <span class="step-number">2</span>
-                    <span class="step-title">Promotion Blocking Rules &mdash; "Which specific promotions block each other?"</span>
+                <div class="step">
+                    <div class="step-header">Step 2 &middot; One named item against another</div>
                     <div class="step-body">
                         <p>
-                            After category blocking, these rules handle conflicts between <strong>individual promotions</strong>.
-                            Blocked promotions are <strong>rejected and added to the rejected list</strong>.
-                            These rules only affect promotions that survived Step 1.
+                            These name an item directly, and the item can be a promotion or an add-on
+                            offering &mdash; the engine does not care which.
                         </p>
-                        ${promoRulesHtml}
+                        ${itemRows}
                     </div>
                 </div>
 
-                <div class="step-card step0">
-                    <span class="step-number">3</span>
-                    <span class="step-title">Promotion Exception Rules &mdash; "Which promotions are exempt from blocking?" (Highest Priority)</span>
+                <div class="step">
+                    <div class="step-header">Step 3 &middot; How many of one category</div>
                     <div class="step-body">
-                        <p>
-                            This table has the <strong>highest priority</strong> in the system. It overrides both
-                            Category Blocking Rules and Promotion Blocking Rules. If a promotion would normally be blocked, but has
-                            an entry here, it is <strong>rescued and allowed to survive</strong>.
-                        </p>
-                        <p>Use this to say:</p>
-                        <ul>
-                            <li><strong>Allowed with category:</strong> "Promotion X can coexist with Category Y, even if their categories conflict"</li>
-                            <li><strong>Allowed with promotion:</strong> "Promotion X can coexist with Promotion Y, even if a rule blocks them"</li>
-                        </ul>
-                        ${exceptionRulesHtml}
+                        <p>The highest-priority ones stay; the rest are rejected.</p>
+                        ${cardinalityRows}
                     </div>
                 </div>
 
-                <div class="step-card step3">
-                    <span class="step-number">4</span>
-                    <span class="step-title">Priority Table &mdash; "In what order are discounts applied?"</span>
+                <div class="step">
+                    <div class="step-header">Step 4 &middot; Exceptions</div>
                     <div class="step-body">
                         <p>
-                            This table ranks every category. It is used in Steps 1 and 2 to pick winners,
-                            and in Step 4 to decide the order surviving discounts are applied (1 = first).
+                            An exception rescues one item from a rule that would otherwise drop it.
+                            Name a rule to make the carve-out apply to that rule only; leave it blank
+                            and it applies to any rule that catches the item.
+                        </p>
+                        ${exceptionRows}
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">Step 5 &middot; Priority order</div>
+                    <div class="step-body">
+                        <p>
+                            This ranks every category. It decides who wins a conflict when no rule says
+                            otherwise, and the order surviving discounts are applied (1 = first).
+                            Two items of the same rank are separated by what is already on the contract
+                            before what is still in the cart.
                         </p>
                         <table class="rules-table">
                             <thead><tr><th style="width:70px;">Priority</th><th>Category</th></tr></thead>
@@ -1109,20 +1128,22 @@
                     </div>
                 </div>
 
-                <h3>Output</h3>
-                <p>The system returns two lists:</p>
+                <h3>What comes back</h3>
                 <ul>
-                    <li><strong style="color:#2e7d32;">Allowed Promotions</strong> &mdash; Survivors sorted by priority, each with an applied order number.</li>
-                    <li><strong style="color:#c62828;">Rejected Promotions</strong> &mdash; Removed promotions, each with a reason explaining why.</li>
+                    <li><strong>valid</strong> &mdash; false means checkout has to be blocked.</li>
+                    <li><strong style="color:#2e7d32;">allowed</strong> &mdash; survivors in priority order, each with an applied order number.</li>
+                    <li><strong style="color:#c62828;">rejected</strong> &mdash; what was dropped, each with a reason code and the rule that did it.</li>
+                    <li><strong>conflicts</strong> &mdash; which items clashed with which, under which rule, and how it was settled. Reported even when an exception rescued everyone.</li>
                 </ul>
 
-                <h3>How to Edit</h3>
+                <h3>Editing</h3>
                 <ul>
-                    <li>Click <strong>"Edit Table"</strong> on any decision box in the diagram to open it.</li>
-                    <li>After changes, click <strong>Save</strong> to apply immediately.</li>
-                    <li>Use the <strong>Test</strong> panel to verify before going to production.</li>
-                    <li>Click <strong>Rollback</strong> to revert to the previous version if needed.</li>
-                    <li><strong>Do not edit the CompatibilityResult box</strong> &mdash; it contains the processing logic.</li>
+                    <li>Click <strong>Edit Table</strong> on any of the five blue boxes to change its rules.</li>
+                    <li>Give every rule a <strong>ruleId</strong> and a <strong>description</strong> &mdash; the tests check both.</li>
+                    <li>Leave <strong>winner</strong> blank to let priority decide, or set A or B to override it.</li>
+                    <li><strong>Save</strong> applies the change immediately. <strong>Rollback</strong> undoes it.</li>
+                    <li>Use the <strong>Try the rules</strong> panel first &mdash; it builds a case for each rule automatically.</li>
+                    <li>Do not edit the grey logic boxes; they are the evaluation, not the rules.</li>
                 </ul>
             `;
         }

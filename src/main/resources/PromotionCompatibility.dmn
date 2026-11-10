@@ -1,375 +1,430 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmn:definitions xmlns:dmn="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns="https://telenor.se/promotion-compatibility" xmlns:kie="http://www.drools.org/kie/dmn/1.5" xmlns:feel="https://www.omg.org/spec/DMN/20191111/FEEL/" id="_PROMOTION_COMPATIBILITY" name="PromotionCompatibility" namespace="https://telenor.se/promotion-compatibility" expressionLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/" typeLanguage="https://www.omg.org/spec/DMN/20191111/FEEL/">
   <dmn:extensionElements />
-  <dmn:itemDefinition id="_tPromotion" name="tPromotion" isCollection="false">
-    <dmn:itemComponent id="_tPromotion_id" name="promotionId" isCollection="false">
+
+  <!-- ============================================================
+       Item model. One item type covers promotions and add-on offerings,
+       so every rule works on both without a parallel rule set.
+       ============================================================ -->
+  <dmn:itemDefinition id="_tItem" name="tItem" isCollection="false">
+    <dmn:itemComponent id="_tItem_itemId" name="itemId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromotion_name" name="promotionName" isCollection="false">
+    <dmn:itemComponent id="_tItem_itemName" name="itemName" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromotion_baseType" name="promotionBaseType" isCollection="false">
+    <dmn:itemComponent id="_tItem_itemType" name="itemType" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromotion_category" name="discountCategory" isCollection="false">
+    <dmn:itemComponent id="_tItem_category" name="discountCategory" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tPromotionList" name="tPromotionList" isCollection="true">
-    <dmn:typeRef>tPromotion</dmn:typeRef>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tAllowedPromotion" name="tAllowedPromotion" isCollection="false">
-    <dmn:itemComponent id="_tAllowed_id" name="promotionId" isCollection="false">
+    <dmn:itemComponent id="_tItem_origin" name="origin" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tAllowed_name" name="promotionName" isCollection="false">
+    <dmn:itemComponent id="_tItem_scopeId" name="scopeId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tAllowed_category" name="discountCategory" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tAllowed_order" name="appliedOrder" isCollection="false">
-      <dmn:typeRef>number</dmn:typeRef>
-    </dmn:itemComponent>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tAllowedPromotionList" name="tAllowedPromotionList" isCollection="true">
-    <dmn:typeRef>tAllowedPromotion</dmn:typeRef>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tRejectedPromotion" name="tRejectedPromotion" isCollection="false">
-    <dmn:itemComponent id="_tRejected_id" name="promotionId" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tRejected_name" name="promotionName" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tRejected_category" name="discountCategory" isCollection="false">
-      <dmn:typeRef>string</dmn:typeRef>
-    </dmn:itemComponent>
-    <dmn:itemComponent id="_tRejected_reason" name="reason" isCollection="false">
+    <dmn:itemComponent id="_tItem_serviceType" name="serviceType" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
   </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tRejectedPromotionList" name="tRejectedPromotionList" isCollection="true">
-    <dmn:typeRef>tRejectedPromotion</dmn:typeRef>
+  <dmn:itemDefinition id="_tItemList" name="tItemList" isCollection="true">
+    <dmn:typeRef>tItem</dmn:typeRef>
   </dmn:itemDefinition>
+
+  <!-- ============================================================
+       Rule table row types. One type per table.
+       ============================================================ -->
   <dmn:itemDefinition id="_tPrecedenceRow" name="tPrecedenceRow" isCollection="false">
-    <dmn:itemComponent id="_tPrecRow_cat" name="discountCategory" isCollection="false">
+    <dmn:itemComponent id="_tPrecedenceRow_cat" name="discountCategory" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPrecRow_rank" name="precedenceRank" isCollection="false">
+    <dmn:itemComponent id="_tPrecedenceRow_rank" name="precedenceRank" isCollection="false">
       <dmn:typeRef>number</dmn:typeRef>
     </dmn:itemComponent>
   </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tPrecedenceList" name="tPrecedenceList" isCollection="true">
+  <dmn:itemDefinition id="_tPrecedenceRowList" name="tPrecedenceRowList" isCollection="true">
     <dmn:typeRef>tPrecedenceRow</dmn:typeRef>
   </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tCategoryRuleRow" name="tCategoryRuleRow" isCollection="false">
-    <dmn:itemComponent id="_tCatRule_a" name="groupA" isCollection="false">
+  <dmn:itemDefinition id="_tCategoryRule" name="tCategoryRule" isCollection="false">
+    <dmn:itemComponent id="_tCategoryRule_ruleId" name="ruleId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tCatRule_b" name="groupB" isCollection="false">
+    <dmn:itemComponent id="_tCategoryRule_a" name="categoryA" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tCatRule_winner" name="overrideWinner" isCollection="false">
+    <dmn:itemComponent id="_tCategoryRule_b" name="categoryB" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCategoryRule_winner" name="winner" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCategoryRule_svc" name="serviceType" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCategoryRule_ch" name="channel" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCategoryRule_desc" name="description" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
   </dmn:itemDefinition>
   <dmn:itemDefinition id="_tCategoryRuleList" name="tCategoryRuleList" isCollection="true">
-    <dmn:typeRef>tCategoryRuleRow</dmn:typeRef>
+    <dmn:typeRef>tCategoryRule</dmn:typeRef>
   </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tPromotionRuleRow" name="tPromotionRuleRow" isCollection="false">
-    <dmn:itemComponent id="_tPromoRule_promo" name="promotion" isCollection="false">
+  <dmn:itemDefinition id="_tItemRule" name="tItemRule" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_ruleId" name="ruleId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromoRule_group" name="blockedByGroup" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_item" name="itemId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromoRule_blockedBy" name="blockedByPromotion" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_withItem" name="conflictsWithItemId" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tPromoRule_winner" name="overrideWinner" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_withCat" name="conflictsWithCategory" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tPromotionRuleList" name="tPromotionRuleList" isCollection="true">
-    <dmn:typeRef>tPromotionRuleRow</dmn:typeRef>
-  </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tAllowedRuleRow" name="tAllowedRuleRow" isCollection="false">
-    <dmn:itemComponent id="_tAllowedRule_promo" name="promotion" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_winner" name="winner" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tAllowedRule_group" name="allowedWithGroup" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_svc" name="serviceType" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
-    <dmn:itemComponent id="_tAllowedRule_promoWith" name="allowedWithPromotion" isCollection="false">
+    <dmn:itemComponent id="_tItemRule_ch" name="channel" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tItemRule_desc" name="description" isCollection="false">
       <dmn:typeRef>string</dmn:typeRef>
     </dmn:itemComponent>
   </dmn:itemDefinition>
-  <dmn:itemDefinition id="_tAllowedRuleList" name="tAllowedRuleList" isCollection="true">
-    <dmn:typeRef>tAllowedRuleRow</dmn:typeRef>
+  <dmn:itemDefinition id="_tItemRuleList" name="tItemRuleList" isCollection="true">
+    <dmn:typeRef>tItemRule</dmn:typeRef>
   </dmn:itemDefinition>
-  <dmn:inputData id="_INPUT_ELIGIBLE" name="EligiblePromotions">
+  <dmn:itemDefinition id="_tCardinalityRule" name="tCardinalityRule" isCollection="false">
+    <dmn:itemComponent id="_tCardinalityRule_ruleId" name="ruleId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCardinalityRule_cat" name="discountCategory" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCardinalityRule_max" name="maxAllowed" isCollection="false">
+      <dmn:typeRef>number</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCardinalityRule_svc" name="serviceType" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCardinalityRule_ch" name="channel" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tCardinalityRule_desc" name="description" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_tCardinalityRuleList" name="tCardinalityRuleList" isCollection="true">
+    <dmn:typeRef>tCardinalityRule</dmn:typeRef>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_tExceptionRule" name="tExceptionRule" isCollection="false">
+    <dmn:itemComponent id="_tExceptionRule_ruleId" name="ruleId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tExceptionRule_item" name="exemptItemId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tExceptionRule_rule" name="appliesToRuleId" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tExceptionRule_whenCat" name="whenCategoryPresent" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tExceptionRule_whenItem" name="whenItemPresent" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_tExceptionRule_desc" name="description" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_tExceptionRuleList" name="tExceptionRuleList" isCollection="true">
+    <dmn:typeRef>tExceptionRule</dmn:typeRef>
+  </dmn:itemDefinition>
+
+  <!-- ============================================================
+       Inputs. Channel is request-level; everything else is per item.
+       ============================================================ -->
+  <dmn:inputData id="_IN_ITEMS" name="Items">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_ELIGIBLE" name="EligiblePromotions" typeRef="tPromotionList" />
+    <dmn:variable id="_V_IN_ITEMS" name="Items" typeRef="tItemList" />
   </dmn:inputData>
-  <dmn:decision id="_DECISION_PRECEDENCE" name="CategoryPrecedence">
+  <dmn:inputData id="_IN_CHANNEL" name="Channel">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_PRECEDENCE" name="CategoryPrecedence" typeRef="tPrecedenceList" />
+    <dmn:variable id="_V_IN_CHANNEL" name="Channel" typeRef="string" />
+  </dmn:inputData>
+
+  <!-- ============================================================
+       DATA TABLES - business-editable. Five grids, one per rule shape.
+       Every rule carries a ruleId so a verdict can point at it.
+       An empty winner cell means "decide by precedence rank" in every table.
+       ============================================================ -->
+  <!-- CategoryPrecedence: rank per discount category. Lower rank wins. A category missing from this table ranks 999 and therefore loses every precedence contest. -->
+  <dmn:decision id="_D_PRECEDENCE" name="CategoryPrecedence">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_PRECEDENCE" name="CategoryPrecedence" typeRef="tPrecedenceRowList" />
     <dmn:decisionTable id="_DT_PRECEDENCE" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryPrecedence">
-      <dmn:input id="_DT_PREC_IN1">
-        <dmn:inputExpression id="_DT_PREC_IE1" typeRef="string">
+      <dmn:input id="_DT_PRECEDENCE_IN1">
+        <dmn:inputExpression id="_DT_PRECEDENCE_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_PREC_OUT1" name="discountCategory" typeRef="string" />
-      <dmn:output id="_DT_PREC_OUT2" name="precedenceRank" typeRef="number" />
-      <dmn:annotation name="" />
-      <dmn:rule id="_DT_PREC_R1">
-        <dmn:inputEntry id="_DT_PREC_R1_I1">
+      <dmn:output id="_DT_PRECEDENCE_OUT1" name="discountCategory" typeRef="string" />
+      <dmn:output id="_DT_PRECEDENCE_OUT2" name="precedenceRank" typeRef="number" />
+      <dmn:annotation name="note" />
+      <dmn:rule id="_DT_PRECEDENCE_R1">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R1_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R1_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R1_O1">
           <dmn:text>"EmployeeDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R1_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R1_O2">
           <dmn:text>1</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R2">
-        <dmn:inputEntry id="_DT_PREC_R2_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R2">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R2_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R2_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R2_O1">
           <dmn:text>"ComplaintDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R2_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R2_O2">
           <dmn:text>2</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R3">
-        <dmn:inputEntry id="_DT_PREC_R3_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R3">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R3_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R3_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R3_O1">
           <dmn:text>"SaveDeskDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R3_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R3_O2">
           <dmn:text>3</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R4">
-        <dmn:inputEntry id="_DT_PREC_R4_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R4">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R4_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R4_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R4_O1">
           <dmn:text>"ChurnBlockerDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R4_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R4_O2">
           <dmn:text>4</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R5">
-        <dmn:inputEntry id="_DT_PREC_R5_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R5">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R5_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R5_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R5_O1">
           <dmn:text>"SignUpDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R5_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R5_O2">
           <dmn:text>5</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R6">
-        <dmn:inputEntry id="_DT_PREC_R6_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R6">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R6_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R6_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R6_O1">
           <dmn:text>"SignUpDiscountLimited"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R6_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R6_O2">
           <dmn:text>6</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R7">
-        <dmn:inputEntry id="_DT_PREC_R7_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R7">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R7_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R7_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R7_O1">
           <dmn:text>"LegacyBindingDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R7_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R7_O2">
           <dmn:text>7</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R8">
-        <dmn:inputEntry id="_DT_PREC_R8_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R8">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R8_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R8_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R8_O1">
           <dmn:text>"OTSDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R8_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R8_O2">
           <dmn:text>8</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R9">
-        <dmn:inputEntry id="_DT_PREC_R9_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R9">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R9_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R9_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R9_O1">
           <dmn:text>"HWSubscriptionDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R9_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R9_O2">
           <dmn:text>9</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R10">
-        <dmn:inputEntry id="_DT_PREC_R10_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R10">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R10_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R10_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R10_O1">
           <dmn:text>"HWSubscriptionDiscountLimited"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R10_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R10_O2">
           <dmn:text>10</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R11">
-        <dmn:inputEntry id="_DT_PREC_R11_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R11">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R11_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R11_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R11_O1">
           <dmn:text>"HWSubscriptionDiscountAccessory"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R11_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R11_O2">
           <dmn:text>11</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R12">
-        <dmn:inputEntry id="_DT_PREC_R12_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R12">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R12_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R12_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R12_O1">
           <dmn:text>"HWDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R12_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R12_O2">
           <dmn:text>12</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R13">
-        <dmn:inputEntry id="_DT_PREC_R13_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R13">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R13_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R13_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R13_O1">
           <dmn:text>"GeoDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R13_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R13_O2">
           <dmn:text>13</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R14">
-        <dmn:inputEntry id="_DT_PREC_R14_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R14">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R14_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R14_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R14_O1">
           <dmn:text>"KomboDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R14_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R14_O2">
           <dmn:text>14</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R15">
-        <dmn:inputEntry id="_DT_PREC_R15_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R15">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R15_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R15_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R15_O1">
           <dmn:text>"PromotionOffering"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R15_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R15_O2">
           <dmn:text>15</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R16">
-        <dmn:inputEntry id="_DT_PREC_R16_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R16">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R16_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R16_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R16_O1">
           <dmn:text>"RecurringExtraSurf"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R16_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R16_O2">
           <dmn:text>16</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R17">
-        <dmn:inputEntry id="_DT_PREC_R17_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R17">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R17_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R17_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R17_O1">
           <dmn:text>"MiscMigratedDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R17_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R17_O2">
           <dmn:text>17</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PREC_R18">
-        <dmn:inputEntry id="_DT_PREC_R18_I1">
+      <dmn:rule id="_DT_PRECEDENCE_R18">
+        <dmn:inputEntry id="_DT_PRECEDENCE_R18_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PREC_R18_O1">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R18_O1">
           <dmn:text>"MiscMigratedDiscountLimited"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PREC_R18_O2">
+        <dmn:outputEntry id="_DT_PRECEDENCE_R18_O2">
           <dmn:text>18</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
@@ -378,31 +433,135 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_CAT_RULES" name="CategoryBlockingRules">
+  <!-- CategoryIncompatibility: two discount categories cannot sit on the same contract. winner is A, B or empty (empty = decide by precedence). Blank serviceType or channel means the rule is global. -->
+  <dmn:decision id="_D_CATRULES" name="CategoryIncompatibility">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_CAT_RULES" name="CategoryBlockingRules" typeRef="tCategoryRuleList" />
-    <dmn:decisionTable id="_DT_CAT_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryBlockingRules">
-      <dmn:input id="_DT_CR_IN1">
-        <dmn:inputExpression id="_DT_CR_IE1" typeRef="string">
+    <dmn:variable id="_V_CATRULES" name="CategoryIncompatibility" typeRef="tCategoryRuleList" />
+    <dmn:decisionTable id="_DT_CATRULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryIncompatibility">
+      <dmn:input id="_DT_CATRULES_IN1">
+        <dmn:inputExpression id="_DT_CATRULES_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_CR_OUT1" name="groupA" typeRef="string" />
-      <dmn:output id="_DT_CR_OUT2" name="groupB" typeRef="string" />
-      <dmn:output id="_DT_CR_OUT3" name="overrideWinner" typeRef="string" />
-      <dmn:annotation name="" />
-      <dmn:rule id="_DT_CR_R1">
-        <dmn:inputEntry id="_DT_CR_R1_I1">
+      <dmn:output id="_DT_CATRULES_OUT1" name="ruleId" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT2" name="categoryA" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT3" name="categoryB" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT4" name="winner" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT5" name="serviceType" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT6" name="channel" typeRef="string" />
+      <dmn:output id="_DT_CATRULES_OUT7" name="description" typeRef="string" />
+      <dmn:annotation name="note" />
+      <dmn:rule id="_DT_CATRULES_R1">
+        <dmn:inputEntry id="_DT_CATRULES_R1_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_CR_R1_O1">
+        <dmn:outputEntry id="_DT_CATRULES_R1_O1">
+          <dmn:text>"CAT-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R1_O2">
           <dmn:text>"EmployeeDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CR_R1_O2">
+        <dmn:outputEntry id="_DT_CATRULES_R1_O3">
           <dmn:text>"LegacyBindingDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_CR_R1_O3">
+        <dmn:outputEntry id="_DT_CATRULES_R1_O4">
           <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R1_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R1_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R1_O7">
+          <dmn:text>"An employee discount and a legacy binding discount cannot sit on the same contract. Precedence decides."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_CATRULES_R2">
+        <dmn:inputEntry id="_DT_CATRULES_R2_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O1">
+          <dmn:text>"CAT-002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O2">
+          <dmn:text>"SaveDeskDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O3">
+          <dmn:text>"ChurnBlockerDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O4">
+          <dmn:text>"B"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R2_O7">
+          <dmn:text>"A churn blocker always wins over a save desk discount, even though it ranks lower."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_CATRULES_R3">
+        <dmn:inputEntry id="_DT_CATRULES_R3_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O1">
+          <dmn:text>"CAT-003"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O2">
+          <dmn:text>"HWDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O3">
+          <dmn:text>"GeoDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O6">
+          <dmn:text>"ONLINE"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R3_O7">
+          <dmn:text>"Hardware and geo discounts cannot be combined when sold online. Precedence decides."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_CATRULES_R4">
+        <dmn:inputEntry id="_DT_CATRULES_R4_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O1">
+          <dmn:text>"CAT-004"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O2">
+          <dmn:text>"MiscMigratedDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O3">
+          <dmn:text>"MiscMigratedDiscountLimited"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O5">
+          <dmn:text>"Broadband"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CATRULES_R4_O7">
+          <dmn:text>"The two migrated discount families are mutually exclusive on broadband. Precedence decides."</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
@@ -410,55 +569,180 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_PROMO_RULES" name="PromotionBlockingRules">
+  <!-- ItemIncompatibility: a named item conflicts with another named item and/or with a whole category. Because rules address items, add-on offerings need no separate table - promotion/promotion, addon/addon and promotion/addon all fall out of this one grid. winner A is the itemId side, winner B is the conflictsWith side. -->
+  <dmn:decision id="_D_ITEMRULES" name="ItemIncompatibility">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_PROMO_RULES" name="PromotionBlockingRules" typeRef="tPromotionRuleList" />
-    <dmn:decisionTable id="_DT_PROMO_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionBlockingRules">
-      <dmn:input id="_DT_PR_IN1">
-        <dmn:inputExpression id="_DT_PR_IE1" typeRef="string">
+    <dmn:variable id="_V_ITEMRULES" name="ItemIncompatibility" typeRef="tItemRuleList" />
+    <dmn:decisionTable id="_DT_ITEMRULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="ItemIncompatibility">
+      <dmn:input id="_DT_ITEMRULES_IN1">
+        <dmn:inputExpression id="_DT_ITEMRULES_IE1" typeRef="string">
           <dmn:text>"match"</dmn:text>
         </dmn:inputExpression>
       </dmn:input>
-      <dmn:output id="_DT_PR_OUT1" name="promotion" typeRef="string" />
-      <dmn:output id="_DT_PR_OUT2" name="blockedByGroup" typeRef="string" />
-      <dmn:output id="_DT_PR_OUT3" name="blockedByPromotion" typeRef="string" />
-      <dmn:output id="_DT_PR_OUT4" name="overrideWinner" typeRef="string" />
-      <dmn:annotation name="" />
-      <dmn:rule id="_DT_PR_R1">
-        <dmn:inputEntry id="_DT_PR_R1_I1">
+      <dmn:output id="_DT_ITEMRULES_OUT1" name="ruleId" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT2" name="itemId" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT3" name="conflictsWithItemId" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT4" name="conflictsWithCategory" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT5" name="winner" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT6" name="serviceType" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT7" name="channel" typeRef="string" />
+      <dmn:output id="_DT_ITEMRULES_OUT8" name="description" typeRef="string" />
+      <dmn:annotation name="note" />
+      <dmn:rule id="_DT_ITEMRULES_R1">
+        <dmn:inputEntry id="_DT_ITEMRULES_R1_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PR_R1_O1">
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O1">
+          <dmn:text>"ITM-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O2">
           <dmn:text>"299"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R1_O2">
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O3">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O4">
           <dmn:text>"EmployeeDiscount"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R1_O3">
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O5">
+          <dmn:text>"B"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O6">
           <dmn:text></dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R1_O4">
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O7">
           <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R1_O8">
+          <dmn:text>"BTL Boost 299 cannot be granted when an employee discount is present; the employee discount wins."</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
         </dmn:annotationEntry>
       </dmn:rule>
-      <dmn:rule id="_DT_PR_R5">
-        <dmn:inputEntry id="_DT_PR_R5_I1">
+      <dmn:rule id="_DT_ITEMRULES_R2">
+        <dmn:inputEntry id="_DT_ITEMRULES_R2_I1">
           <dmn:text>-</dmn:text>
         </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_PR_R5_O1">
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O1">
+          <dmn:text>"ITM-002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O2">
           <dmn:text>"72"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R5_O2">
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O3">
+          <dmn:text>"73"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O4">
           <dmn:text></dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R5_O3">
-          <dmn:text>"73"</dmn:text>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O5">
+          <dmn:text>"B"</dmn:text>
         </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_PR_R5_O4">
-          <dmn:text>"73"</dmn:text>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O7">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R2_O8">
+          <dmn:text>"GEO internal (73) always wins over GEO external (72). Both share a rank, so only this rule can separate them."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_ITEMRULES_R3">
+        <dmn:inputEntry id="_DT_ITEMRULES_R3_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O1">
+          <dmn:text>"ITM-003"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O2">
+          <dmn:text>"ADDON-ROUTER-20"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O3">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O4">
+          <dmn:text>"SignUpDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O5">
+          <dmn:text>"A"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O7">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R3_O8">
+          <dmn:text>"The router hardware add-on takes precedence over any sign-up discount on the same contract."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_ITEMRULES_R4">
+        <dmn:inputEntry id="_DT_ITEMRULES_R4_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O1">
+          <dmn:text>"ITM-004"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O2">
+          <dmn:text>"103"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O3">
+          <dmn:text>"ADDON-EXTRA-SURF"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O5">
+          <dmn:text>"A"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O7">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R4_O8">
+          <dmn:text>"The employee discount on the main sim replaces the extra surf add-on."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_ITEMRULES_R5">
+        <dmn:inputEntry id="_DT_ITEMRULES_R5_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O1">
+          <dmn:text>"ITM-005"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O2">
+          <dmn:text>"400"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O3">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O4">
+          <dmn:text>"OTSDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O5">
+          <dmn:text>"B"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O6">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O7">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_ITEMRULES_R5_O8">
+          <dmn:text>"Legacy binding discount 400 cannot be granted alongside an OTS discount; the OTS discount wins."</dmn:text>
         </dmn:outputEntry>
         <dmn:annotationEntry>
           <dmn:text></dmn:text>
@@ -466,288 +750,1011 @@
       </dmn:rule>
     </dmn:decisionTable>
   </dmn:decision>
-  <dmn:decision id="_DECISION_RESULT" name="CompatibilityResult">
+  <!-- CategoryCardinality: at most maxAllowed items of this category per contract. The highest-ranked items survive; the rest are rejected with CARDINALITY_EXCEEDED. -->
+  <dmn:decision id="_D_CARDRULES" name="CategoryCardinality">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_RESULT" name="CompatibilityResult" typeRef="Any" />
-    <dmn:informationRequirement id="_IR_ELIGIBLE">
-      <dmn:requiredInput href="#_INPUT_ELIGIBLE" />
+    <dmn:variable id="_V_CARDRULES" name="CategoryCardinality" typeRef="tCardinalityRuleList" />
+    <dmn:decisionTable id="_DT_CARDRULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="CategoryCardinality">
+      <dmn:input id="_DT_CARDRULES_IN1">
+        <dmn:inputExpression id="_DT_CARDRULES_IE1" typeRef="string">
+          <dmn:text>"match"</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_DT_CARDRULES_OUT1" name="ruleId" typeRef="string" />
+      <dmn:output id="_DT_CARDRULES_OUT2" name="discountCategory" typeRef="string" />
+      <dmn:output id="_DT_CARDRULES_OUT3" name="maxAllowed" typeRef="number" />
+      <dmn:output id="_DT_CARDRULES_OUT4" name="serviceType" typeRef="string" />
+      <dmn:output id="_DT_CARDRULES_OUT5" name="channel" typeRef="string" />
+      <dmn:output id="_DT_CARDRULES_OUT6" name="description" typeRef="string" />
+      <dmn:annotation name="note" />
+      <dmn:rule id="_DT_CARDRULES_R1">
+        <dmn:inputEntry id="_DT_CARDRULES_R1_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O1">
+          <dmn:text>"CRD-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O2">
+          <dmn:text>"SignUpDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O3">
+          <dmn:text>1</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R1_O6">
+          <dmn:text>"At most one sign-up discount may be checked out per contract."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_CARDRULES_R2">
+        <dmn:inputEntry id="_DT_CARDRULES_R2_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O1">
+          <dmn:text>"CRD-002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O2">
+          <dmn:text>"HWDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O3">
+          <dmn:text>2</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_CARDRULES_R2_O6">
+          <dmn:text>"At most two hardware discounts may be checked out per contract."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
+  <!-- Exceptions: rescue an item that another rule would otherwise reject. appliesToRuleId names the single rule the exemption covers; left blank it covers any rule. Both when* columns blank means the exemption is unconditional. -->
+  <dmn:decision id="_D_EXCRULES" name="Exceptions">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_EXCRULES" name="Exceptions" typeRef="tExceptionRuleList" />
+    <dmn:decisionTable id="_DT_EXCRULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="Exceptions">
+      <dmn:input id="_DT_EXCRULES_IN1">
+        <dmn:inputExpression id="_DT_EXCRULES_IE1" typeRef="string">
+          <dmn:text>"match"</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_DT_EXCRULES_OUT1" name="ruleId" typeRef="string" />
+      <dmn:output id="_DT_EXCRULES_OUT2" name="exemptItemId" typeRef="string" />
+      <dmn:output id="_DT_EXCRULES_OUT3" name="appliesToRuleId" typeRef="string" />
+      <dmn:output id="_DT_EXCRULES_OUT4" name="whenCategoryPresent" typeRef="string" />
+      <dmn:output id="_DT_EXCRULES_OUT5" name="whenItemPresent" typeRef="string" />
+      <dmn:output id="_DT_EXCRULES_OUT6" name="description" typeRef="string" />
+      <dmn:annotation name="note" />
+      <dmn:rule id="_DT_EXCRULES_R1">
+        <dmn:inputEntry id="_DT_EXCRULES_R1_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O1">
+          <dmn:text>"EXC-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O2">
+          <dmn:text>"5"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O3">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O4">
+          <dmn:text>"EmployeeDiscount"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R1_O6">
+          <dmn:text>"Kombo binding discount 5 survives any rule that would drop it while an employee discount is present."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_EXCRULES_R2">
+        <dmn:inputEntry id="_DT_EXCRULES_R2_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O1">
+          <dmn:text>"EXC-002"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O2">
+          <dmn:text>"299"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O3">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O5">
+          <dmn:text>"449"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R2_O6">
+          <dmn:text>"BTL Boost 299 survives whatever catches it when hardware bundle 449 is also present."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_EXCRULES_R3">
+        <dmn:inputEntry id="_DT_EXCRULES_R3_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O1">
+          <dmn:text>"EXC-003"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O2">
+          <dmn:text>"306"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O3">
+          <dmn:text>"CRD-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R3_O6">
+          <dmn:text>"Sign-up promotion 306 is outside the sign-up cardinality limit: it neither counts nor is dropped by CRD-001."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_DT_EXCRULES_R4">
+        <dmn:inputEntry id="_DT_EXCRULES_R4_I1">
+          <dmn:text>-</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O1">
+          <dmn:text>"EXC-004"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O2">
+          <dmn:text>"400"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O3">
+          <dmn:text>"CAT-001"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O4">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O5">
+          <dmn:text></dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_DT_EXCRULES_R4_O6">
+          <dmn:text>"Legacy binding discount 400 is exempt from CAT-001 only; every other rule still applies to it."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text></dmn:text>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
+
+  <!-- ============================================================
+       LOGIC - developer-owned. Each decision below is a DRG node that can
+       be evaluated and asserted on its own.
+       ============================================================ -->
+  <!-- PrecedenceOf(precedence, category) - rank lookup with a safe default for unranked categories. -->
+  <dmn:businessKnowledgeModel id="_BKM_PRECEDENCE_OF" name="PrecedenceOf">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_BKM_PRECEDENCE_OF" name="PrecedenceOf" typeRef="Any" />
+    <dmn:encapsulatedLogic id="_FN_PRECEDENCE_OF" kind="FEEL">
+      <dmn:formalParameter id="_FP_PRECEDENCE_OF_1" name="precedence" typeRef="Any" />
+      <dmn:formalParameter id="_FP_PRECEDENCE_OF_2" name="category" typeRef="Any" />
+      <dmn:literalExpression id="_EXBKM_PRECEDENCE_OF">
+        <dmn:text>if precedence = null or category = null then 999 else if count(precedence[discountCategory = category]) &gt; 0 then (precedence[discountCategory = category])[1].precedenceRank else 999</dmn:text>
+      </dmn:literalExpression>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+  <!-- MatchingExceptions(exceptions, itemId, ruleId, categoriesInScope, itemIdsInScope) - the Exceptions rows that rescue this item from this rule. Returns a list so the rescuing ruleId can be reported, not just the fact that something rescued it. -->
+  <dmn:businessKnowledgeModel id="_BKM_MATCHING_EXCEPTIONS" name="MatchingExceptions">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_BKM_MATCHING_EXCEPTIONS" name="MatchingExceptions" typeRef="Any" />
+    <dmn:encapsulatedLogic id="_FN_MATCHING_EXCEPTIONS" kind="FEEL">
+      <dmn:formalParameter id="_FP_MATCHING_EXCEPTIONS_1" name="exceptions" typeRef="Any" />
+      <dmn:formalParameter id="_FP_MATCHING_EXCEPTIONS_2" name="itemId" typeRef="Any" />
+      <dmn:formalParameter id="_FP_MATCHING_EXCEPTIONS_3" name="ruleId" typeRef="Any" />
+      <dmn:formalParameter id="_FP_MATCHING_EXCEPTIONS_4" name="categoriesInScope" typeRef="Any" />
+      <dmn:formalParameter id="_FP_MATCHING_EXCEPTIONS_5" name="itemIdsInScope" typeRef="Any" />
+      <dmn:literalExpression id="_EXBKM_MATCHING_EXCEPTIONS">
+        <dmn:text>if exceptions = null then [] else (for e in exceptions return if e.exemptItemId = itemId and (e.appliesToRuleId = null or e.appliesToRuleId = "" or e.appliesToRuleId = ruleId) and (((e.whenCategoryPresent = null or e.whenCategoryPresent = "") and (e.whenItemPresent = null or e.whenItemPresent = "")) or (e.whenCategoryPresent != null and e.whenCategoryPresent != "" and list contains(categoriesInScope, e.whenCategoryPresent)) or (e.whenItemPresent != null and e.whenItemPresent != "" and list contains(itemIdsInScope, e.whenItemPresent))) then e else null)[item != null]</dmn:text>
+      </dmn:literalExpression>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+  <!-- NormalisedItems: fill in defaults once, and attach the precedence rank and the origin tie-break key so nothing downstream has to look them up again. origin defaults to CART; an omitted scopeId becomes the implicit scope "". -->
+  <dmn:decision id="_D_NORMALISED" name="NormalisedItems">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_NORMALISED" name="NormalisedItems" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_NORMALISED_I1">
+      <dmn:requiredInput href="#_IN_ITEMS" />
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_PRECEDENCE">
-      <dmn:requiredDecision href="#_DECISION_PRECEDENCE" />
+    <dmn:informationRequirement id="_IR_NORMALISED_D1">
+      <dmn:requiredDecision href="#_D_PRECEDENCE" />
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_CAT_RULES">
-      <dmn:requiredDecision href="#_DECISION_CAT_RULES" />
+    <dmn:knowledgeRequirement id="_KR_NORMALISED_1">
+      <dmn:requiredKnowledge href="#_BKM_PRECEDENCE_OF" />
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="_EX_NORMALISED">
+      <dmn:text>if Items = null then [] else for i in Items return {itemId: i.itemId, itemName: i.itemName, itemType: if i.itemType = null then "PROMOTION" else i.itemType, discountCategory: i.discountCategory, origin: if i.origin = null then "CART" else i.origin, scopeId: if i.scopeId = null then "" else i.scopeId, serviceType: i.serviceType, precedenceRank: PrecedenceOf(CategoryPrecedence, i.discountCategory), originRank: if i.origin = "INVENTORY" then 0 else 1}</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <!-- OrderedItems: one canonical total order - rank, then inventory before cart, then itemId. Every list downstream is derived from this one by filtering, which is what makes the verdict independent of the order the caller sent the items in. -->
+  <dmn:decision id="_D_ORDERED" name="OrderedItems">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_ORDERED" name="OrderedItems" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_ORDERED_D1">
+      <dmn:requiredDecision href="#_D_NORMALISED" />
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_PROMO_RULES">
-      <dmn:requiredDecision href="#_DECISION_PROMO_RULES" />
+    <dmn:literalExpression id="_EX_ORDERED">
+      <dmn:text>sort(NormalisedItems, function(a, b) a.precedenceRank &lt; b.precedenceRank or (a.precedenceRank = b.precedenceRank and a.originRank &lt; b.originRank) or (a.precedenceRank = b.precedenceRank and a.originRank = b.originRank and a.itemId &lt; b.itemId))</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <!-- Scopes: the distinct contracts in the request. Conflicts are evaluated inside a scope, never across scopes. -->
+  <dmn:decision id="_D_SCOPES" name="Scopes">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_SCOPES" name="Scopes" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_SCOPES_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
     </dmn:informationRequirement>
-    <dmn:informationRequirement id="_IR_ALLOWED_RULES">
-      <dmn:requiredDecision href="#_DECISION_ALLOWED_RULES" />
+    <dmn:literalExpression id="_EX_SCOPES">
+      <dmn:text>distinct values(for i in OrderedItems return i.scopeId)</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <!-- ScopeCategories: the distinct discount categories present on each contract. Exception rules keyed on whenCategoryPresent are answered from here. -->
+  <dmn:decision id="_D_SCOPECATS" name="ScopeCategories">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_SCOPECATS" name="ScopeCategories" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_SCOPECATS_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
     </dmn:informationRequirement>
-    <dmn:context id="_CTX_RESULT">
+    <dmn:informationRequirement id="_IR_SCOPECATS_D2">
+      <dmn:requiredDecision href="#_D_SCOPES" />
+    </dmn:informationRequirement>
+    <dmn:literalExpression id="_EX_SCOPECATS">
+      <dmn:text>for sc in Scopes return {scopeId: sc, values: distinct values(for it in OrderedItems[scopeId = sc] return it.discountCategory)}</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <!-- ScopeItemIds: the item ids present on each contract. Exception rules keyed on whenItemPresent are answered from here. Kept separate from ScopeCategories because a single FEEL 'for' body may not hold two sibling loops - see the note on ResolvedConflicts. -->
+  <dmn:decision id="_D_SCOPEITEMS" name="ScopeItemIds">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_SCOPEITEMS" name="ScopeItemIds" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_SCOPEITEMS_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_SCOPEITEMS_D2">
+      <dmn:requiredDecision href="#_D_SCOPES" />
+    </dmn:informationRequirement>
+    <dmn:literalExpression id="_EX_SCOPEITEMS">
+      <dmn:text>for sc in Scopes return {scopeId: sc, values: for it in OrderedItems[scopeId = sc] return it.itemId}</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <!-- ApplicableRules: drop rules that cannot apply to this request before any conflict work. A rule naming a channel applies only in that channel; a rule naming a service type is kept only if some item carries that service type - the per-item match happens later. -->
+  <dmn:decision id="_D_APPLICABLE" name="ApplicableRules">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_APPLICABLE" name="ApplicableRules" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_APPLICABLE_I1">
+      <dmn:requiredInput href="#_IN_CHANNEL" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_APPLICABLE_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_APPLICABLE_D2">
+      <dmn:requiredDecision href="#_D_CATRULES" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_APPLICABLE_D3">
+      <dmn:requiredDecision href="#_D_ITEMRULES" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_APPLICABLE_D4">
+      <dmn:requiredDecision href="#_D_CARDRULES" />
+    </dmn:informationRequirement>
+    <dmn:context id="_CTX_APPLICABLE">
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PREC" name="categoryPrecedence" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_PREC">
-          <dmn:text>CategoryPrecedence</dmn:text>
+        <dmn:variable id="_CE_APPLICABLE_1" name="channelValue" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_1">
+          <dmn:text>if Channel = null then "" else Channel</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_RULES" name="categoryBlockingRules" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_CAT_RULES">
-          <dmn:text>CategoryBlockingRules</dmn:text>
+        <dmn:variable id="_CE_APPLICABLE_2" name="serviceTypesPresent" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_2">
+          <dmn:text>distinct values(for i in OrderedItems return i.serviceType)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- Blank and empty-string are both treated as 'not set': the browser editor writes one, a hand-edited file the other. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_APPLICABLE_3" name="inContext" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_3">
+          <dmn:text>function(ruleServiceType, ruleChannel) (ruleServiceType = null or ruleServiceType = "" or list contains(serviceTypesPresent, ruleServiceType)) and (ruleChannel = null or ruleChannel = "" or ruleChannel = channelValue)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- A table whose last row a rule owner deleted evaluates to null, not to an empty list. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_APPLICABLE_4" name="categoryRules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_4">
+          <dmn:text>if CategoryIncompatibility = null then [] else (for r in CategoryIncompatibility return if inContext(r.serviceType, r.channel) then r else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_RULES" name="promotionBlockingRules" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_PROMO_RULES">
-          <dmn:text>PromotionBlockingRules</dmn:text>
+        <dmn:variable id="_CE_APPLICABLE_5" name="itemRules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_5">
+          <dmn:text>if ItemIncompatibility = null then [] else (for r in ItemIncompatibility return if inContext(r.serviceType, r.channel) then r else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_ALLOWED_RULES" name="promotionExceptionRules" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_ALLOWED_RULES">
-          <dmn:text>PromotionExceptionRules</dmn:text>
+        <dmn:variable id="_CE_APPLICABLE_6" name="cardinalityRules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_APPLICABLE_6">
+          <dmn:text>if CategoryCardinality = null then [] else (for r in CategoryCardinality return if inContext(r.serviceType, r.channel) then r else null)[item != null]</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
       <dmn:contextEntry>
-        <dmn:variable id="_CE_PREC_OF" name="precedenceOf" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_PREC_OF">
-          <dmn:text>function(cat) if count(categoryPrecedence[discountCategory = cat]) &gt; 0 then (categoryPrecedence[discountCategory = cat]).precedenceRank[1] else 999</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_CATS" name="categoriesPresent" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_CATS">
-          <dmn:text>distinct values(for p in EligiblePromotions return p.discountCategory)</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_CONFLICTS" name="activeConflicts" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_CONFLICTS">
-          <dmn:text>categoryBlockingRules[list contains(categoriesPresent, groupA) and list contains(categoriesPresent, groupB)]</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_RESOLUTIONS" name="conflictResolutions" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_RESOLUTIONS">
-          <dmn:text>for c in activeConflicts return {winnerCategory: if c.overrideWinner != null then c.overrideWinner else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupA else c.groupB, loserCategory: if c.overrideWinner != null then (if c.overrideWinner = c.groupA then c.groupB else c.groupA) else if precedenceOf(c.groupA) &lt; precedenceOf(c.groupB) then c.groupB else c.groupA, isOverride: c.overrideWinner != null}</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_LOSERS" name="losingCategories" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_LOSERS">
-          <dmn:text>distinct values(for cr in conflictResolutions return cr.loserCategory)</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_EXEMPTED" name="categoryExemptedIds" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_CAT_EXEMPTED">
-          <dmn:text>distinct values((for p in EligiblePromotions[list contains(losingCategories, discountCategory)] return if (some rule in promotionExceptionRules satisfies rule.promotion = p.promotionId and (rule.allowedWithGroup = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory or (rule.allowedWithPromotion != null and (some winner in EligiblePromotions[discountCategory = conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory] satisfies winner.promotionId = rule.allowedWithPromotion)))) then p.promotionId else null)[item != null])</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_ACTIVE_BLOCKS" name="activeBlocks" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_ACTIVE_BLOCKS">
-          <dmn:text>(for rule in promotionBlockingRules return if (rule.blockedByGroup != null and list contains(categoriesPresent, rule.blockedByGroup)) or (rule.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.blockedByPromotion)) then rule else null)[item != null]</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_BLOCKED_IDS" name="blockedPromotionIds" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_BLOCKED_IDS">
-          <dmn:text>distinct values(for b in activeBlocks return if b.overrideWinner = null or b.overrideWinner = "" then b.promotion else if b.overrideWinner = "BY_PRECEDENCE" then (if b.blockedByPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = b.blockedByPromotion) then (if precedenceOf((EligiblePromotions[promotionId = b.promotion])[1].discountCategory) &lt; precedenceOf((EligiblePromotions[promotionId = b.blockedByPromotion])[1].discountCategory) then b.blockedByPromotion else b.promotion) else b.promotion) else if b.overrideWinner = b.promotion then b.blockedByPromotion else b.promotion)</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_EXEMPTED" name="promoExemptedIds" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_PROMO_EXEMPTED">
-          <dmn:text>distinct values((for pid in blockedPromotionIds return if (some rule in promotionExceptionRules satisfies rule.promotion = pid and ((rule.allowedWithGroup != null and list contains(categoriesPresent, rule.allowedWithGroup)) or (rule.allowedWithPromotion != null and (some p in EligiblePromotions satisfies p.promotionId = rule.allowedWithPromotion)))) then pid else null)[item != null])</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_SURVIVING" name="surviving" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_SURVIVING">
-          <dmn:text>EligiblePromotions[(not(list contains(losingCategories, discountCategory)) or list contains(categoryExemptedIds, promotionId)) and (not(list contains(blockedPromotionIds, promotionId)) or list contains(promoExemptedIds, promotionId))]</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_SORTED" name="sorted" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_SORTED">
-          <dmn:text>sort(surviving, function(a, b) precedenceOf(a.discountCategory) &lt; precedenceOf(b.discountCategory))</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_ALLOWED" name="allowedResult" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_ALLOWED">
-          <dmn:text>if count(sorted) = 0 then [] else for i in 1..count(sorted) return {promotionId: sorted[i].promotionId, promotionName: sorted[i].promotionName, discountCategory: sorted[i].discountCategory, appliedOrder: i}</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_CAT_REJECTED" name="categoryRejections" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_CAT_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(losingCategories, discountCategory) and not(list contains(categoryExemptedIds, promotionId))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: "Incompatible with " + conflictResolutions[loserCategory = p.discountCategory][1].winnerCategory + (if conflictResolutions[loserCategory = p.discountCategory][1].isOverride then " (override winner)" else " (higher precedence)")}</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_BUILD_REASON" name="buildReason" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_BUILD_REASON">
-          <dmn:text>function(rule) if rule = null then "Blocked by promotion rule" else (if rule.blockedByGroup != null and rule.blockedByPromotion != null then "Blocked by category " + rule.blockedByGroup + " or promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion) else if rule.blockedByGroup != null then "Blocked by category " + rule.blockedByGroup else "Blocked by promotion " + (if count(EligiblePromotions[promotionId = rule.blockedByPromotion]) &gt; 0 then EligiblePromotions[promotionId = rule.blockedByPromotion][1].promotionName + " (" + rule.blockedByPromotion + ")" else rule.blockedByPromotion)) + (if rule.overrideWinner != null and rule.overrideWinner != "" then (if rule.overrideWinner = "BY_PRECEDENCE" then ", winner by precedence" else ", winner: " + (if count(EligiblePromotions[promotionId = rule.overrideWinner]) &gt; 0 then EligiblePromotions[promotionId = rule.overrideWinner][1].promotionName + " (" + rule.overrideWinner + ")" else rule.overrideWinner)) else "")</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_PROMO_REJECTED" name="promotionRejections" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_PROMO_REJECTED">
-          <dmn:text>for p in EligiblePromotions[list contains(blockedPromotionIds, promotionId) and not(list contains(promoExemptedIds, promotionId)) and not(list contains(losingCategories, discountCategory))] return {promotionId: p.promotionId, promotionName: p.promotionName, discountCategory: p.discountCategory, reason: buildReason(if count(activeBlocks[promotion = p.promotionId]) &gt; 0 then activeBlocks[promotion = p.promotionId][1] else if count(activeBlocks[blockedByPromotion = p.promotionId]) &gt; 0 then activeBlocks[blockedByPromotion = p.promotionId][1] else null)}</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:variable id="_CE_REJECTED" name="rejectedResult" typeRef="Any" />
-        <dmn:literalExpression id="_EXPR_REJECTED">
-          <dmn:text>concatenate(categoryRejections, promotionRejections)</dmn:text>
-        </dmn:literalExpression>
-      </dmn:contextEntry>
-      <dmn:contextEntry>
-        <dmn:literalExpression id="_EXPR_FINAL">
-          <dmn:text>{AllowedPromotions: allowedResult, RejectedPromotions: rejectedResult}</dmn:text>
+        <dmn:literalExpression id="_EX_APPLICABLE_7">
+          <dmn:text>{categoryRules: categoryRules, itemRules: itemRules, cardinalityRules: cardinalityRules}</dmn:text>
         </dmn:literalExpression>
       </dmn:contextEntry>
     </dmn:context>
   </dmn:decision>
-  <dmn:decision id="_DECISION_ALLOWED_RULES" name="PromotionExceptionRules">
+  <!-- CategoryConflicts: a category rule fires when both of its categories are present in the same scope. Emits winners and losers; exemptions are applied later, in ResolvedConflicts. -->
+  <dmn:decision id="_D_CATCONFLICTS" name="CategoryConflicts">
     <dmn:extensionElements />
-    <dmn:variable id="_VAR_ALLOWED_RULES" name="PromotionExceptionRules" typeRef="tAllowedRuleList" />
-    <dmn:decisionTable id="_DT_ALLOWED_RULES" hitPolicy="COLLECT" preferredOrientation="Rule-as-Row" outputLabel="PromotionExceptionRules">
-      <dmn:input id="_DT_AR_IN1">
-        <dmn:inputExpression id="_DT_AR_IE1" typeRef="string">
-          <dmn:text>"match"</dmn:text>
-        </dmn:inputExpression>
-      </dmn:input>
-      <dmn:output id="_DT_AR_OUT1" name="promotion" typeRef="string" />
-      <dmn:output id="_DT_AR_OUT2" name="allowedWithGroup" typeRef="string" />
-      <dmn:output id="_DT_AR_OUT3" name="allowedWithPromotion" typeRef="string" />
-      <dmn:annotation name="" />
-      <dmn:rule id="_DT_AR_R1">
-        <dmn:inputEntry id="_DT_AR_R1_I1">
-          <dmn:text>-</dmn:text>
-        </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O1">
-          <dmn:text>"5"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O2">
-          <dmn:text>"EmployeeDiscount"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R1_O3">
-          <dmn:text></dmn:text>
-        </dmn:outputEntry>
-        <dmn:annotationEntry>
-          <dmn:text>Test: Kombo discount is aexempted from Employee category conflict</dmn:text>
-        </dmn:annotationEntry>
-      </dmn:rule>
-      <dmn:rule id="_DT_AR_R2">
-        <dmn:inputEntry id="_DT_AR_R2_I1">
-          <dmn:text>-</dmn:text>
-        </dmn:inputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O1">
-          <dmn:text>"EX002"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O2">
-          <dmn:text></dmn:text>
-        </dmn:outputEntry>
-        <dmn:outputEntry id="_DT_AR_R2_O3">
-          <dmn:text>"449"</dmn:text>
-        </dmn:outputEntry>
-        <dmn:annotationEntry>
-          <dmn:text>Test: Promo exempted from specific promotion block</dmn:text>
-        </dmn:annotationEntry>
-      </dmn:rule>
-    </dmn:decisionTable>
+    <dmn:variable id="_V_CATCONFLICTS" name="CategoryConflicts" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_CATCONFLICTS_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CATCONFLICTS_D2">
+      <dmn:requiredDecision href="#_D_SCOPES" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CATCONFLICTS_D3">
+      <dmn:requiredDecision href="#_D_APPLICABLE" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CATCONFLICTS_D4">
+      <dmn:requiredDecision href="#_D_PRECEDENCE" />
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="_KR_CATCONFLICTS_1">
+      <dmn:requiredKnowledge href="#_BKM_PRECEDENCE_OF" />
+    </dmn:knowledgeRequirement>
+    <dmn:context id="_CTX_CATCONFLICTS">
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CATCONFLICTS_1" name="rules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CATCONFLICTS_1">
+          <dmn:text>ApplicableRules.categoryRules</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- A rule naming a service type only sees items carrying that service type. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CATCONFLICTS_2" name="raw" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CATCONFLICTS_2">
+          <dmn:text>flatten(for sc in Scopes return for r in rules return {ruleId: r.ruleId, scopeId: sc, categoryA: r.categoryA, categoryB: r.categoryB, winner: r.winner, description: r.description, sideA: OrderedItems[scopeId = sc and discountCategory = r.categoryA and (r.serviceType = null or r.serviceType = "" or serviceType = r.serviceType)], sideB: OrderedItems[scopeId = sc and discountCategory = r.categoryB and (r.serviceType = null or r.serviceType = "" or serviceType = r.serviceType)]})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- A rule naming the same category twice is a cardinality question, not a pairwise one, and is ignored here - CategoryCardinality is where that belongs. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CATCONFLICTS_3" name="active" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CATCONFLICTS_3">
+          <dmn:text>(for c in raw return if c.categoryA != c.categoryB and count(c.sideA) &gt; 0 and count(c.sideB) &gt; 0 then c else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CATCONFLICTS_4" name="oriented" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CATCONFLICTS_4">
+          <dmn:text>for c in active return {base: c, aWins: if c.winner = "A" then true else if c.winner = "B" then false else PrecedenceOf(CategoryPrecedence, c.categoryA) &lt;= PrecedenceOf(CategoryPrecedence, c.categoryB)}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EX_CATCONFLICTS_5">
+          <dmn:text>for o in oriented return {ruleId: o.base.ruleId, ruleType: "CATEGORY_INCOMPATIBILITY", reasonCode: "CATEGORY_INCOMPATIBLE", scopeId: o.base.scopeId, isOverride: o.base.winner = "A" or o.base.winner = "B", winners: if o.aWins then o.base.sideA else o.base.sideB, losers: if o.aWins then o.base.sideB else o.base.sideA, preExemptedItems: [], preExemptedByRuleIds: [], explanation: (if o.base.winner = "A" or o.base.winner = "B" then o.base.ruleId + " declares " + (if o.aWins then o.base.categoryA else o.base.categoryB) + " the winner over " + (if o.aWins then o.base.categoryB else o.base.categoryA) + ", overriding precedence rank" else (if o.aWins then o.base.categoryA else o.base.categoryB) + " (rank " + string(PrecedenceOf(CategoryPrecedence, if o.aWins then o.base.categoryA else o.base.categoryB)) + ") takes precedence over " + (if o.aWins then o.base.categoryB else o.base.categoryA) + " (rank " + string(PrecedenceOf(CategoryPrecedence, if o.aWins then o.base.categoryB else o.base.categoryA)) + ")")}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
   </dmn:decision>
+  <!-- ItemConflicts: an item rule fires when the named item and at least one counterpart are present in the same scope. The counterpart is the named item, any member of the named category, or either when both columns are filled. An item never conflicts with itself. -->
+  <dmn:decision id="_D_ITEMCONFLICTS" name="ItemConflicts">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_ITEMCONFLICTS" name="ItemConflicts" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_ITEMCONFLICTS_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_ITEMCONFLICTS_D2">
+      <dmn:requiredDecision href="#_D_SCOPES" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_ITEMCONFLICTS_D3">
+      <dmn:requiredDecision href="#_D_APPLICABLE" />
+    </dmn:informationRequirement>
+    <dmn:context id="_CTX_ITEMCONFLICTS">
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ITEMCONFLICTS_1" name="rules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_1">
+          <dmn:text>ApplicableRules.itemRules</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- itemId != r.itemId is what stops a rule naming the category the item itself belongs to from making that item its own counterpart. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ITEMCONFLICTS_2" name="raw" typeRef="Any" />
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_2">
+          <dmn:text>flatten(for sc in Scopes return for r in rules return {ruleId: r.ruleId, scopeId: sc, winner: r.winner, description: r.description, byItem: r.conflictsWithItemId != null and r.conflictsWithItemId != "", sideA: OrderedItems[scopeId = sc and itemId = r.itemId and (r.serviceType = null or r.serviceType = "" or serviceType = r.serviceType)], sideB: OrderedItems[scopeId = sc and itemId != r.itemId and (r.serviceType = null or r.serviceType = "" or serviceType = r.serviceType) and ((r.conflictsWithItemId != null and r.conflictsWithItemId != "" and itemId = r.conflictsWithItemId) or (r.conflictsWithCategory != null and r.conflictsWithCategory != "" and discountCategory = r.conflictsWithCategory))]})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ITEMCONFLICTS_3" name="active" typeRef="Any" />
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_3">
+          <dmn:text>(for c in raw return if count(c.sideA) &gt; 0 and count(c.sideB) &gt; 0 then c else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- Two passes rather than one: rankA and rankB cannot be two sibling loops in a single 'for' body. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ITEMCONFLICTS_4" name="rankedA" typeRef="Any" />
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_4">
+          <dmn:text>for c in active return {base: c, rankA: min(for x in c.sideA return x.precedenceRank)}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_ITEMCONFLICTS_5" name="oriented" typeRef="Any" />
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_5">
+          <dmn:text>for c in rankedA return {base: c.base, aWins: if c.base.winner = "A" then true else if c.base.winner = "B" then false else c.rankA &lt;= min(for x in c.base.sideB return x.precedenceRank)}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EX_ITEMCONFLICTS_6">
+          <dmn:text>for o in oriented return {ruleId: o.base.ruleId, ruleType: "ITEM_INCOMPATIBILITY", reasonCode: if o.base.byItem then "ITEM_INCOMPATIBLE" else "ITEM_CATEGORY_INCOMPATIBLE", scopeId: o.base.scopeId, isOverride: o.base.winner = "A" or o.base.winner = "B", winners: if o.aWins then o.base.sideA else o.base.sideB, losers: if o.aWins then o.base.sideB else o.base.sideA, preExemptedItems: [], preExemptedByRuleIds: [], explanation: o.base.ruleId + ": " + (if o.aWins then o.base.sideA[1].itemName else o.base.sideB[1].itemName) + " (" + (if o.aWins then o.base.sideA[1].itemId else o.base.sideB[1].itemId) + ")" + (if o.base.winner = "A" or o.base.winner = "B" then " is the declared winner over " else " takes precedence over ") + (if o.aWins then o.base.sideB[1].itemName else o.base.sideA[1].itemName) + " (" + (if o.aWins then o.base.sideB[1].itemId else o.base.sideA[1].itemId) + ")"}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
+  </dmn:decision>
+  <!-- CardinalityViolations: too many items of one category on one contract. An exemption is applied before counting - an exempt item neither counts toward the limit nor is dropped by it - so the exemption is resolved here rather than in ResolvedConflicts. -->
+  <dmn:decision id="_D_CARDVIOLATIONS" name="CardinalityViolations">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_CARDVIOLATIONS" name="CardinalityViolations" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D2">
+      <dmn:requiredDecision href="#_D_SCOPES" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D3">
+      <dmn:requiredDecision href="#_D_SCOPECATS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D4">
+      <dmn:requiredDecision href="#_D_SCOPEITEMS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D5">
+      <dmn:requiredDecision href="#_D_APPLICABLE" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_CARDVIOLATIONS_D6">
+      <dmn:requiredDecision href="#_D_EXCRULES" />
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="_KR_CARDVIOLATIONS_1">
+      <dmn:requiredKnowledge href="#_BKM_MATCHING_EXCEPTIONS" />
+    </dmn:knowledgeRequirement>
+    <dmn:context id="_CTX_CARDVIOLATIONS">
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_1" name="rules" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_1">
+          <dmn:text>ApplicableRules.cardinalityRules</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_2" name="raw" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_2">
+          <dmn:text>flatten(for sc in Scopes return for r in rules return {ruleId: r.ruleId, scopeId: sc, discountCategory: r.discountCategory, maxAllowed: r.maxAllowed, description: r.description, members: OrderedItems[scopeId = sc and discountCategory = r.discountCategory and (r.serviceType = null or r.serviceType = "" or serviceType = r.serviceType)], categoriesInScope: (ScopeCategories[scopeId = sc])[1].values, itemIdsInScope: (ScopeItemIds[scopeId = sc])[1].values})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- One flat row per (rule, item), carrying the item's own fields so that everything below is a plain list filter rather than another loop. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_3" name="hits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_3">
+          <dmn:text>flatten(for c in raw return for m in c.members return {ruleId: c.ruleId, itemId: m.itemId, itemName: m.itemName, itemType: m.itemType, discountCategory: m.discountCategory, origin: m.origin, scopeId: m.scopeId, serviceType: m.serviceType, precedenceRank: m.precedenceRank, originRank: m.originRank, exceptions: MatchingExceptions(Exceptions, m.itemId, c.ruleId, c.categoriesInScope, c.itemIdsInScope)})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_4" name="exemptHits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_4">
+          <dmn:text>(for h in hits return if count(h.exceptions) &gt; 0 then h else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_5" name="candidateHits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_5">
+          <dmn:text>(for h in hits return if count(h.exceptions) = 0 then h else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_6" name="exemptedByPairs" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_6">
+          <dmn:text>flatten(for h in exemptHits return for e in h.exceptions return {ruleId: h.ruleId, scopeId: h.scopeId, excRuleId: e.ruleId})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- An exempt item leaves the count entirely: it neither counts toward the limit nor is dropped by it. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_7" name="counted" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_7">
+          <dmn:text>for c in raw return {base: c, exempt: exemptHits[ruleId = c.ruleId and scopeId = c.scopeId], candidates: candidateHits[ruleId = c.ruleId and scopeId = c.scopeId], exemptedBy: distinct values(for q in exemptedByPairs[ruleId = c.ruleId and scopeId = c.scopeId] return q.excRuleId)}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_CARDVIOLATIONS_8" name="active" typeRef="Any" />
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_8">
+          <dmn:text>(for c in counted return if count(c.candidates) &gt; c.base.maxAllowed then c else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- candidates is already in canonical order, so the survivors are simply the first maxAllowed of them. -->
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EX_CARDVIOLATIONS_9">
+          <dmn:text>for c in active return {ruleId: c.base.ruleId, ruleType: "CARDINALITY", reasonCode: "CARDINALITY_EXCEEDED", scopeId: c.base.scopeId, isOverride: false, winners: if c.base.maxAllowed &lt; 1 then [] else sublist(c.candidates, 1, c.base.maxAllowed), losers: if c.base.maxAllowed &lt; 1 then c.candidates else sublist(c.candidates, c.base.maxAllowed + 1), preExemptedItems: c.exempt, preExemptedByRuleIds: c.exemptedBy, explanation: c.base.ruleId + " allows at most " + string(c.base.maxAllowed) + " " + c.base.discountCategory + " per contract; " + string(count(c.candidates)) + " present"}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
+  </dmn:decision>
+  <!-- ResolvedConflicts: one uniform pass applying Exceptions to every conflict, whatever its shape, and stamping the resolution. A conflict whose losers are all rescued is still reported - resolution EXEMPTED - because a rule that fires and then does nothing is exactly what a rule owner needs to see. Note the shape of the entries below: each holds at most one nested loop, because Drools' FEEL mis-scopes two sibling loops inside one 'for' body. -->
+  <dmn:decision id="_D_RESOLVED" name="ResolvedConflicts">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_RESOLVED" name="ResolvedConflicts" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_RESOLVED_D1">
+      <dmn:requiredDecision href="#_D_SCOPECATS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_RESOLVED_D2">
+      <dmn:requiredDecision href="#_D_SCOPEITEMS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_RESOLVED_D3">
+      <dmn:requiredDecision href="#_D_CATCONFLICTS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_RESOLVED_D4">
+      <dmn:requiredDecision href="#_D_ITEMCONFLICTS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_RESOLVED_D5">
+      <dmn:requiredDecision href="#_D_CARDVIOLATIONS" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_RESOLVED_D6">
+      <dmn:requiredDecision href="#_D_EXCRULES" />
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="_KR_RESOLVED_1">
+      <dmn:requiredKnowledge href="#_BKM_MATCHING_EXCEPTIONS" />
+    </dmn:knowledgeRequirement>
+    <dmn:context id="_CTX_RESOLVED">
+      <!-- Order matters: category, then item, then cardinality. An item caught by two rules is reported against the first, so it is never rejected twice. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_1" name="all" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_1">
+          <dmn:text>concatenate(CategoryConflicts, ItemConflicts, CardinalityViolations)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_2" name="hits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_2">
+          <dmn:text>flatten(for c in all return for l in c.losers return {ruleId: c.ruleId, itemId: l.itemId, itemName: l.itemName, itemType: l.itemType, discountCategory: l.discountCategory, origin: l.origin, scopeId: l.scopeId, serviceType: l.serviceType, precedenceRank: l.precedenceRank, originRank: l.originRank, exceptions: MatchingExceptions(Exceptions, l.itemId, c.ruleId, (ScopeCategories[scopeId = c.scopeId])[1].values, (ScopeItemIds[scopeId = c.scopeId])[1].values)})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_3" name="exemptedHits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_3">
+          <dmn:text>(for h in hits return if count(h.exceptions) &gt; 0 then h else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_4" name="remainingHits" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_4">
+          <dmn:text>(for h in hits return if count(h.exceptions) = 0 then h else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_5" name="exemptedByPairs" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_5">
+          <dmn:text>flatten(for h in exemptedHits return for e in h.exceptions return {ruleId: h.ruleId, scopeId: h.scopeId, excRuleId: e.ruleId})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_6" name="classified" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_6">
+          <dmn:text>for c in all return {base: c, exempted: exemptedHits[ruleId = c.ruleId and scopeId = c.scopeId], remaining: remainingHits[ruleId = c.ruleId and scopeId = c.scopeId], exemptedBy: distinct values(for q in exemptedByPairs[ruleId = c.ruleId and scopeId = c.scopeId] return q.excRuleId)}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- The three id/participant projections below are separate entries for the same reason: one nested loop each. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_7" name="loserIds" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_7">
+          <dmn:text>for c in classified return {ruleId: c.base.ruleId, scopeId: c.base.scopeId, values: for x in c.remaining return x.itemId}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_8" name="exemptedIds" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_8">
+          <dmn:text>for c in classified return {ruleId: c.base.ruleId, scopeId: c.base.scopeId, values: for x in concatenate(c.base.preExemptedItems, c.exempted) return x.itemId}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- Winners first, then losers, then anything an exception rescued before counting. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_RESOLVED_9" name="participantRows" typeRef="Any" />
+        <dmn:literalExpression id="_EX_RESOLVED_9">
+          <dmn:text>for c in classified return {ruleId: c.base.ruleId, scopeId: c.base.scopeId, values: for p in concatenate(c.base.winners, c.base.losers, c.base.preExemptedItems) return {itemId: p.itemId, discountCategory: p.discountCategory, origin: p.origin}}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EX_RESOLVED_10">
+          <dmn:text>for c in classified return {ruleId: c.base.ruleId, ruleType: c.base.ruleType, reasonCode: c.base.reasonCode, scopeId: c.base.scopeId, participants: (participantRows[ruleId = c.base.ruleId and scopeId = c.base.scopeId])[1].values, winners: c.base.winners, losers: c.remaining, loserItemIds: (loserIds[ruleId = c.base.ruleId and scopeId = c.base.scopeId])[1].values, exemptedItemIds: (exemptedIds[ruleId = c.base.ruleId and scopeId = c.base.scopeId])[1].values, exemptedByRuleIds: distinct values(concatenate(c.base.preExemptedByRuleIds, c.exemptedBy)), resolution: if count(c.remaining) = 0 then "EXEMPTED" else if c.base.ruleType = "CARDINALITY" then "AUTO_BY_CARDINALITY" else if c.base.isOverride then "AUTO_BY_OVERRIDE" else "AUTO_BY_PRECEDENCE", winnerItemId: if count(c.remaining) = 0 or count(c.base.winners) = 0 then null else c.base.winners[1].itemId, explanation: c.base.explanation + (if count(c.exempted) &gt; 0 then " - exempted by " + c.exemptedBy[1] else "")}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
+  </dmn:decision>
+  <!-- Verdict: the answer. valid is the checkout gate; rejected carries a stable reasonCode and the ruleId that fired; conflicts says which items conflict with which, so a client can show the user what to correct instead of only what was taken away. -->
+  <dmn:decision id="_D_VERDICT" name="Verdict">
+    <dmn:extensionElements />
+    <dmn:variable id="_V_VERDICT" name="Verdict" typeRef="Any" />
+    <dmn:informationRequirement id="_IR_VERDICT_D1">
+      <dmn:requiredDecision href="#_D_ORDERED" />
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_VERDICT_D2">
+      <dmn:requiredDecision href="#_D_RESOLVED" />
+    </dmn:informationRequirement>
+    <dmn:context id="_CTX_VERDICT">
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_1" name="rejections" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_1">
+          <dmn:text>flatten(for c in ResolvedConflicts return for l in c.losers return {itemId: l.itemId, ruleId: c.ruleId, reasonCode: c.reasonCode, reasonText: c.explanation})</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_2" name="rejectedIds" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_2">
+          <dmn:text>distinct values(for r in rejections return r.itemId)</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- One entry per item even when several rules caught it: the first rule wins. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_3" name="rejected" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_3">
+          <dmn:text>(for it in OrderedItems return if list contains(rejectedIds, it.itemId) then {itemId: it.itemId, itemName: it.itemName, itemType: it.itemType, discountCategory: it.discountCategory, origin: it.origin, scopeId: it.scopeId, serviceType: it.serviceType, reasonCode: (rejections[itemId = it.itemId])[1].reasonCode, ruleId: (rejections[itemId = it.itemId])[1].ruleId, reasonText: (rejections[itemId = it.itemId])[1].reasonText} else null)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_4" name="survivors" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_4">
+          <dmn:text>(for it in OrderedItems return if list contains(rejectedIds, it.itemId) then null else it)[item != null]</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_5" name="allowed" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_5">
+          <dmn:text>if count(survivors) = 0 then [] else for i in 1..count(survivors) return {itemId: survivors[i].itemId, itemName: survivors[i].itemName, itemType: survivors[i].itemType, discountCategory: survivors[i].discountCategory, origin: survivors[i].origin, scopeId: survivors[i].scopeId, serviceType: survivors[i].serviceType, appliedOrder: i}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_6" name="conflictsOut" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_6">
+          <dmn:text>for c in ResolvedConflicts return {ruleId: c.ruleId, ruleType: c.ruleType, scopeId: c.scopeId, participants: c.participants, resolution: c.resolution, winnerItemId: c.winnerItemId, loserItemIds: c.loserItemIds, exemptedItemIds: c.exemptedItemIds, exemptedByRuleIds: c.exemptedByRuleIds, explanation: c.explanation}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <!-- A stable order so a caller can diff two verdicts. -->
+      <dmn:contextEntry>
+        <dmn:variable id="_CE_VERDICT_7" name="conflictsSorted" typeRef="Any" />
+        <dmn:literalExpression id="_EX_VERDICT_7">
+          <dmn:text>sort(conflictsOut, function(a, b) a.ruleId &lt; b.ruleId or (a.ruleId = b.ruleId and a.scopeId &lt; b.scopeId))</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_EX_VERDICT_8">
+          <dmn:text>{valid: count(rejected) = 0, allowed: allowed, rejected: rejected, conflicts: conflictsSorted}</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
+  </dmn:decision>
+
   <dmndi:DMNDI>
     <dmndi:DMNDiagram id="_DIAGRAM_001" name="DRG">
       <di:extension>
         <kie:ComponentsWidthsExtension>
           <kie:ComponentWidths dmnElementRef="_DT_PRECEDENCE" />
-          <kie:ComponentWidths dmnElementRef="_DT_CAT_RULES" />
-          <kie:ComponentWidths dmnElementRef="_DT_PROMO_RULES" />
-          <kie:ComponentWidths dmnElementRef="_CTX_RESULT" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_PREC" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_RULES" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_RULES" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED_RULES" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_PREC_OF" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_CATS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_CONFLICTS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_RESOLUTIONS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_LOSERS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_EXEMPTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_ACTIVE_BLOCKS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_BLOCKED_IDS" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_EXEMPTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_SURVIVING" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_SORTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_ALLOWED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_CAT_REJECTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_BUILD_REASON" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_PROMO_REJECTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_REJECTED" />
-          <kie:ComponentWidths dmnElementRef="_EXPR_FINAL" />
-          <kie:ComponentWidths dmnElementRef="_DT_ALLOWED_RULES">
-            <kie:width>50</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>572</kie:width>
-          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_DT_CATRULES" />
+          <kie:ComponentWidths dmnElementRef="_DT_ITEMRULES" />
+          <kie:ComponentWidths dmnElementRef="_DT_CARDRULES" />
+          <kie:ComponentWidths dmnElementRef="_DT_EXCRULES" />
+          <kie:ComponentWidths dmnElementRef="_CTX_APPLICABLE" />
+          <kie:ComponentWidths dmnElementRef="_CTX_CATCONFLICTS" />
+          <kie:ComponentWidths dmnElementRef="_CTX_ITEMCONFLICTS" />
+          <kie:ComponentWidths dmnElementRef="_CTX_CARDVIOLATIONS" />
+          <kie:ComponentWidths dmnElementRef="_CTX_RESOLVED" />
+          <kie:ComponentWidths dmnElementRef="_CTX_VERDICT" />
         </kie:ComponentsWidthsExtension>
       </di:extension>
-      <dmndi:DMNShape id="dmnshape-drg-_INPUT_ELIGIBLE" dmnElementRef="_INPUT_ELIGIBLE" isCollapsed="false">
-        <dc:Bounds height="50" width="200" x="1309" y="378.3421052631579" />
+      <dmndi:DMNShape id="dmnshape-_D_VERDICT" dmnElementRef="_D_VERDICT" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1120" y="50" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_PRECEDENCE" dmnElementRef="_DECISION_PRECEDENCE" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="5" y="380" />
+      <dmndi:DMNShape id="dmnshape-_D_RESOLVED" dmnElementRef="_D_RESOLVED" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1075.5" y="225" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_CAT_RULES" dmnElementRef="_DECISION_CAT_RULES" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="308" y="380" />
+      <dmndi:DMNShape id="dmnshape-_D_CARDVIOLATIONS" dmnElementRef="_D_CARDVIOLATIONS" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="607.5" y="400" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_PROMO_RULES" dmnElementRef="_DECISION_PROMO_RULES" isCollapsed="false">
-        <dc:Bounds height="50" width="250" x="607" y="380" />
+      <dmndi:DMNShape id="dmnshape-_D_CATCONFLICTS" dmnElementRef="_D_CATCONFLICTS" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="897.5" y="400" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_RESULT" dmnElementRef="_DECISION_RESULT" isCollapsed="false">
-        <dc:Bounds height="50" width="300" x="590" y="135" />
+      <dmndi:DMNShape id="dmnshape-_D_ITEMCONFLICTS" dmnElementRef="_D_ITEMCONFLICTS" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1187.5" y="400" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_DECISION_ALLOWED_RULES" dmnElementRef="_DECISION_ALLOWED_RULES" isCollapsed="false">
-        <dc:Bounds height="50" width="270" x="952" y="380" />
+      <dmndi:DMNShape id="dmnshape-_D_APPLICABLE" dmnElementRef="_D_APPLICABLE" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="607.5" y="575" />
         <dmndi:DMNLabel />
       </dmndi:DMNShape>
-      <dmndi:DMNEdge id="dmnedge-drg-_IR_ELIGIBLE" dmnElementRef="_IR_ELIGIBLE">
-        <di:waypoint x="1409" y="378" />
-        <di:waypoint x="840" y="205" />
-        <di:waypoint x="840" y="185" />
+      <dmndi:DMNShape id="dmnshape-_D_SCOPECATS" dmnElementRef="_D_SCOPECATS" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1253.5" y="575" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_SCOPEITEMS" dmnElementRef="_D_SCOPEITEMS" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1543.5" y="575" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_SCOPES" dmnElementRef="_D_SCOPES" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1253.5" y="750" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_ORDERED" dmnElementRef="_D_ORDERED" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1298" y="925" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_NORMALISED" dmnElementRef="_D_NORMALISED" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1298" y="1100" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_IN_CHANNEL" dmnElementRef="_IN_CHANNEL" isCollapsed="false">
+        <dc:Bounds height="50" width="140" x="60" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_IN_ITEMS" dmnElementRef="_IN_ITEMS" isCollapsed="false">
+        <dc:Bounds height="50" width="140" x="275" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_CATRULES" dmnElementRef="_D_CATRULES" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="490" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_ITEMRULES" dmnElementRef="_D_ITEMRULES" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="780" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_CARDRULES" dmnElementRef="_D_CARDRULES" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1070" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_EXCRULES" dmnElementRef="_D_EXCRULES" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1360" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_D_PRECEDENCE" dmnElementRef="_D_PRECEDENCE" isCollapsed="false">
+        <dc:Bounds height="60" width="215" x="1650" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_BKM_MATCHING_EXCEPTIONS" dmnElementRef="_BKM_MATCHING_EXCEPTIONS" isCollapsed="false">
+        <dc:Bounds height="50" width="190" x="1940" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_BKM_PRECEDENCE_OF" dmnElementRef="_BKM_PRECEDENCE_OF" isCollapsed="false">
+        <dc:Bounds height="50" width="190" x="2205" y="1275" />
+        <dmndi:DMNLabel />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="dmnedge-_IR_NORMALISED_I1" dmnElementRef="_IR_NORMALISED_I1">
+        <di:waypoint x="345" y="1275" />
+        <di:waypoint x="1351.8" y="1160" />
       </dmndi:DMNEdge>
-      <dmndi:DMNEdge id="dmnedge-drg-_IR_PRECEDENCE" dmnElementRef="_IR_PRECEDENCE">
-        <di:waypoint x="130" y="380" />
-        <di:waypoint x="640" y="205" />
-        <di:waypoint x="640" y="185" />
+      <dmndi:DMNEdge id="dmnedge-_IR_NORMALISED_D1" dmnElementRef="_IR_NORMALISED_D1">
+        <di:waypoint x="1721.7" y="1275" />
+        <di:waypoint x="1405.5" y="1160" />
       </dmndi:DMNEdge>
-      <dmndi:DMNEdge id="dmnedge-drg-_IR_CAT_RULES" dmnElementRef="_IR_CAT_RULES">
-        <di:waypoint x="433" y="380" />
-        <di:waypoint x="690" y="205" />
-        <di:waypoint x="690" y="185" />
+      <dmndi:DMNEdge id="dmnedge-_KR_NORMALISED_1" dmnElementRef="_KR_NORMALISED_1">
+        <di:waypoint x="2268.3" y="1275" />
+        <di:waypoint x="1459.2" y="1160" />
       </dmndi:DMNEdge>
-      <dmndi:DMNEdge id="dmnedge-drg-_IR_PROMO_RULES" dmnElementRef="_IR_PROMO_RULES">
-        <di:waypoint x="732" y="380" />
-        <di:waypoint x="740" y="205" />
-        <di:waypoint x="740" y="185" />
+      <dmndi:DMNEdge id="dmnedge-_IR_ORDERED_D1" dmnElementRef="_IR_ORDERED_D1">
+        <di:waypoint x="1405.5" y="1100" />
+        <di:waypoint x="1405.5" y="985" />
       </dmndi:DMNEdge>
-      <dmndi:DMNEdge id="dmnedge-drg-_IR_ALLOWED_RULES" dmnElementRef="_IR_ALLOWED_RULES">
-        <di:waypoint x="1087" y="380" />
-        <di:waypoint x="790" y="205" />
-        <di:waypoint x="790" y="185" />
+      <dmndi:DMNEdge id="dmnedge-_IR_SCOPES_D1" dmnElementRef="_IR_SCOPES_D1">
+        <di:waypoint x="1321.9" y="925" />
+        <di:waypoint x="1361" y="810" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_SCOPECATS_D1" dmnElementRef="_IR_SCOPECATS_D1">
+        <di:waypoint x="1345.8" y="925" />
+        <di:waypoint x="1639.5" y="780" />
+        <di:waypoint x="1325.2" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_SCOPECATS_D2" dmnElementRef="_IR_SCOPECATS_D2">
+        <di:waypoint x="1289.3" y="750" />
+        <di:waypoint x="1396.8" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_SCOPEITEMS_D1" dmnElementRef="_IR_SCOPEITEMS_D1">
+        <di:waypoint x="1369.7" y="925" />
+        <di:waypoint x="1728.5" y="780" />
+        <di:waypoint x="1615.2" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_SCOPEITEMS_D2" dmnElementRef="_IR_SCOPEITEMS_D2">
+        <di:waypoint x="1325.2" y="750" />
+        <di:waypoint x="1686.8" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_APPLICABLE_I1" dmnElementRef="_IR_APPLICABLE_I1">
+        <di:waypoint x="130" y="1275" />
+        <di:waypoint x="1127" y="1130" />
+        <di:waypoint x="1127" y="955" />
+        <di:waypoint x="993.5" y="780" />
+        <di:waypoint x="643.3" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_APPLICABLE_D1" dmnElementRef="_IR_APPLICABLE_D1">
+        <di:waypoint x="1393.6" y="925" />
+        <di:waypoint x="637.5" y="780" />
+        <di:waypoint x="679.2" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_APPLICABLE_D2" dmnElementRef="_IR_APPLICABLE_D2">
+        <di:waypoint x="597.5" y="1275" />
+        <di:waypoint x="860" y="1130" />
+        <di:waypoint x="860" y="955" />
+        <di:waypoint x="726.5" y="780" />
+        <di:waypoint x="715" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_APPLICABLE_D3" dmnElementRef="_IR_APPLICABLE_D3">
+        <di:waypoint x="887.5" y="1275" />
+        <di:waypoint x="949" y="1130" />
+        <di:waypoint x="949" y="955" />
+        <di:waypoint x="815.5" y="780" />
+        <di:waypoint x="750.8" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_APPLICABLE_D4" dmnElementRef="_IR_APPLICABLE_D4">
+        <di:waypoint x="1177.5" y="1275" />
+        <di:waypoint x="1038" y="1130" />
+        <di:waypoint x="1038" y="955" />
+        <di:waypoint x="904.5" y="780" />
+        <di:waypoint x="786.7" y="635" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CATCONFLICTS_D1" dmnElementRef="_IR_CATCONFLICTS_D1">
+        <di:waypoint x="1417.4" y="925" />
+        <di:waypoint x="1082.5" y="780" />
+        <di:waypoint x="904.5" y="605" />
+        <di:waypoint x="933.3" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CATCONFLICTS_D2" dmnElementRef="_IR_CATCONFLICTS_D2">
+        <di:waypoint x="1361" y="750" />
+        <di:waypoint x="993.5" y="605" />
+        <di:waypoint x="969.2" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CATCONFLICTS_D3" dmnElementRef="_IR_CATCONFLICTS_D3">
+        <di:waypoint x="661.2" y="575" />
+        <di:waypoint x="1005" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CATCONFLICTS_D4" dmnElementRef="_IR_CATCONFLICTS_D4">
+        <di:waypoint x="1793.3" y="1275" />
+        <di:waypoint x="1216" y="1130" />
+        <di:waypoint x="1216" y="955" />
+        <di:waypoint x="1171.5" y="780" />
+        <di:waypoint x="1082.5" y="605" />
+        <di:waypoint x="1040.8" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_KR_CATCONFLICTS_1" dmnElementRef="_KR_CATCONFLICTS_1">
+        <di:waypoint x="2331.7" y="1275" />
+        <di:waypoint x="1595" y="1130" />
+        <di:waypoint x="1595" y="955" />
+        <di:waypoint x="1550.5" y="780" />
+        <di:waypoint x="1171.5" y="605" />
+        <di:waypoint x="1076.7" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_ITEMCONFLICTS_D1" dmnElementRef="_IR_ITEMCONFLICTS_D1">
+        <di:waypoint x="1441.3" y="925" />
+        <di:waypoint x="1817.5" y="780" />
+        <di:waypoint x="1840.5" y="605" />
+        <di:waypoint x="1241.2" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_ITEMCONFLICTS_D2" dmnElementRef="_IR_ITEMCONFLICTS_D2">
+        <di:waypoint x="1396.8" y="750" />
+        <di:waypoint x="1929.5" y="605" />
+        <di:waypoint x="1295" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_ITEMCONFLICTS_D3" dmnElementRef="_IR_ITEMCONFLICTS_D3">
+        <di:waypoint x="715" y="575" />
+        <di:waypoint x="1348.8" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D1" dmnElementRef="_IR_CARDVIOLATIONS_D1">
+        <di:waypoint x="1465.2" y="925" />
+        <di:waypoint x="370.5" y="780" />
+        <di:waypoint x="258.5" y="605" />
+        <di:waypoint x="634.4" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D2" dmnElementRef="_IR_CARDVIOLATIONS_D2">
+        <di:waypoint x="1432.7" y="750" />
+        <di:waypoint x="347.5" y="605" />
+        <di:waypoint x="661.2" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D3" dmnElementRef="_IR_CARDVIOLATIONS_D3">
+        <di:waypoint x="1325.2" y="575" />
+        <di:waypoint x="688.1" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D4" dmnElementRef="_IR_CARDVIOLATIONS_D4">
+        <di:waypoint x="1615.2" y="575" />
+        <di:waypoint x="715" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D5" dmnElementRef="_IR_CARDVIOLATIONS_D5">
+        <di:waypoint x="768.8" y="575" />
+        <di:waypoint x="741.9" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_CARDVIOLATIONS_D6" dmnElementRef="_IR_CARDVIOLATIONS_D6">
+        <di:waypoint x="1431.7" y="1275" />
+        <di:waypoint x="682" y="1130" />
+        <di:waypoint x="682" y="955" />
+        <di:waypoint x="459.5" y="780" />
+        <di:waypoint x="436.5" y="605" />
+        <di:waypoint x="768.8" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_KR_CARDVIOLATIONS_1" dmnElementRef="_KR_CARDVIOLATIONS_1">
+        <di:waypoint x="2003.3" y="1275" />
+        <di:waypoint x="771" y="1130" />
+        <di:waypoint x="771" y="955" />
+        <di:waypoint x="548.5" y="780" />
+        <di:waypoint x="525.5" y="605" />
+        <di:waypoint x="795.6" y="460" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D1" dmnElementRef="_IR_RESOLVED_D1">
+        <di:waypoint x="1396.8" y="575" />
+        <di:waypoint x="1484.5" y="430" />
+        <di:waypoint x="1102.4" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D2" dmnElementRef="_IR_RESOLVED_D2">
+        <di:waypoint x="1686.8" y="575" />
+        <di:waypoint x="1573.5" y="430" />
+        <di:waypoint x="1129.2" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D3" dmnElementRef="_IR_RESOLVED_D3">
+        <di:waypoint x="1005" y="400" />
+        <di:waypoint x="1156.1" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D4" dmnElementRef="_IR_RESOLVED_D4">
+        <di:waypoint x="1295" y="400" />
+        <di:waypoint x="1183" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D5" dmnElementRef="_IR_RESOLVED_D5">
+        <di:waypoint x="715" y="400" />
+        <di:waypoint x="1209.9" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_RESOLVED_D6" dmnElementRef="_IR_RESOLVED_D6">
+        <di:waypoint x="1503.3" y="1275" />
+        <di:waypoint x="1684" y="1130" />
+        <di:waypoint x="1684" y="955" />
+        <di:waypoint x="1906.5" y="780" />
+        <di:waypoint x="2018.5" y="605" />
+        <di:waypoint x="1662.5" y="430" />
+        <di:waypoint x="1236.8" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_KR_RESOLVED_1" dmnElementRef="_KR_RESOLVED_1">
+        <di:waypoint x="2066.7" y="1275" />
+        <di:waypoint x="1773" y="1130" />
+        <di:waypoint x="1773" y="955" />
+        <di:waypoint x="1995.5" y="780" />
+        <di:waypoint x="2107.5" y="605" />
+        <di:waypoint x="1751.5" y="430" />
+        <di:waypoint x="1263.6" y="285" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_VERDICT_D1" dmnElementRef="_IR_VERDICT_D1">
+        <di:waypoint x="1489.1" y="925" />
+        <di:waypoint x="2084.5" y="780" />
+        <di:waypoint x="2196.5" y="605" />
+        <di:waypoint x="1840.5" y="430" />
+        <di:waypoint x="1372.5" y="255" />
+        <di:waypoint x="1191.7" y="110" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_IR_VERDICT_D2" dmnElementRef="_IR_VERDICT_D2">
+        <di:waypoint x="1183" y="225" />
+        <di:waypoint x="1263.3" y="110" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
